@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width=20, fig.height=8)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width=20, fig.height=8)
 library(reefbudgetR)
 library(tidyverse)
 library(dplyr)
@@ -177,11 +177,8 @@ production_plot <- ggplot(data = net_site) +
   facet_grid(
     ~ REGIONCODE,
     scales = 'free_x',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
-  ) +
+    space = 'free'
+    ) +
   theme_bw() +
   # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
   #                   name = "Method") +
@@ -214,7 +211,6 @@ production_plot <- ggplot(data = net_site) +
     legend.key.size = unit(1, "cm"),
     legend.position = 'top'
   )
-production_plot
 ```
 
 ```{r plot_bioerosion}
@@ -244,10 +240,7 @@ bioerosion_plot <- ggplot(data = net_site) +
   facet_grid(
     ~ REGIONCODE,
     scales = 'free',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
+    space = 'free'
   ) +
   theme_bw() +
   # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
@@ -282,7 +275,6 @@ bioerosion_plot <- ggplot(data = net_site) +
     legend.key.size = unit(1, "cm"),
     legend.position = 'top'
   )
-bioerosion_plot
 ```
 
 ```{r plot_urchins}
@@ -313,10 +305,7 @@ urchin_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC != "SfM")) +
   facet_grid(
     ~ REGIONCODE,
     scales = 'free_x',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
+    space = 'free'
   ) +
   theme_bw() +
   # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
@@ -351,7 +340,6 @@ urchin_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC != "SfM")) +
     legend.key.size = unit(1, "cm"),
     legend.position = 'top'
   )
-urchin_plot
 ```
 
 ```{r plot_parrotfish}
@@ -378,10 +366,7 @@ parrotfish_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC = "CPM")) +
   facet_grid(
     ~ REGIONCODE,
     scales = 'free',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
+    space = 'free'
   ) +
   theme_bw() +
   scale_x_discrete(position = "top") +
@@ -412,10 +397,9 @@ parrotfish_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC = "CPM")) +
     legend.key.size = unit(1, "cm"),
     legend.position = 'top'
   )
-parrotfish_plot
 ```
 
-```{r plot_net, eval = FALSE}
+```{r plot_net}
 net_plot <- ggplot(data = net_site) +
   geom_col(
     aes(x = OCC_SITENAME,
@@ -445,8 +429,8 @@ net_plot <- ggplot(data = net_site) +
                     name = "") +
   #scale_x_discrete(labels = cpm$Label) +
   scale_y_continuous(
-    limits = c(-2, 16),
-    breaks = seq(-2, 16, by = 2),
+    limits = c(-4, 16),
+    breaks = seq(-4, 16, by = 2),
     expand = c(0, 0)
   ) +
   ylab(expression(paste(
@@ -471,8 +455,14 @@ net_plot <- ggplot(data = net_site) +
     legend.key.size = unit(1, "cm"),
     legend.position = 'top'
   )
-net_plot
+
 ```
 
-
+```{r plots, echo = FALSE}
+production_plot
+bioerosion_plot
+urchin_plot
+parrotfish_plot
+net_plot
+```
 
