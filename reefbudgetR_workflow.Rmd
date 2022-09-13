@@ -6,10 +6,16 @@ date: "`r Sys.Date()`"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width=20, fig.height=8)
-library(reefbudgetR)
+options(digits = 3)
+
+# Load libraries
 library(tidyverse)
 library(dplyr)
-options(digits = 3)
+
+# Install reefbudgetR package from github (only need to do this once unless there are package updates)
+devtools::install_github("hannahbarkley/reefbudgetR")
+
+library(reefbudgetR)
 
 ```
 
