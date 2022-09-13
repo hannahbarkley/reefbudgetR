@@ -1,25 +1,29 @@
 ---
 title: "Process carbonate budgets data with reefbudgetR"
-output: html_document
-date: "`r Sys.Date()`"
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.width=20, fig.height=8)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width=20, fig.height=8)
+
 library(reefbudgetR)
 library(tidyverse)
 library(dplyr)
+
 options(digits = 3)
 
 ```
 
 ```{r load_data}
+# Set working directory containing data
+setwd("T:/Oceanography/Carbonate Budgets/Data/")
 
-benthic_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_Benthic_alldata.csv", na = "", check.names = FALSE)
+# Load benthic, urchin, and fish data
+benthic_data <- read.csv("CB_Benthic_alldata.csv", na = "", check.names = FALSE)
 
-urchin_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_Urchin_alldata.csv", na = "", check.names = FALSE)
+urchin_data <- read.csv("CB_Urchin_alldata.csv", na = "", check.names = FALSE)
 
-fish_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
+fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
 ```
 
@@ -103,6 +107,7 @@ urch_site <- bind_rows(urch_cpm$site_erosion,
 
 ```{r process_parrotfish}
 
+# Proess fish data
 fish_belt <- process_fish(
   data = fish_data, 
   rates_dbase = "Kindinger", 
@@ -114,6 +119,7 @@ fish_site <- fish_belt$fish_erosion_site
 
 ```{r process_net}
 
+# Process net production data
 net_site = process_net(
   prod = prod_site,
   urch = urch_site,
@@ -121,358 +127,3 @@ net_site = process_net(
 )
 
 ```
-
-```{r prep_plot, eval = FALSE}
-
-net_site$CB_METHOD <- factor(net_site$CB_METHOD_BENTHIC, levels = c("CPM", "Chords", "SfM"))
-net_site$REGIONCODE <- factor(net_site$REGIONCODE, levels = c("MHI", "MARIAN"))
-net_site$OCC_SITENAME <- factor(
-  net_site$OCC_SITENAME,
-  levels = c(
-    "Gab Gab",
-    "Piti",
-    "Fish Eye",
-    "Tumon Bay",
-    "West Saipan",
-    "South Saipan" ,
-    "West Pagan",
-    "East Pagan",
-    "North Maug",
-    "Maug Caldera",
-    "Mokuleia",
-    "Makua",
-    "Barbers Point",
-    "Ewa",
-    "Reef Runway",
-    "Kewalo",
-    "Kaneohe Bay"
-  )
-)
-
-```
-
-```{r plot_prod}
-
-production_plot <- ggplot(data = net_site) +
-  geom_hline(yintercept = 0) +
-  geom_col(
-    aes(x = OCC_SITENAME,
-        y = GROSS_CARB_PROD_KG_M2_YR_MEAN,
-        fill = CB_METHOD_BENTHIC),
-    show.legend = TRUE,
-    color = 'black',
-    position = position_dodge(width = 0.6),
-    width = 0.6
-  ) +
-  geom_errorbar(
-    aes(
-      x = OCC_SITENAME,
-      ymin = GROSS_CARB_PROD_KG_M2_YR_MEAN - GROSS_CARB_PROD_KG_M2_YR_SE,
-      ymax = GROSS_CARB_PROD_KG_M2_YR_MEAN + GROSS_CARB_PROD_KG_M2_YR_SE,
-      group = CB_METHOD_BENTHIC
-    ),
-    width = 0.2,
-    position = position_dodge(width = 0.6)
-  ) +
-  facet_grid(
-    ~ REGIONCODE,
-    scales = 'free_x',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
-  ) +
-  theme_bw() +
-  # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
-  #                   name = "Method") +
-  scale_fill_manual(values = c("#FF4438", "#ff827a", "#ffbeba"),
-                    name = "") +
-  scale_y_continuous(
-    limits = c(0, 18),
-    breaks = seq(0, 18, by = 2),
-    expand = c(0, 0)
-  ) +
-  ylab(expression(paste(
-    "Gross production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
-  ))) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(size = 12, color = 'black'),
-    axis.text.y = element_text(size = 12, color = 'black'),
-    axis.title.y = element_text(size = 18),
-    strip.text.x = element_blank(),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 12),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "white"),
-    panel.border = element_rect(
-      colour = "black",
-      fill = NA,
-      size = 1
-    ),
-    legend.key.size = unit(1, "cm"),
-    legend.position = 'top'
-  )
-production_plot
-```
-
-```{r plot_bioerosion}
-bioerosion_plot <- ggplot(data = net_site) +
-  geom_col(
-    aes(
-      x = OCC_SITENAME,
-      y = -1 * BIOEROSION_KG_M2_YR_MEAN,
-      fill = CB_METHOD_BENTHIC
-    ),
-    show.legend = TRUE,
-    color = 'black',
-    position = position_dodge(width = 0.6),
-    width = 0.6
-  ) +
-  geom_errorbar(
-    aes(
-      x = OCC_SITENAME,
-      ymin = -1 * (BIOEROSION_KG_M2_YR_MEAN - BIOEROSION_KG_M2_YR_SE),
-      ymax = -1 * (BIOEROSION_KG_M2_YR_MEAN + BIOEROSION_KG_M2_YR_SE),
-      group = CB_METHOD_BENTHIC
-    ),
-    width = 0.2,
-    position = position_dodge(width = 0.6)
-  ) +
-  geom_hline(yintercept = 0) +
-  facet_grid(
-    ~ REGIONCODE,
-    scales = 'free',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
-  ) +
-  theme_bw() +
-  # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
-  #                   name = "") +
-  scale_fill_manual(values = c("#ff8400", "#ffac54", "#ffd4a6"),
-                    name = "") +
-  scale_x_discrete(position = "top") +
-  scale_y_continuous(
-    limits = c(-6, 0),
-    breaks = seq(-6, 0, by = 1),
-    expand = c(0, 0)
-  ) +
-  ylab(expression(paste(
-    "Bioerosion rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
-  ))) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(size = 12, color = 'black'),
-    axis.text.y = element_text(size = 12, color = 'black'),
-    axis.title.y = element_text(size = 18),
-    strip.text.x = element_blank(),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 12),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "white"),
-    panel.border = element_rect(
-      colour = "black",
-      fill = NA,
-      size = 1
-    ),
-    legend.key.size = unit(1, "cm"),
-    legend.position = 'top'
-  )
-bioerosion_plot
-```
-
-```{r plot_urchins}
-urchin_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC != "SfM")) +
-  geom_hline(yintercept = 0) +
-  geom_col(
-    aes(
-      x = OCC_SITENAME,
-      y = -1 * URCHIN_EROSION_KG_M2_YR_MEAN,
-      fill = CB_METHOD_BENTHIC
-    ),
-    show.legend = TRUE,
-    color = 'black',
-    position = position_dodge(width = 0.6),
-    width = 0.6
-  ) +
-  geom_errorbar(
-    aes(
-      x = OCC_SITENAME,
-      ymin = -1 * (URCHIN_EROSION_KG_M2_YR_MEAN - URCHIN_EROSION_KG_M2_YR_SE),
-      ymax = -1 * (URCHIN_EROSION_KG_M2_YR_MEAN + URCHIN_EROSION_KG_M2_YR_SE),
-      group = CB_METHOD_BENTHIC
-    ),
-    width = 0.2,
-    position = position_dodge(width = 0.6)
-  ) +
-  geom_hline(yintercept = 0) +
-  facet_grid(
-    ~ REGIONCODE,
-    scales = 'free_x',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
-  ) +
-  theme_bw() +
-  # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
-  #                   name = "") +
-  scale_fill_manual(values = c("#7171ff", "#a2a2ff"),
-                    name = "") +
-  scale_x_discrete(position = "top") +
-  scale_y_continuous(
-    limits = c(-6, 0),
-    breaks = seq(-6, 0, by = 1),
-    expand = c(0, 0)
-  ) +
-  ylab(expression(paste(
-    "Urchin erosion rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
-  ))) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(size = 12, color = 'black'),
-    axis.text.y = element_text(size = 12, color = 'black'),
-    axis.title.y = element_text(size = 18),
-    strip.text.x = element_blank(),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 12),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "white"),
-    panel.border = element_rect(
-      colour = "black",
-      fill = NA,
-      size = 1
-    ),
-    legend.key.size = unit(1, "cm"),
-    legend.position = 'top'
-  )
-urchin_plot
-```
-
-```{r plot_parrotfish}
-parrotfish_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC = "CPM")) +
-  geom_col(
-    aes(x = OCC_SITENAME,
-        y = -1 * FISH_EROSION_KG_M2_YR_ALL_MEAN),
-    show.legend = FALSE,
-    fill = "#76bc21",
-    color = 'black',
-    position = position_dodge(width = 0.6),
-    width = 0.6
-  ) +
-  geom_errorbar(
-    aes(
-      x = OCC_SITENAME,
-      ymin = -1 * (FISH_EROSION_KG_M2_YR_ALL_MEAN - FISH_EROSION_KG_M2_YR_ALL_SE),
-      ymax = -1 * (FISH_EROSION_KG_M2_YR_ALL_MEAN + FISH_EROSION_KG_M2_YR_ALL_SE)
-    ),
-    width = 0.2,
-    position = position_dodge(width = 0.6)
-  ) +
-  geom_hline(yintercept = 0) +
-  facet_grid(
-    ~ REGIONCODE,
-    scales = 'free',
-    space = 'free',
-    labeller = as_labeller(
-      c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-    )
-  ) +
-  theme_bw() +
-  scale_x_discrete(position = "top") +
-  scale_y_continuous(
-    limits = c(-6, 0),
-    breaks = seq(-6, 0, by = 1),
-    expand = c(0, 0)
-  ) +
-  ylab(expression(
-    paste("Parrotfish erosion rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  ")
-  )) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(size = 12, color = 'black'),
-    axis.text.y = element_text(size = 12, color = 'black'),
-    axis.title.y = element_text(size = 18),
-    strip.text.x = element_blank(),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 12),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "white"),
-    panel.border = element_rect(
-      colour = "black",
-      fill = NA,
-      size = 1
-    ),
-    legend.key.size = unit(1, "cm"),
-    legend.position = 'top'
-  )
-parrotfish_plot
-```
-
-```{r plot_net, eval = FALSE}
-net_plot <- ggplot(data = net_site) +
-  geom_col(
-    aes(x = OCC_SITENAME,
-        y = NET_CARB_PROD_KG_M2_YR_MEAN,
-        fill = CB_METHOD_BENTHIC),
-    show.legend = TRUE,
-    color = 'black',
-    position = position_dodge(width = 0.6),
-    width = 0.6
-  ) +
-  geom_errorbar(
-    aes(
-      x = OCC_SITENAME,
-      ymin = NET_CARB_PROD_KG_M2_YR_MEAN - NET_CARB_PROD_KG_M2_YR_SE,
-      ymax = NET_CARB_PROD_KG_M2_YR_MEAN + NET_CARB_PROD_KG_M2_YR_SE,
-      group = CB_METHOD_BENTHIC
-    ),
-    width = 0.2,
-    position = position_dodge(width = 0.6)
-  ) +
-  geom_hline(yintercept = 0) +
-  facet_grid( ~ REGIONCODE, scales = 'free', space = 'free', labeller = as_labeller(
-    c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-  )) +
-  theme_bw() +
-  scale_fill_manual(values = c("#0085ca", "#54addb", "#a6d4ec"),
-                    name = "") +
-  #scale_x_discrete(labels = cpm$Label) +
-  scale_y_continuous(
-    limits = c(-2, 16),
-    breaks = seq(-2, 16, by = 2),
-    expand = c(0, 0)
-  ) +
-  ylab(expression(paste(
-    "Net production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
-  ))) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(size = 12, color = 'black'),
-    axis.text.y = element_text(size = 12, color = 'black'),
-    axis.title.y = element_text(size = 18),
-    strip.text.x = element_blank(),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 12),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "white"),
-    panel.border = element_rect(
-      colour = "black",
-      fill = NA,
-      size = 1
-    ),
-    legend.key.size = unit(1, "cm"),
-    legend.position = 'top'
-  )
-net_plot
-```
-
-
-
