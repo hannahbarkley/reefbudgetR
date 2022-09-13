@@ -1,15 +1,15 @@
-#'Convert all individually saved Chris Perry's Excel Entry sheets for each site into one large dataframe
+#'Convert all individually saved Indo-Pacific ReefBudget (IPRB) Excel Entry sheets for each site into one large dataframe
 #'@author Rebecca Weible
-#'@param cpm_csv .csv file in Chris Perry's Excel sheet format without any changes
+#'@param iprb_csv .csv file in Chris Perry's Excel sheet format without any changes
 #'@param METADATA .csv file with all of the metadata from Chris Perry's Excel sheet saved in a dataframe format
 #'@param ADDLOCATION create column for unique, general site name where the data comes from (i.e. "Kaneohe)
 #'@param OCC.SITEID create column for unique OCC site ID (i.e. OCC-OAH-005)
 #'@import dplyr
-#'@export convert_cpm
+#'@export convert_iprb
 
-convert_cpm <- function(cpm_csv, cpm_metadata, add_location, OCC_SITEID) {
+convert_iprb <- function(iprb_csv, iprb_metadata, add_location, OCC_SITEID) {
 
-  data <- read.csv(file = cpm_csv) %>% #call in CPM fish data entry spreadsheet
+  data <- read.csv(file = iprb_csv) %>% #call in Indo-Pacific ReefBudget fish data entry spreadsheet
     dplyr::filter(!TRANSECT.1=="") %>% #remove blank rows
     dplyr::rename(SPECIES = TRANSECT.1, #rename column headings to size bins
                   `J.0-10cm` = X,
@@ -29,7 +29,6 @@ convert_cpm <- function(cpm_csv, cpm_metadata, add_location, OCC_SITEID) {
     setNames(., c("1","2","3","4","5","6","7","8","9","10")) %>%#rename each dataframe in the list by transect number
     bind_rows(., .id="Transect") %>%
     filter(!SPECIES %in% "Total") %>%
-    #complete(SPECIES) #no need b/c CPM Excel sheet is already complete
     gather(., sizebin, count, -Transect, -SPECIES) %>% #set up dataframe to create separate phase column
     separate(sizebin, c("PHASE", "sizebin"), extra = "merge", fill = "left") %>% #pull phase letters out of sizebin column (J, I, or T)
     spread(., sizebin, count, fill = 0) %>% #spread back out like data entry format
@@ -37,7 +36,7 @@ convert_cpm <- function(cpm_csv, cpm_metadata, add_location, OCC_SITEID) {
     mutate(CRUISEID = "MP2108") %>% #here and below, add columns of metadata that are missing
     mutate(LOCATIONCODE = "OAH") %>%
     mutate(OCC_SITEID = OCC_SITEID) %>%
-    mutate(CB_METHOD = "CPM_BELT") %>%
+    mutate(CB_METHOD = "IPRB_BELT") %>%
     mutate(LOCATION = add_location) %>%
     dplyr::rename(TRANSECT = Transect) %>%
     mutate_at(vars(TRANSECT), as.factor) %>%
@@ -45,7 +44,7 @@ convert_cpm <- function(cpm_csv, cpm_metadata, add_location, OCC_SITEID) {
     mutate(NOTES = "")
 
 
-  finaldata <- read.csv(file = cpm_metadata) %>% #import rest of metadata from site description tab in CPM excel sheets
+  finaldata <- read.csv(file = iprb_metadata) %>% #import rest of metadata from site description tab in IPRB excel sheets
     mutate_at(vars(TRANSECT), as.factor) %>%
     left_join(., data, by = c("OCC_SITEID", "TRANSECT")) %>% #merge with dataframe created above
     ungroup() %>%

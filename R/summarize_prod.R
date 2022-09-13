@@ -2,7 +2,7 @@
 #'@author Hannah Barkley
 #'@param data Data set to summarize; product of run_calc_prod
 #'@param transect_summary Transect sumamry; product of run_calc_prod
-#'@param dbase_type Production database to use ("CPM" or "NCRMP")
+#'@param dbase_type Production database to use ("IPRB" or "NCRMP")
 #'@param summarize_by Grouping factor to summarize by ("substrate code",
 #'"substrate class", "coral group",or "overall")
 #'@param level Summarize at "transect" or "site" level
@@ -17,7 +17,7 @@
 
 summarize_prod <- function(data,
                            transect_summary,
-                           dbase_type = c("CPM", "NCRMP"),
+                           dbase_type = c("IPRB", "NCRMP"),
                            summarize_by = c("substrate code",
                                             "substrate class",
                                             "coral group",
@@ -31,9 +31,9 @@ summarize_prod <- function(data,
 
 ) {
 
-  if (dbase_type == "CPM") {
-    data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_CPM
-    prod_dbase <- prod_dbase_cpm
+  if (dbase_type == "IPRB") {
+    data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
+    prod_dbase <- prod_dbase_iprb
   }
 
   if (dbase_type == "NCRMP") {
@@ -385,7 +385,7 @@ summarize_prod <- function(data,
 
 
   # Summarize production by TRANSECT ----------------------------------------
-  if (dbase_type == "CPM") {
+  if (dbase_type == "IPRB") {
     summary_transect <- summary_transect_substratecode  %>%
       dplyr::group_by(
         .data$REGION,

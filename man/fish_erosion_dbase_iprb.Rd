@@ -1,13 +1,13 @@
-\name{fish_erosion_dbase_perry}
-\alias{fish_erosion_dbase_perry}
+\name{fish_erosion_dbase_iprb}
+\alias{fish_erosion_dbase_iprb}
 \docType{data}
-\title{Fish erosion rates database, created by Chris Perry
+\title{Fish erosion rates database, from Indo-Pacific ReefBudget Methodology
 %%   ~~ data name/kind ... ~~
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }
-\usage{data("fish_erosion_dbase_perry")}
+\usage{data("fish_erosion_dbase_iprb")}
 \format{
   A data frame with 480 observations on the following 4 variables.
   \describe{
@@ -27,7 +27,6 @@
 %%  ~~ possibly secondary sources and usages ~~
 }
 \examples{
-data(fish_erosion_dbase_perry)
-## maybe str(fish_erosion_dbase_perry) ; plot(fish_erosion_dbase_perry) ...
+data(fish_erosion_dbase_iprb)
 }
 \keyword{datasets}

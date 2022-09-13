@@ -1,13 +1,13 @@
 #' Format input data
 #'@author Rebecca Weible
-#'@param cpm_rates .csv file of Chris Perry's EXACT Equations tab
+#'@param iprb_rates .csv file of Chris Perry's EXACT Equations tab
 #'@import dplyr
 #'@importFrom sjmisc seq_row
 #'@export format_rates
 #'
 
-format_rates <- function(cpm_rates, output = c("all", "finalerosion")) {
-  rates <- cpm_rates %>% #call in rate values
+format_rates <- function(iprb_rates, output = c("all", "finalerosion")) {
+  rates <- iprb_rates %>% #call in rate values
     #remove blank rows
     dplyr::filter(!X.2 == "") %>%
     # rename column headings to size bins

@@ -3,7 +3,7 @@
 #'@param data Benthic data set to process
 #'@param transect_id String of transect names
 #'@param transect_length String of transect lengths in meters
-#'@param dbase_type Production database to use ("CPM" or "NCRMP")
+#'@param dbase_type Production database to use ("IPRB" or "NCRMP")
 #'@param data_type Type of data collection ("In water" or "SfM")
 #'@import dplyr
 #'@importFrom sjmisc seq_row
@@ -16,9 +16,9 @@ run_calc_prod <- function(data,
                           data_type,
                           ...) {
 
-  if (dbase_type == "CPM") {
-    data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_CPM
-    prod_dbase <- prod_dbase_cpm
+  if (dbase_type == "IPRB") {
+    data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
+    prod_dbase <- prod_dbase_iprb
   }
 
   if (dbase_type == "NCRMP") {

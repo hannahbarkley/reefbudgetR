@@ -1,13 +1,13 @@
-\name{prod_dbase_cpm}
-\alias{prod_dbase_cpm}
+\name{prod_dbase_iprb}
+\alias{prod_dbase_iprb}
 \docType{data}
-\title{ CPM database
+\title{ Indo-Pacific ReefBudget carbonate production database
 %%   ~~ data name/kind ... ~~
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }
-\usage{data("prod_dbase_cpm")}
+\usage{data("prod_dbase_iprb")}
 \format{
   A data frame with 219 observations on the following 14 variables.
   \describe{
@@ -37,7 +37,6 @@
 %%  ~~ possibly secondary sources and usages ~~
 }
 \examples{
-data(prod_dbase_cpm)
-## maybe str(prod_dbase_cpm) ; plot(prod_dbase_cpm) ...
+data(prod_dbase_iprb)
 }
 \keyword{datasets}

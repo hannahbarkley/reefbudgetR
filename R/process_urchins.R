@@ -3,7 +3,7 @@
 #'@param data Urchin observation data set
 #'@param transect_id String of transect names
 #'@param transect_length String of transect lengths in meters
-#'@param method_name Transect design ("CPM" or "Chords")
+#'@param method_name Transect design ("IPRB" or "Chords")
 #'@param data_type Type of data collection ("In water" or "SfM")
 #'@import tidyr
 #'@import dplyr
@@ -13,7 +13,7 @@
 process_urchins <- function(data,
                             transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
                             transect_length = c(10, 10, 10, 10, 10, 10),
-                            method_name = c("CPM", "Chords"),
+                            method_name = c("IPRB", "Chords"),
                             data_type = c("In water", "SfM"),
                             full_summary = FALSE) {
 

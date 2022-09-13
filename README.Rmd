@@ -31,9 +31,9 @@ fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
 #### Process benthic data by method type
 
-# Process CPM benthic data
+# Process "Indo-Pacific ReefBudget (IPRB)" methodology benthic data
 prod_cpm <- process_prod(
-  data = benthic_data[benthic_data$CB_METHOD == "CPM", ],
+  data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
   transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
   transect_length = c(10, 10, 10, 10, 10, 10),
   dbase_type = "NCRMP",
@@ -42,7 +42,7 @@ prod_cpm <- process_prod(
   full_summary = TRUE
 )
 
-# Process chords benthic data
+# Process "Chords" methodology benthic data
 prod_chords <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
   transect_id = c("A", "B", "C", "D", "E", "F"),
@@ -53,7 +53,7 @@ prod_chords <- process_prod(
   full_summary = TRUE
 )
 
-# Process SfM benthic data
+# Process "SfM" methodology benthic data
 prod_sfm <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
   transect_id = c("A", "B", "C", "D", "E", "F"),

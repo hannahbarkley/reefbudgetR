@@ -27,13 +27,13 @@ fish_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_FishBelt_alldat
 
 #### Process benthic data by method type
 
-# Process CPM benthic data
-prod_cpm <- process_prod(
-  data = benthic_data[benthic_data$CB_METHOD == "CPM", ],
+# Process IPRB benthic data
+prod_iprb <- process_prod(
+  data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
   transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
   transect_length = c(10, 10, 10, 10, 10, 10),
   dbase_type = "NCRMP",
-  method_name = "CPM",
+  method_name = "IPRB",
   data_type = "In water",
   full_summary = TRUE
 )
@@ -62,7 +62,7 @@ prod_sfm <- process_prod(
 
 # Combine site-level production data back together
 prod_site <- bind_rows(
-  prod_cpm$summary_site,
+  prod_iprb$summary_site,
   prod_chords$summary_site,
   prod_sfm$summary_site
 )
@@ -73,10 +73,10 @@ prod_site <- bind_rows(
 
 #### Process urchin data by method type
 
-# Process CPM urchin data
-urch_cpm <- process_urchins(
-  data = urchin_data[urchin_data$CB_METHOD == "CPM", ],
-  method_name = "CPM",
+# Process IPRB urchin data
+urch_iprb <- process_urchins(
+  data = urchin_data[urchin_data$CB_METHOD == "IPRB", ],
+  method_name = "IPRB",
   data_type = "In water",
   transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
   transect_length = c(10, 10, 10, 10, 10, 10),
@@ -95,7 +95,7 @@ urch_chords <- process_urchins(
 
 
 # Combine site-level urchin erosion data back together
-urch_site <- bind_rows(urch_cpm$site_erosion,
+urch_site <- bind_rows(urch_iprb$site_erosion,
                                  urch_chords$site_erosion)
 
 ```
@@ -124,7 +124,7 @@ net_site = process_net(
 
 ```{r prep_plot, eval = FALSE}
 
-net_site$CB_METHOD <- factor(net_site$CB_METHOD_BENTHIC, levels = c("CPM", "Chords", "SfM"))
+net_site$CB_METHOD <- factor(net_site$CB_METHOD_BENTHIC, levels = c("IPRB", "Chords", "SfM"))
 net_site$REGIONCODE <- factor(net_site$REGIONCODE, levels = c("MHI", "MARIAN"))
 net_site$OCC_SITENAME <- factor(
   net_site$OCC_SITENAME,
@@ -343,7 +343,7 @@ urchin_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC != "SfM")) +
 ```
 
 ```{r plot_parrotfish}
-parrotfish_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC = "CPM")) +
+parrotfish_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC = "IPRB")) +
   geom_col(
     aes(x = OCC_SITENAME,
         y = -1 * FISH_EROSION_KG_M2_YR_ALL_MEAN),
@@ -427,7 +427,6 @@ net_plot <- ggplot(data = net_site) +
   theme_bw() +
   scale_fill_manual(values = c("#0085ca", "#54addb", "#a6d4ec"),
                     name = "") +
-  #scale_x_discrete(labels = cpm$Label) +
   scale_y_continuous(
     limits = c(-4, 16),
     breaks = seq(-4, 16, by = 2),
