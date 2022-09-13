@@ -16,18 +16,18 @@ fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 ``` r
 #### Process benthic data by method type
 
-# Process CPM benthic data
-prod_cpm <- process_prod(
-  data = benthic_data[benthic_data$CB_METHOD == "CPM", ],
+# Process "Indo-Pacific ReefBudget (IPRB)" methodology benthic data
+prod_IPRB <- process_prod(
+  data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
   transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
   transect_length = c(10, 10, 10, 10, 10, 10),
   dbase_type = "NCRMP",
-  method_name = "CPM",
+  method_name = "IPRB",
   data_type = "In water",
   full_summary = TRUE
 )
 
-# Process chords benthic data
+# Process "Chords" methodology benthic data
 prod_chords <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
   transect_id = c("A", "B", "C", "D", "E", "F"),
@@ -38,7 +38,7 @@ prod_chords <- process_prod(
   full_summary = TRUE
 )
 
-# Process SfM benthic data
+# Process "SfM" methodology benthic data
 prod_sfm <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
   transect_id = c("A", "B", "C", "D", "E", "F"),
@@ -51,7 +51,7 @@ prod_sfm <- process_prod(
 
 # Combine site-level production data back together
 prod_site <- bind_rows(
-  prod_cpm$summary_site,
+  prod_IPRB$summary_site,
   prod_chords$summary_site,
   prod_sfm$summary_site
 )
@@ -60,10 +60,10 @@ prod_site <- bind_rows(
 ``` r
 #### Process urchin data by method type
 
-# Process CPM urchin data
-urch_cpm <- process_urchins(
-  data = urchin_data[urchin_data$CB_METHOD == "CPM", ],
-  method_name = "CPM",
+# Process IPRB urchin data
+urch_IPRB <- process_urchins(
+  data = urchin_data[urchin_data$CB_METHOD == "IPRB", ],
+  method_name = "IPRB",
   data_type = "In water",
   transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
   transect_length = c(10, 10, 10, 10, 10, 10),
@@ -82,7 +82,7 @@ urch_chords <- process_urchins(
 
 
 # Combine site-level urchin erosion data back together
-urch_site <- bind_rows(urch_cpm$site_erosion,
+urch_site <- bind_rows(urch_IPRB$site_erosion,
                                  urch_chords$site_erosion)
 ```
 
