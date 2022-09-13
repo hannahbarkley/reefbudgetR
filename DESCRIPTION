@@ -1,0 +1,32 @@
+Package: reefbudgetR
+Title: reefbudgetR: process ReefBudget carbonate budget data
+Version: 0.0.0.9001
+Authors@R: 
+    c(person("Hannah", "Barkley", , "hannah.barkley@noaa.gov", 
+    role = c("aut", "cre")),
+    person("Rebecca", "Weible", , "rebecca.weible@noaa.gov", role = c("aut")))
+Description: Provides tools for working with ReefBudget carbonate budget data, with functions to process field-based and SfM-derived benthic, urchin, and parrotfish census data and calculate carbonate production and erosion.
+URL: https://geography.exeter.ac.uk/reefbudget/
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1.9000
+Depends: 
+    R (>= 3.5.0)
+LazyData: true
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    lubridate,
+    reshape2,
+    rlang,
+    sjmisc,
+    rmarkdown,
+    tidyr,
+    tidyverse,
+    Rmisc,
+    dplyr
+VignetteBuilder: knitr
