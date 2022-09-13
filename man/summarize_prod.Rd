@@ -7,7 +7,7 @@
 summarize_prod(
   data,
   transect_summary,
-  dbase_type = c("CPM", "NCRMP"),
+  dbase_type = c("IPRB", "NCRMP"),
   summarize_by = c("substrate code", "substrate class", "coral group", "overall"),
   level = c("transect", "site"),
   macro_rate = 0.209,
@@ -22,7 +22,7 @@ summarize_prod(
 
 \item{transect_summary}{Transect sumamry; product of run_calc_prod}
 
-\item{dbase_type}{Production database to use ("CPM" or "NCRMP")}
+\item{dbase_type}{Production database to use ("IPRB" or "NCRMP")}
 
 \item{summarize_by}{Grouping factor to summarize by ("substrate code",
 "substrate class", "coral group",or "overall")}

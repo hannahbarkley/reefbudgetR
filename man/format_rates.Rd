@@ -4,10 +4,10 @@
 \alias{format_rates}
 \title{Format input data}
 \usage{
-format_rates(cpm_rates, output = c("all", "finalerosion"))
+format_rates(iprb_rates, output = c("all", "finalerosion"))
 }
 \arguments{
-\item{cpm_rates}{.csv file of Chris Perry's EXACT Equations tab}
+\item{iprb_rates}{.csv file of Chris Perry's EXACT Equations tab}
 }
 \description{
 Format input data

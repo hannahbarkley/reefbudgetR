@@ -8,8 +8,8 @@ process_prod(
   data,
   transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
   transect_length = c(10, 10, 10, 10, 10, 10),
-  dbase_type = c("CPM", "NCRMP"),
-  method_name = c("CPM", "Chords"),
+  dbase_type = c("IPRB", "NCRMP"),
+  method_name = c("IPRB", "Chords"),
   data_type = c("In water", "SfM"),
   full_summary = FALSE,
   label = NULL,
@@ -23,9 +23,9 @@ process_prod(
 
 \item{transect_length}{String of transect lengths in meters}
 
-\item{dbase_type}{Production database to use ("CPM" or "NCRMP")}
+\item{dbase_type}{Production database to use ("IPRB" or "NCRMP")}
 
-\item{method_name}{Transect design ("CPM" or "Chords")}
+\item{method_name}{Transect design ("IPRB" or "Chords")}
 
 \item{data_type}{Type of data collection ("In water" or "SfM")}
 }

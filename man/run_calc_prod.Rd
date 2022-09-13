@@ -13,7 +13,7 @@ run_calc_prod(data, transect_id, transect_length, dbase_type, data_type, ...)
 
 \item{transect_length}{String of transect lengths in meters}
 
-\item{dbase_type}{Production database to use ("CPM" or "NCRMP")}
+\item{dbase_type}{Production database to use ("IPRB" or "NCRMP")}
 
 \item{data_type}{Type of data collection ("In water" or "SfM")}
 }
