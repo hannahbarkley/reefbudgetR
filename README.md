@@ -87,7 +87,7 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 ```
 
 ``` r
-# Proess fish data
+# Process fish data
 fish_belt <- process_fish(
   data = fish_data, 
   rates_dbase = "Kindinger", 
@@ -98,7 +98,7 @@ fish_site <- fish_belt$fish_erosion_site
 
 ``` r
 # Process net production data
-net_site = process_net(
+net_site <- process_net(
   prod = prod_site,
   urch = urch_site,
   fish = fish_site
