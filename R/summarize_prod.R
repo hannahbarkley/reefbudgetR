@@ -205,7 +205,7 @@ summarize_prod <- function(data,
 
   summary_transect_substrateclass <-
     summary_transect_substrateclass %>%
-    group_by(OCC_SITEID_TRANSECT) %>%
+    group_by(OCC_SITEID) %>%
     fill(
       c(
         "REGION",
@@ -221,7 +221,8 @@ summarize_prod <- function(data,
         "DEPTH_M",
         "LOCALDATE",
         "CB_METHOD"
-      )
+      ),
+      .direction = 'downup'
     )
 
   summary_transect_substrateclass[, 17:26][is.na(summary_transect_substrateclass[, 17:26])] <- 0
@@ -351,7 +352,7 @@ summarize_prod <- function(data,
   )]
 
   summary_transect_coral <-
-    summary_transect_coral %>% group_by(OCC_SITEID_TRANSECT) %>%
+    summary_transect_coral %>% group_by(OCC_SITEID) %>%
     fill(
       c(
         "REGION",
@@ -372,7 +373,7 @@ summarize_prod <- function(data,
     )
 
   summary_transect_coral <-
-    summary_transect_coral %>% group_by(CORAL_GROUP ) %>%
+    summary_transect_coral %>% group_by(CORAL_GROUP) %>%
     fill(
       c(
         "CORAL_GROUP_NAME"
