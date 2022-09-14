@@ -1,13 +1,17 @@
 #' Calculate metrics for density, biomass, and bioerosion at the transect
 #' and site level
+#'
 #'@author Rebecca Weible
-#'@param data output from `calc_eros_fish_output`
-#'@param metric Metric to summarize ("count", "biomass", or "bioerosion")
-#'@param level Level to summarize at ("transect" or "site" level)
+#'
+#'@param data output from `calc_eros_fish_output`.
+#'@param metric Metric to summarize ("count", "biomass", or "bioerosion").
+#'@param level Level to summarize at ("transect" or "site" level).
 #'@param summarize_by Grouping factor to summarize by ("size class",
-#'"species", or "overall")
+#'"species", or "overall").
+#'
 #'@import Rmisc
 #'@import dplyr
+#'
 #'@export summarize_fish_metrics
 
 summarize_fish_metrics <- function(data,

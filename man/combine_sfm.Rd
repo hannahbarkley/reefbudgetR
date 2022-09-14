@@ -2,7 +2,7 @@
 % Please edit documentation in R/combine_sfm.r
 \name{combine_sfm}
 \alias{combine_sfm}
-\title{Combine individual SfM transect files}
+\title{Combine individual SfM benthic data transect files}
 \usage{
 combine_sfm(
   sfm_folder,
@@ -14,20 +14,21 @@ combine_sfm(
 )
 }
 \arguments{
-\item{sfm_folder}{Directory containing individual SfM transect files}
+\item{sfm_folder}{Directory containing SfM transect files.}
 
-\item{region_code}{Region code where surveys were conducted (e.g. "MHI")}
+\item{location_code}{Location code where surveys were conducted
+("OAH", "GUA", "SAI", ...).}
 
-\item{location_code}{Location code where surveys were conducted (e.g. "OAH")}
+\item{local_date}{Local Date of imagery collection (yyyy-mm-dd).}
 
-\item{local_date}{Local Date of imagery collection (yyyy-mm-dd)}
+\item{cruise_id}{Cruise ID for survey collection ("MP2108", "RA2201", ...).}
 
-\item{cruise_id}{Cruise ID for survey collection}
+\item{surveyor}{Initials of data collector.}
 
-\item{surveyor}{Initials of data collector}
+\item{region_codeSurvey}{region ("MHI", "MARIAN", ...).}
 }
 \description{
-Combine individual SfM transect files
+Combine individual SfM benthic data transect files
 }
 \author{
 Hannah Barkley

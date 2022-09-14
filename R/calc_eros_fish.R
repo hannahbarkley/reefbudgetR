@@ -1,13 +1,16 @@
-#' Calculates parrotfish biomass, density, and bioerosion rates
+#' Calculate parrotfish biomass, density, and bioerosion rates
 
 #'@author Rebecca Weible
+#'
 #'@param data Parrotfish belt data, including number of fish observed of each
-#'species, size class, and phase
+#'species, size class, and phase.
 #'@param rates_dbase Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("rates_dbase = "IPRB") or rates developed by Tye Kindinger
-#'("rates_dbase = "Kindinger")
+#'ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
+#'by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").
+#'
 #'@import dplyr
 #'@importFrom rlang .data
+#'
 #'@export calc_eros_fish
 
 calc_eros_fish <- function(data,

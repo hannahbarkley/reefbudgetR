@@ -1,10 +1,14 @@
-#' Format field data and processed net production data for NCEI submission
+#' Format net production data for NCEI submission
+#'
 #'@author Hannah Barkley
-#'@param net_prod output of `process_net_prod`
+#'
+#'@param net_prod output of `process_net_prod`.
+#'
 #'@import dplyr
 #'@import tools
 #'@import tidyr
 #'@import reshape2
+#'
 #'@export format_4ncei
 #'
 format_4ncei <- function(net_prod) {

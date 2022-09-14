@@ -1,7 +1,7 @@
 \name{prod_dbase_iprb}
 \alias{prod_dbase_iprb}
 \docType{data}
-\title{ Indo-Pacific ReefBudget carbonate production database
+\title{Indo-Pacific ReefBudget carbonate production database
 %%   ~~ data name/kind ... ~~
 }
 \description{
@@ -9,26 +9,28 @@
 }
 \usage{data("prod_dbase_iprb")}
 \format{
-  A data frame with 219 observations on the following 14 variables.
   \describe{
-    \item{\code{REGIONCODE}}{a character vector}
-    \item{\code{SUBSTRATE_CODE}}{a character vector}
-    \item{\code{CORAL_GROUP_NAME}}{a character vector}
-    \item{\code{CORAL_GROUP}}{a character vector}
-    \item{\code{SUBSTRATE_CLASS}}{a character vector}
-    \item{\code{SUBSTRATE_NAME}}{a character vector}
-    \item{\code{MORPHOLOGY}}{a character vector}
-    \item{\code{MORPHOLOGYCODE}}{a character vector}
-    \item{\code{TAXA_LEVEL}}{a character vector}
-    \item{\code{EXTENSION_CM_YR}}{a numeric vector}
-    \item{\code{EXTENSION_CM_YR_CI}}{a numeric vector}
-    \item{\code{DENSITY_G_CM3}}{a numeric vector}
-    \item{\code{DENSITY_G_CM3_CI}}{a numeric vector}
-    \item{\code{CONVERSION_FACTOR}}{a numeric vector}
+    \item{\code{REGIONCODE}}{Region, Main Hawaiian Islands "MHI" or Marianas Archipelago "MARIAN".}
+    \item{\code{SUBSTRATE_CODE}}{Substrate code for taxa.}
+    \item{\code{CORAL_GROUP_NAME}}{Coral genera group.}
+    \item{\code{CORAL_GROUP}}{Coral genera group code.}
+    \item{\code{SUBSTRATE_CLASS}}{Substrate classification.}
+    \item{\code{SUBSTRATE_NAME}}{Substrate classification name.}
+    \item{\code{MORPHOLOGY}}{Morphology (corals only).}
+    \item{\code{MORPHOLOGYCODE}}{Morphology code (corals only).}
+    \item{\code{TAXA_LEVEL}}{Taxa levels for corals, "GENUS" or "SPECIES".}
+    \item{\code{EXTENSION_CM_YR}}{Mean extension rate in cm/yr.}
+    \item{\code{EXTENSION_CM_YR_CI}}{Confidence interval for extension rate in cm/yr}
+    \item{\code{DENSITY_G_CM3}}{Mean skeletal density in g/cm3.}
+    \item{\code{DENSITY_G_CM3_CI}}{Confidence interval for skeletal density in g/cm3}
+    \item{\code{CONVERSION_FACTOR}}{Conversion factor for branching morphologies.}
   }
 }
 \details{
-%%  ~~ If necessary, more details than the __description__ above ~~
+ Indo-Pacific ReefBudget parrotfish erosion rates are derived from the
+"Coral taxa average rates" tab in "IP Calcification and bioerosion rates database v.1.3.xlsx",
+downloaded from the Indo-Pacific ReefBudget website
+(https://geography.exeter.ac.uk/reefbudget/indopacific/).
 }
 \source{
 %%  ~~ reference to a publication or URL from which the data were obtained ~~

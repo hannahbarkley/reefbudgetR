@@ -13,19 +13,20 @@ calc_fish_metrics(
 )
 }
 \arguments{
-\item{bio_equations}{dataframe with Tye's equations of bite rate,
-bite volume, and prop of scars}
+\item{bio_equations}{Data frame with equations of bite rate,
+bite volume, and prop of scars.}
 
-\item{tl2fl_conversion}{dataframe with Tyes TL to FL conversion constants}
+\item{tl2fl_conversion}{Data frame with total length (TL) to fork length (FL)
+conversion constants.}
 
-\item{avg_sst}{Input average Sea Surface Temperature (Celsius) of
-location where data was collected (HI, MARIAN, AMSM, PRIAS, etc.)}
+\item{avg_sst}{Average Sea Surface Temperature (SST, in degrees Celsius) of
+location where data were collected.}
 
-\item{avg_time}{Input average time period (HHMM) of location where data were
-collected (e.g. if collected between 8am and 1pm, average will be 11am)}
+\item{avg_time}{Average time period (HHMM) of location where data were
+collected (e.g. if collected between 0800 and 1300, average will be 1100).}
 
-\item{avg_depth}{Input average depth (Meters) at location where data were
-collected}
+\item{avg_depth}{Average depth (in meters) at location where data were
+collected.}
 }
 \description{
 Calculate bite rate, volume, and proportion of scars from bioerosion equations

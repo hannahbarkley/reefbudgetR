@@ -3,7 +3,7 @@
 \name{calc_prod}
 \alias{calc_prod}
 \title{Calculate production rates for each benthic component measured on
-a benthic carbonate budgets transect}
+a carbonate budget transect}
 \usage{
 calc_prod(
   substrate_class,
@@ -15,24 +15,29 @@ calc_prod(
 )
 }
 \arguments{
-\item{substrate_class}{Type of substrate.}
+\item{substrate_class}{Type of substrate observed ("CORAL", "CCA", "TURF", "MA", ...).}
 
-\item{substrate_code}{NCRMP taxa code}
+\item{substrate_code}{NCRMP taxa code observed ("PLOB", "MCAP", "PMEA", "CCA", ...).}
 
-\item{morphology_code}{Taxa morphology (corals only)}
+\item{morphology_code}{Taxa morphology observed (corals only; "BR", "MD", "EM", ...). Non-corals default to NA.}
 
-\item{substrate_cover_cm}{Surface distance of benthic component}
+\item{substrate_cover_cm}{Measure surface distance of benthic component, in cm.}
 
-\item{region_code}{Survey region}
+\item{region_code}{Survey region ("MHI", "MARIAN", ...).}
 
-\item{prod_dbase}{Production database to reference}
+\item{prod_dbase}{Production database to reference, either Indo-Pacific ReefBudget ("IPRB")
+or NCRMP-specific ("NCRMP").}
 }
 \description{
 Calculate production rates for each benthic component measured on
-a benthic carbonate budgets transect
+a carbonate budget transect
+}
+\details{
+See included carbonate production databases \code{prod_dbase_iprb} and \code{prod_dbase_ncrmp}
+for acceptable \code{substrate_class}, \code{substrate_code}, and \code{morphology_code} values.
 }
 \examples{
-calc_prod("CORAL","PLOB","MD",10,"MHI",prod_dbase)
+calc_prod("CORAL","PLOB","MD",10,"MHI","NCRMP")
 
 
 }

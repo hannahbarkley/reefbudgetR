@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_urchins.R
 \name{process_urchins}
 \alias{process_urchins}
-\title{Process urchin erosion data}
+\title{Calculate urchin erosion rates from urchin census data}
 \usage{
 process_urchins(
   data,
@@ -14,18 +14,18 @@ process_urchins(
 )
 }
 \arguments{
-\item{data}{Urchin observation data set}
+\item{data}{Urchin observation data set.}
 
-\item{transect_id}{String of transect names}
+\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).}
 
-\item{transect_length}{String of transect lengths in meters}
+\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).}
 
-\item{method_name}{Transect design ("IPRB" or "Chords")}
+\item{method_name}{Transect design by which data were collected ("IPRB" or "Chords").}
 
-\item{data_type}{Type of data collection ("In water" or "SfM")}
+\item{data_type}{Type of data collection ("In water" or "SfM").}
 }
 \description{
-Process urchin erosion data
+Calculate urchin erosion rates from urchin census data
 }
 \author{
 Hannah Barkley

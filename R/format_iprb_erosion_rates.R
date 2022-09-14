@@ -1,16 +1,25 @@
-#' Format input data
+#' Format Indo-Pacific ReefBudget parrotfish erosion rates
+#'
 #'@author Rebecca Weible
-#'@param iprb_rates .csv file of Chris Perry's EXACT Equations tab
+#'
+#'@param iprb_rates Indo-Pacific ReefBudget parrotfish erosion rates
+#'("Equations" tab in IP_Parrotfish_erosion_rates_database_v1.3.xlsx,
+#'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/).
+#'
 #'@import dplyr
 #'@importFrom sjmisc seq_row
-#'@export format_rates
+#'
+#'@export format_iprb_erosion_rates
 #'
 
-format_rates <- function(iprb_rates, output = c("all", "finalerosion")) {
-  rates <- iprb_rates %>% #call in rate values
-    #remove blank rows
+format_iprb_erosion_rates <- function(iprb_rates, output = c("all", "finalerosion")) {
+
+  rates <- iprb_rates %>%
+
+    # Remove blank rows
     dplyr::filter(!X.2 == "") %>%
-    # rename column headings to size bins
+
+    # Rename column headings to size bins
     dplyr::rename(
       GrazType = "X.1",
       TAXONNAME = "X.2",
@@ -33,12 +42,16 @@ format_rates <- function(iprb_rates, output = c("all", "finalerosion")) {
       T.x50 = "X.18",
       T.x60 = "X.19"
     ) %>%
-    # Split dataframe into list of dataframes by type of equations
+
+    # Split data frame into list of data frames by type of equations
     split(., cumsum(seq_row(.) %in% c(26, 45, 65, 84))) %>%
+
     lapply(., function(x) x %>%
-        #remove unnecessary rows
+
+        # Remove unnecessary rows
         dplyr::filter(!TAXONNAME == "SPECIES")) %>%
-    # Rename each dataframe in the list by type of equations
+
+    # Rename each data frame in the list by type of equations
     setNames(
       .,
       c(
@@ -49,13 +62,17 @@ format_rates <- function(iprb_rates, output = c("all", "finalerosion")) {
         "MassRemoved"
       )
     ) %>%
+
     # Remove columns that are not necessary
     lapply(., function(x) select(x, -X, -13, -c(X.20:X.25))) %>%
+
     # Replace blank values in equation list with zeros
     lapply(., function(x) x %>%
         mutate_each(funs(replace(., . == "", 0)), -GrazType, -TAXONNAME, -X.10)) %>%
+
     # Set up dataframe to create separate phase column
     lapply(., function(x) gather(x, sizebin, count, -GrazType, -TAXONNAME)) %>%
+
     # Pull phase letters out of sizebin column (J, I, or T)
     lapply(., function(x)
       x %>% separate(
@@ -64,22 +81,22 @@ format_rates <- function(iprb_rates, output = c("all", "finalerosion")) {
         extra = "merge",
         fill = "left"
       )) %>%
+
     lapply(., function(x) spread(x, sizebin, count, fill = 0)) %>%
+
     lapply(., function(x) x %>%
              filter(PHASE != "X")) %>%
+
     # Remove excess columns (these will be calculated later)
     lapply(., function(x) x %>%
              select(-c(x20:x60)))
-
 
   output <- rates[1][[1]] %>%
     gather(., "sizeclass", ".value", -c(GrazType:PHASE)) %>%
     select(PHASE, sizeclass, TAXONNAME, .value) %>%
     filter(!(sizeclass %in% "10"))
 
-
   # Tell function what to print
-
   if (output == "all") {
     return(rates)
   }

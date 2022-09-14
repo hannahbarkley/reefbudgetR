@@ -2,7 +2,7 @@
 % Please edit documentation in R/summarize_transect.R
 \name{summarize_transect}
 \alias{summarize_transect}
-\title{Summarize transect metadata}
+\title{Summarize benthic transect metadata}
 \usage{
 summarize_transect(
   data,
@@ -12,16 +12,16 @@ summarize_transect(
 )
 }
 \arguments{
-\item{data}{Production data set}
+\item{data}{Production data set.}
 
-\item{transect_id}{String of transect names}
+\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).}
 
-\item{transect_length}{String of transect lengths in meters}
+\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).}
 
-\item{data_type}{Data type Type of data collection ("In water" or "SfM")}
+\item{data_type}{Type of data collection ("In water" or "SfM").}
 }
 \description{
-Summarize transect metadata
+Summarize benthic transect metadata
 }
 \author{
 Hannah Barkley

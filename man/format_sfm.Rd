@@ -7,7 +7,7 @@
 format_sfm(data)
 }
 \arguments{
-\item{data}{SfM data set; output of \code{combine_sfm}}
+\item{data}{SfM data set, output of \code{combine_sfm}.}
 }
 \description{
 Format SfM production data for processing

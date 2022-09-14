@@ -11,12 +11,12 @@ calc_fish_erosion_rates(
 )
 }
 \arguments{
-\item{data}{dataframe with bite rate, bite volume, and prop scars}
+\item{data}{Data frame with bite rate, bite volume, and prop scars.}
 
-\item{substrate_density}{substrate density in g cm^-3; set to 1.47}
+\item{substrate_density}{Substrate density in g cm^-3; default to 1.47.}
 
-\item{perc_day_feeding}{persent of day that Chlorurus gibbus and
-large parrotfish spend eating from Bellwood et al. 1995; set to 83.3}
+\item{perc_day_feeding}{Percent of day that Chlorurus gibbus and
+large parrotfish spend eating (from Bellwood et al. 1995); default to 83.3.}
 }
 \description{
 Calculate erosion rate metrics from bite rate, volume, and proportion of scars

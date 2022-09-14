@@ -1,13 +1,17 @@
-#' Process urchin erosion data
+#' Calculate urchin erosion rates from urchin census data
+#'
 #'@author Hannah Barkley
-#'@param data Urchin observation data set
-#'@param transect_id String of transect names
-#'@param transect_length String of transect lengths in meters
-#'@param method_name Transect design ("IPRB" or "Chords")
-#'@param data_type Type of data collection ("In water" or "SfM")
+#'
+#'@param data Urchin observation data set.
+#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).
+#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).
+#'@param method_name Transect design by which data were collected ("IPRB" or "Chords").
+#'@param data_type Type of data collection ("In water" or "SfM").
+#'
 #'@import tidyr
 #'@import dplyr
 #'@importFrom sjmisc seq_row
+#'
 #'@export process_urchins
 
 process_urchins <- function(data,

@@ -1,12 +1,19 @@
 #' Run calc_prod function
+#'
 #'@author Hannah Barkley
+#'
 #'@param data Benthic data set to process
-#'@param transect_id String of transect names
-#'@param transect_length String of transect lengths in meters
-#'@param dbase_type Production database to use ("IPRB" or "NCRMP")
-#'@param data_type Type of data collection ("In water" or "SfM")
+#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).
+#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).
+#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
+#'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+#'database is derived from "IP Calcification and bioerosion rates database v.1.3",
+#'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.
+#'@param data_type Type of data collection ("In water" or "SfM").
+#'
 #'@import dplyr
 #'@importFrom sjmisc seq_row
+#'
 #'@export run_calc_prod
 
 run_calc_prod <- function(data,

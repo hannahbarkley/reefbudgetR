@@ -1,6 +1,9 @@
 #' Format SfM production data for processing
+#'
 #'@author Hannah Barkley
-#'@param data SfM data set; output of `combine_sfm`
+#'
+#'@param data SfM data set, output of `combine_sfm`.
+#'
 #'@export format_sfm
 
 format_sfm <- function(data) {

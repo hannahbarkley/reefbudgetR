@@ -9,13 +9,16 @@ run_calc_prod(data, transect_id, transect_length, dbase_type, data_type, ...)
 \arguments{
 \item{data}{Benthic data set to process}
 
-\item{transect_id}{String of transect names}
+\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).}
 
-\item{transect_length}{String of transect lengths in meters}
+\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).}
 
-\item{dbase_type}{Production database to use ("IPRB" or "NCRMP")}
+\item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
+or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+database is derived from "IP Calcification and bioerosion rates database v.1.3",
+downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
 
-\item{data_type}{Type of data collection ("In water" or "SfM")}
+\item{data_type}{Type of data collection ("In water" or "SfM").}
 }
 \description{
 Run calc_prod function

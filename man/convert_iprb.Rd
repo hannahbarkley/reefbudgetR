@@ -2,21 +2,26 @@
 % Please edit documentation in R/convert_iprb.r
 \name{convert_iprb}
 \alias{convert_iprb}
-\title{Convert all individually saved Indo-Pacific ReefBudget (IPRB) Excel Entry sheets for each site into one large dataframe}
+\title{Convert all individual Indo-Pacific ReefBudget (IPRB) Excel
+Entry sheets for each site into one large data frame}
 \usage{
-convert_iprb(iprb_csv, iprb_metadata, add_location, OCC_SITEID)
+convert_iprb(iprb_csv, iprb_metadata, add_location, occ_siteid)
 }
 \arguments{
-\item{iprb_csv}{.csv file in Chris Perry's Excel sheet format without any changes}
+\item{iprb_csv}{.csv file in Indo-Pacific ReefBudget Excel sheet format,
+downloaded as is.}
 
-\item{METADATA}{.csv file with all of the metadata from Chris Perry's Excel sheet saved in a dataframe format}
+\item{iprb_metadata}{.csv file with all of the metadata from
+Indo-Pacific ReefBudget Excel sheet, saved in a dataframe format.}
 
-\item{ADDLOCATION}{create column for unique, general site name where the data comes from (i.e. "Kaneohe)}
+\item{add_location}{create column for unique, general site name
+where the data comes from ("Kaneohe Bay", "Tumon Bay", ...).}
 
-\item{OCC.SITEID}{create column for unique OCC site ID (i.e. OCC-OAH-005)}
+\item{occ_siteid}{OCC site ID ("OCC-OAH-005", "OCC-GUA_015", ...).}
 }
 \description{
-Convert all individually saved Indo-Pacific ReefBudget (IPRB) Excel Entry sheets for each site into one large dataframe
+Convert all individual Indo-Pacific ReefBudget (IPRB) Excel
+Entry sheets for each site into one large data frame
 }
 \author{
 Rebecca Weible

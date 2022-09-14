@@ -2,17 +2,19 @@
 % Please edit documentation in R/process_fish.R
 \name{process_fish}
 \alias{process_fish}
-\title{Calculate erosion rates from parrotfish belt data}
+\title{Calculate parrotfish erosion rates from belt data}
 \usage{
 process_fish(data, rates_dbase = "Kindinger", full_summary = FALSE)
 }
 \arguments{
-\item{data}{Parrotfish belt data}
+\item{data}{Parrotfish belt data.}
 
-\item{rates_dbase}{Use Perry or Kindinger rates}
+\item{rates_dbase}{Erosion rates database to use. Choose either Indo-Pacific
+ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
+by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").}
 }
 \description{
-Calculate erosion rates from parrotfish belt data
+Calculate parrotfish erosion rates from belt data
 }
 \author{
 Rebecca Weible

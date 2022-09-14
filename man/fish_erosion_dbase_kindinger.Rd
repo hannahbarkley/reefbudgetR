@@ -1,7 +1,7 @@
 \name{fish_erosion_dbase_kindinger}
 \alias{fish_erosion_dbase_kindinger}
 \docType{data}
-\title{Fish erosion rates database, created by Tye Kindinger
+\title{U.S. Pacific Islands parrotfish erosion rates database, created by Tye Kindinger
 %%   ~~ data name/kind ... ~~
 }
 \description{
@@ -9,12 +9,11 @@
 }
 \usage{data("fish_erosion_dbase_kindinger")}
 \format{
-  A data frame with 480 observations on the following 4 variables.
   \describe{
-    \item{\code{PHASE}}{a character vector}
-    \item{\code{SIZE_CLASS}}{a character vector}
-    \item{\code{TAXON_NAME}}{a character vector}
-    \item{\code{EROSION_RATE}}{a numeric vector}
+    \item{\code{PHASE}}{Life phase, initial ("I") or terminal ("T").}
+    \item{\code{SIZE_CLASS}}{Fish size class, in 10cm bins.}
+    \item{\code{TAXON_NAME}}{Fish name.}
+    \item{\code{EROSION_RATE}}{Fish erosion rates.}
   }
 }
 \details{
@@ -28,6 +27,5 @@
 }
 \examples{
 data(fish_erosion_dbase_kindinger)
-## maybe str(fish_erosion_dbase_kindinger) ; plot(fish_erosion_dbase_kindinger) ...
 }
 \keyword{datasets}

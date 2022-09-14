@@ -9,7 +9,6 @@
 }
 \usage{data("fish_grazing_types")}
 \format{
-  A data frame with 48 observations on the following 18 variables.
   \describe{
     \item{\code{GRAZ_TYPE}}{a character vector}
     \item{\code{SPECIES}}{a character vector}

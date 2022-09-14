@@ -1,11 +1,15 @@
-#' Summarize transect metadata
+#' Summarize benthic transect metadata
+#'
 #'@author Hannah Barkley
-#'@param data Production data set
-#'@param transect_id String of transect names
-#'@param transect_length String of transect lengths in meters
-#'@param data_type Data type Type of data collection ("In water" or "SfM")
+#'
+#'@param data Production data set.
+#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).
+#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).
+#'@param data_type Type of data collection ("In water" or "SfM").
+#'
 #'@import dplyr
 #'@importFrom rlang .data
+#'
 #'@export summarize_transect
 #'
 summarize_transect <-

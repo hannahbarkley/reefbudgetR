@@ -13,14 +13,14 @@ summarize_fish_metrics(
 )
 }
 \arguments{
-\item{data}{output from \code{calc_eros_fish_output}}
+\item{data}{output from \code{calc_eros_fish_output}.}
 
-\item{metric}{Metric to summarize ("count", "biomass", or "bioerosion")}
+\item{metric}{Metric to summarize ("count", "biomass", or "bioerosion").}
 
-\item{level}{Level to summarize at ("transect" or "site" level)}
+\item{level}{Level to summarize at ("transect" or "site" level).}
 
 \item{summarize_by}{Grouping factor to summarize by ("size class",
-"species", or "overall")}
+"species", or "overall").}
 }
 \description{
 Calculate metrics for density, biomass, and bioerosion at the transect

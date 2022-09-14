@@ -1,18 +1,25 @@
 #' Summarize carbonate production rates at transect and site level
+#'
 #'@author Hannah Barkley
-#'@param data Data set to summarize; product of run_calc_prod
-#'@param transect_summary Transect sumamry; product of run_calc_prod
-#'@param dbase_type Production database to use ("IPRB" or "NCRMP")
+#'
+#'@param data Data set to summarize; product of `run_calc_prod`.
+#'@param transect_summary Transect sumamry; product of `run_calc_prod`.
+#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
+#'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+#'database is derived from "IP Calcification and bioerosion rates database v.1.3",
+#'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.
 #'@param summarize_by Grouping factor to summarize by ("substrate code",
 #'"substrate class", "coral group",or "overall")
-#'@param level Summarize at "transect" or "site" level
-#'@param macro_rate Rate of macrobioerosion
-#'@param macro_rate_ci Confidence interval for rate of macrobioerosion
-#'@param micro_rate Rate of microbioerosion
-#'@param micro_rate_ci Confidence interval for rate of microbioerosion
+#'@param level Summarize at "transect" or "site" level.
+#'@param macro_rate Rate of macrobioerosion in kg/cm2/yr. Default is 0.209.
+#'@param macro_rate_ci Confidence interval for rate of macrobioerosion in kg/cm2/yr, Default is 0.129.
+#'@param micro_rate Rate of microbioerosion in kg/cm2/yr. Default is 0.262.
+#'@param micro_rate_ci Confidence interval for rate of microbioerosion in kg/cm2/yr. Default is 0.180.
+#'
 #'@import dplyr
 #'@importFrom sjmisc seq_row
 #'@importFrom rlang .data
+#'
 #'@export summarize_prod
 
 summarize_prod <- function(data,

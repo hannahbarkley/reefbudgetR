@@ -1,16 +1,21 @@
 #'Calculate bite rate, volume, and proportion of scars from bioerosion equations
+#'
 #'@author Rebecca Weible
-#'@param bio_equations dataframe with Tye's equations of bite rate,
-#'bite volume, and prop of scars
-#'@param tl2fl_conversion dataframe with Tyes TL to FL conversion constants
-#'@param avg_sst Input average Sea Surface Temperature (Celsius) of
-#'location where data was collected (HI, MARIAN, AMSM, PRIAS, etc.)
-#'@param avg_time Input average time period (HHMM) of location where data were
-#'collected (e.g. if collected between 8am and 1pm, average will be 11am)
-#'@param avg_depth Input average depth (Meters) at location where data were
-#'collected
+#'
+#'@param bio_equations Data frame with equations of bite rate,
+#'bite volume, and prop of scars.
+#'@param tl2fl_conversion Data frame with total length (TL) to fork length (FL)
+#'conversion constants.
+#'@param avg_sst Average Sea Surface Temperature (SST, in degrees Celsius) of
+#'location where data were collected.
+#'@param avg_time Average time period (HHMM) of location where data were
+#'collected (e.g. if collected between 0800 and 1300, average will be 1100).
+#'@param avg_depth Average depth (in meters) at location where data were
+#'collected.
+#'
 #'@import tidyverse
 #'@import dplyr
+#'
 #'@export calc_fish_metrics
 
 calc_fish_metrics <- function(bio_equations,

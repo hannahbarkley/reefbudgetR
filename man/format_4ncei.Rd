@@ -2,15 +2,15 @@
 % Please edit documentation in R/format_4ncei.R
 \name{format_4ncei}
 \alias{format_4ncei}
-\title{Format field data and processed net production data for NCEI submission}
+\title{Format net production data for NCEI submission}
 \usage{
 format_4ncei(net_prod)
 }
 \arguments{
-\item{net_prod}{output of \code{process_net_prod}}
+\item{net_prod}{output of \code{process_net_prod}.}
 }
 \description{
-Format field data and processed net production data for NCEI submission
+Format net production data for NCEI submission
 }
 \author{
 Hannah Barkley

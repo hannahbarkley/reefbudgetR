@@ -2,17 +2,18 @@
 % Please edit documentation in R/summarize_fish_erosion.R
 \name{summarize_fish_erosion}
 \alias{summarize_fish_erosion}
-\title{Summarize parrotfish bioerosion rates per site}
+\title{Summarize site-level parrotfish bioerosion rates}
 \usage{
 summarize_fish_erosion(species_table, full_summary = FALSE)
 }
 \arguments{
-\item{species_table}{Species table with average metrics}
+\item{species_table}{Species table with average density, biomass, and bioersion metrics,
+outputs of \code{summarize_fish_metrics}.}
 
 \item{full_summary}{Return full summary of results (default is FALSE)}
 }
 \description{
-Summarize parrotfish bioerosion rates per site
+Summarize site-level parrotfish bioerosion rates
 }
 \author{
 Rebecca Weible

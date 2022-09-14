@@ -1,8 +1,13 @@
-#' Summarize parrotfish bioerosion rates per site
+#' Summarize site-level parrotfish bioerosion rates
+#'
 #' @author Rebecca Weible
-#' @param species_table Species table with average metrics
+#'
+#' @param species_table Species table with average density, biomass, and bioersion metrics,
+#' outputs of `summarize_fish_metrics`.
 #' @param full_summary Return full summary of results (default is FALSE)
+#'
 #' @import dplyr
+#'
 #' @export summarize_fish_erosion
 #'
 

@@ -1,15 +1,23 @@
 #' Calculate production rates for each benthic component measured on
-#' a benthic carbonate budgets transect
+#' a carbonate budget transect
+#'
 #'@author Hannah Barkley
-#'@param substrate_class Type of substrate.
-#'@param substrate_code NCRMP taxa code
-#'@param morphology_code Taxa morphology (corals only)
-#'@param substrate_cover_cm Surface distance of benthic component
-#'@param region_code Survey region
-#'@param prod_dbase Production database to reference
+#'
+#'@param substrate_class Type of substrate observed ("CORAL", "CCA", "TURF", "MA", ...).
+#'@param substrate_code NCRMP taxa code observed ("PLOB", "MCAP", "PMEA", "CCA", ...).
+#'@param morphology_code Taxa morphology observed (corals only; "BR", "MD", "EM", ...). Non-corals default to NA.
+#'@param substrate_cover_cm Measure surface distance of benthic component, in cm.
+#'@param region_code Survey region ("MHI", "MARIAN", ...).
+#'@param prod_dbase Production database to reference, either Indo-Pacific ReefBudget ("IPRB")
+#'or NCRMP-specific ("NCRMP").
+#'
+#'@details See included carbonate production databases `prod_dbase_iprb` and `prod_dbase_ncrmp`
+#'for acceptable `substrate_class`, `substrate_code`, and `morphology_code` values.
+#'
 #'@export calc_prod
+#'
 #'@examples
-#' calc_prod("CORAL","PLOB","MD",10,"MHI",prod_dbase)
+#' calc_prod("CORAL","PLOB","MD",10,"MHI","NCRMP")
 #'
 #'
 calc_prod <- function(substrate_class,

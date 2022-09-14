@@ -18,24 +18,27 @@ summarize_prod(
 )
 }
 \arguments{
-\item{data}{Data set to summarize; product of run_calc_prod}
+\item{data}{Data set to summarize; product of \code{run_calc_prod}.}
 
-\item{transect_summary}{Transect sumamry; product of run_calc_prod}
+\item{transect_summary}{Transect sumamry; product of \code{run_calc_prod}.}
 
-\item{dbase_type}{Production database to use ("IPRB" or "NCRMP")}
+\item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
+or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+database is derived from "IP Calcification and bioerosion rates database v.1.3",
+downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
 
 \item{summarize_by}{Grouping factor to summarize by ("substrate code",
 "substrate class", "coral group",or "overall")}
 
-\item{level}{Summarize at "transect" or "site" level}
+\item{level}{Summarize at "transect" or "site" level.}
 
-\item{macro_rate}{Rate of macrobioerosion}
+\item{macro_rate}{Rate of macrobioerosion in kg/cm2/yr. Default is 0.209.}
 
-\item{macro_rate_ci}{Confidence interval for rate of macrobioerosion}
+\item{macro_rate_ci}{Confidence interval for rate of macrobioerosion in kg/cm2/yr, Default is 0.129.}
 
-\item{micro_rate}{Rate of microbioerosion}
+\item{micro_rate}{Rate of microbioerosion in kg/cm2/yr. Default is 0.262.}
 
-\item{micro_rate_ci}{Confidence interval for rate of microbioerosion}
+\item{micro_rate_ci}{Confidence interval for rate of microbioerosion in kg/cm2/yr. Default is 0.180.}
 }
 \description{
 Summarize carbonate production rates at transect and site level

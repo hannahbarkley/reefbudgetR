@@ -1,10 +1,16 @@
-#' Calculate erosion rates from parrotfish belt data
+#' Calculate parrotfish erosion rates from belt data
+#'
 #'@author Rebecca Weible
-#'@param data Parrotfish belt data
-#'@param rates_dbase Use Perry or Kindinger rates
+#'
+#'@param data Parrotfish belt data.
+#'@param rates_dbase Erosion rates database to use. Choose either Indo-Pacific
+#'ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
+#'by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").
+#'
 #'@import Rmisc
 #'@import tidyverse
 #'@import dplyr
+#'
 #'@export process_fish
 
 process_fish <- function(data,

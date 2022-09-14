@@ -1,13 +1,19 @@
-#' Calculate net production rates for each transect
+#' Calculate site-level net production rates
+#'
 #'@author Hannah Barkley
-#'@param prod Production data
-#'@param urch Urchin data
-#'@param parrotfish Parrotfish data
+#'
+#'@param prod Production data, output of `process_prod`.
+#'@param urch Urchin data, output of `process_urchins`.
+#'@param parrotfish Parrotfish data, output of `process_fish`.
+#'@param format Output data frame format ("wide" or "long"). Default is "wide".
+#'
+#'
 #'@import dplyr
 #'@import tools
 #'@import tidyr
 #'@import reshape2
 #'@importFrom sjmisc seq_row
+#'
 #'@export process_net
 
 process_net <- function(prod,

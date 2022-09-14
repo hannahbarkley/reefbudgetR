@@ -1,7 +1,7 @@
 \name{fish_erosion_dbase_iprb}
 \alias{fish_erosion_dbase_iprb}
 \docType{data}
-\title{Fish erosion rates database, from Indo-Pacific ReefBudget Methodology
+\title{Fish erosion rates database from Indo-Pacific ReefBudget Methodology
 %%   ~~ data name/kind ... ~~
 }
 \description{
@@ -9,16 +9,17 @@
 }
 \usage{data("fish_erosion_dbase_iprb")}
 \format{
-  A data frame with 480 observations on the following 4 variables.
   \describe{
-    \item{\code{PHASE}}{a character vector}
-    \item{\code{SIZE_CLASS}}{a character vector}
-    \item{\code{TAXON_NAME}}{a character vector}
-    \item{\code{EROSION_RATE}}{a numeric vector}
+    \item{\code{PHASE}}{Life phase, initial ("I") or terminal ("T").}
+    \item{\code{SIZE_CLASS}}{Fish size class, in 10cm bins.}
+    \item{\code{TAXON_NAME}}{Fish name.}
+    \item{\code{EROSION_RATE}}{Fish erosion rates.}
   }
 }
-\details{
-%%  ~~ If necessary, more details than the __description__ above ~~
+\details{ Indo-Pacific ReefBudget parrotfish erosion rates are derived from the
+"Equations" tab in "IP_Parrotfish_erosion_rates_database_v1.3.xlsx",
+downloaded from the Indo-Pacific ReefBudget website
+(https://geography.exeter.ac.uk/reefbudget/indopacific/).
 }
 \source{
 %%  ~~ reference to a publication or URL from which the data were obtained ~~

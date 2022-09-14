@@ -2,20 +2,20 @@
 % Please edit documentation in R/calc_eros_fish.R
 \name{calc_eros_fish}
 \alias{calc_eros_fish}
-\title{Formats data and calculates values of biomass, density, and
-bioerosion rates}
+\title{Calculate parrotfish biomass, density, and bioerosion rates}
 \usage{
-calc_eros_fish(data, rates_dbase = c("Perry", "Kindinger"))
+calc_eros_fish(data, rates_dbase = c("IPRB", "Kindinger"))
 }
 \arguments{
-\item{data}{csv file of imported data to be formatted and for biomass and
-bioerosion to be calculated from the COUNT and sizebin input data}
+\item{data}{Parrotfish belt data, including number of fish observed of each
+species, size class, and phase.}
 
-\item{rates_dbase}{Use Perry or Kindinger rates}
+\item{rates_dbase}{Erosion rates database to use. Choose either Indo-Pacific
+ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
+by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").}
 }
 \description{
-Formats data and calculates values of biomass, density, and
-bioerosion rates
+Calculate parrotfish biomass, density, and bioerosion rates
 }
 \author{
 Rebecca Weible

@@ -1,11 +1,15 @@
-#' Combine individual SfM transect files
+#' Combine individual SfM benthic data transect files
+#'
 #'@author Hannah Barkley
-#'@param sfm_folder Directory containing individual SfM transect files
-#'@param region_code Region code where surveys were conducted (e.g. "MHI")
-#'@param location_code Location code where surveys were conducted (e.g. "OAH")
-#'@param local_date Local Date of imagery collection (yyyy-mm-dd)
-#'@param cruise_id Cruise ID for survey collection
-#'@param surveyor Initials of data collector
+#'
+#'@param sfm_folder Directory containing SfM transect files.
+#'@param region_codeSurvey region ("MHI", "MARIAN", ...).
+#'@param location_code Location code where surveys were conducted
+#'("OAH", "GUA", "SAI", ...).
+#'@param local_date Local Date of imagery collection (yyyy-mm-dd).
+#'@param cruise_id Cruise ID for survey collection ("MP2108", "RA2201", ...).
+#'@param surveyor Initials of data collector.
+#'
 #'@import lubridate
 #'@export combine_sfm
 

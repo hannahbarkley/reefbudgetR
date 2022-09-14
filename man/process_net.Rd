@@ -2,19 +2,21 @@
 % Please edit documentation in R/process_net.R
 \name{process_net}
 \alias{process_net}
-\title{Calculate net production rates for each transect}
+\title{Calculate site-level net production rates}
 \usage{
 process_net(prod, urch, fish, format = "wide")
 }
 \arguments{
-\item{prod}{Production data}
+\item{prod}{Production data, output of \code{process_prod}.}
 
-\item{urch}{Urchin data}
+\item{urch}{Urchin data, output of \code{process_urchins}.}
 
-\item{parrotfish}{Parrotfish data}
+\item{format}{Output data frame format ("wide" or "long"). Default is "wide".}
+
+\item{parrotfish}{Parrotfish data, output of \code{process_fish}.}
 }
 \description{
-Calculate net production rates for each transect
+Calculate site-level net production rates
 }
 \author{
 Hannah Barkley
