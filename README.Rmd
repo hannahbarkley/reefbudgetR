@@ -32,7 +32,7 @@ fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #### Process benthic data by method type
 
 # Process "Indo-Pacific ReefBudget (IPRB)" methodology benthic data
-prod_IPRB <- process_prod(
+prod_iprb <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
   transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
   transect_length = c(10, 10, 10, 10, 10, 10),
@@ -66,7 +66,7 @@ prod_sfm <- process_prod(
 
 # Combine site-level production data back together
 prod_site <- bind_rows(
-  prod_IPRB$summary_site,
+  prod_iprb$summary_site,
   prod_chords$summary_site,
   prod_sfm$summary_site
 )
@@ -78,7 +78,7 @@ prod_site <- bind_rows(
 #### Process urchin data by method type
 
 # Process IPRB urchin data
-urch_IPRB <- process_urchins(
+urch_iprb <- process_urchins(
   data = urchin_data[urchin_data$CB_METHOD == "IPRB", ],
   method_name = "IPRB",
   data_type = "In water",
@@ -99,7 +99,7 @@ urch_chords <- process_urchins(
 
 
 # Combine site-level urchin erosion data back together
-urch_site <- bind_rows(urch_IPRB$site_erosion,
+urch_site <- bind_rows(urch_iprb$site_erosion,
                                  urch_chords$site_erosion)
 
 ```
