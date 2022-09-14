@@ -1,18 +1,19 @@
-#' Formats data and calculates values of biomass, density, and
-#' bioerosion rates
+#' Calculates parrotfish biomass, density, and bioerosion rates
 
 #'@author Rebecca Weible
-#'@param data csv file of imported data to be formatted and for biomass and
-#'bioerosion to be calculated from the COUNT and sizebin input data
-#'@param rates_dbase Use Perry or Kindinger rates
+#'@param data Parrotfish belt data, including number of fish observed of each
+#'species, size class, and phase
+#'@param rates_dbase Erosion rates database to use. Choose either Indo-Pacific
+#'ReefBudget ("rates_dbase = "IPRB") or rates developed by Tye Kindinger
+#'("rates_dbase = "Kindinger")
 #'@import dplyr
 #'@importFrom rlang .data
 #'@export calc_eros_fish
 
 calc_eros_fish <- function(data,
-                             rates_dbase = c("Perry", "Kindinger")) {
-  if (rates_dbase == "Perry") {
-    rates_dbase <- fish_erosion_dbase_perry
+                             rates_dbase = c("IPRB", "Kindinger")) {
+  if (rates_dbase == "IPRB") {
+    rates_dbase <- fish_erosion_dbase_iprb
   }
 
   if (rates_dbase == "Kindinger") {
@@ -37,16 +38,23 @@ calc_eros_fish <- function(data,
       "SIZE_CLASS_0_10_CM":"SIZE_CLASS_51_60_CM"
     )), as.numeric) %>%
     # select only the important columns
-    select(.data$REGION:.data$CB_TRANSECTID, .data$AREA_M2, .data$SPECIES:PHASE) %>%
+    select(.data$REGION:.data$CB_TRANSECTID,
+           .data$AREA_M2,
+           .data$SPECIES:PHASE) %>%
     #column names to row values
     gather(.,
            "SIZE_CLASS",
-           "COUNT", -c(.data$REGION:.data$SPECIES), -.data$PHASE, na.rm = TRUE) %>%
+           "COUNT", -c(.data$REGION:.data$SPECIES),
+           -.data$PHASE, na.rm = TRUE) %>%
     # make size bins into factors
     mutate_at(vars(SIZE_CLASS), as.factor) %>%
     #remove all size classes above 10cm for J classification
     filter(!(
-      SIZE_CLASS %in% c("SIZE_CLASS_11_20_CM", "SIZE_CLASS_21_30_CM", "SIZE_CLASS_31_40_CM", "SIZE_CLASS_41_50_CM", "SIZE_CLASS_51_60_CM") &
+      SIZE_CLASS %in% c("SIZE_CLASS_11_20_CM",
+                        "SIZE_CLASS_21_30_CM",
+                        "SIZE_CLASS_31_40_CM",
+                        "SIZE_CLASS_41_50_CM",
+                        "SIZE_CLASS_51_60_CM") &
         PHASE == "J"
     )) %>%
     # remove all I and T for 0-10cm classification
@@ -109,7 +117,8 @@ calc_eros_fish <- function(data,
     select(REGION:SPECIES, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
     #change all negative bioerosion values to zero...can use this to change
     # multiple columns to zero based on a single column
-    mutate_at(.vars = "FISH_EROSION_KG_M2_YR", funs(ifelse(FISH_EROSION_KG_M2_YR <= 0, 0, .)))
+    mutate_at(.vars = "FISH_EROSION_KG_M2_YR",
+              list(~ifelse(FISH_EROSION_KG_M2_YR <= 0, 0, .)))
 
   fish_all <-
     left_join(
