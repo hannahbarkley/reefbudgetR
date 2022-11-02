@@ -106,7 +106,6 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 
 ```
 
-
 ```{r process_parrotfish}
 
 fish_belt <- process_fish(
@@ -197,6 +196,130 @@ production_plot <- ggplot(data = net_site) +
   ) +
   ylab(expression(paste(
     "Gross production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
+  ))) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 12, color = 'black'),
+    axis.text.y = element_text(size = 12, color = 'black'),
+    axis.title.y = element_text(size = 18),
+    strip.text.x = element_blank(),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white"),
+    panel.border = element_rect(
+      colour = "black",
+      fill = NA,
+      size = 1
+    ),
+    legend.key.size = unit(1, "cm"),
+    legend.position = 'top'
+  )
+```
+
+```{r plot_rugosity}
+
+rugosity_plot <- ggplot(data = net_site) +
+  geom_hline(yintercept = 0) +
+  geom_col(
+    aes(x = OCC_SITENAME,
+        y = RUGOSITY_MEAN,
+        fill = CB_METHOD_BENTHIC),
+    show.legend = TRUE,
+    color = 'black',
+    position = position_dodge(width = 0.6),
+    width = 0.6
+  ) +
+  geom_errorbar(
+    aes(
+      x = OCC_SITENAME,
+      ymin = RUGOSITY_MEAN - RUGOSITY_SE,
+      ymax = RUGOSITY_MEAN + RUGOSITY_SE,
+      group = CB_METHOD_BENTHIC
+    ),
+    width = 0.2,
+    position = position_dodge(width = 0.6)
+  ) +
+  facet_grid(
+    ~ REGIONCODE,
+    scales = 'free_x',
+    space = 'free'
+    ) +
+  theme_bw() +
+  # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
+  #                   name = "Method") +
+  scale_fill_manual(values = c("#FF4438", "#ff827a", "#ffbeba"),
+                    name = "") +
+  scale_y_continuous(
+    limits = c(0, 4),
+    breaks = seq(0, 4, by = 0.5),
+    expand = c(0, 0)
+  ) +
+  ylab(expression(paste(
+    "Rugosity"
+  ))) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 12, color = 'black'),
+    axis.text.y = element_text(size = 12, color = 'black'),
+    axis.title.y = element_text(size = 18),
+    strip.text.x = element_blank(),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white"),
+    panel.border = element_rect(
+      colour = "black",
+      fill = NA,
+      size = 1
+    ),
+    legend.key.size = unit(1, "cm"),
+    legend.position = 'top'
+  )
+```
+
+```{r plot_cover}
+
+cover_plot <- ggplot(data = net_site) +
+  geom_hline(yintercept = 0) +
+  geom_col(
+    aes(x = OCC_SITENAME,
+        y = HARD_CORAL_COVER_PCT_MEAN,
+        fill = CB_METHOD_BENTHIC),
+    show.legend = TRUE,
+    color = 'black',
+    position = position_dodge(width = 0.6),
+    width = 0.6
+  ) +
+  geom_errorbar(
+    aes(
+      x = OCC_SITENAME,
+      ymin = HARD_CORAL_COVER_PCT_MEAN - HARD_CORAL_COVER_PCT_SE,
+      ymax = HARD_CORAL_COVER_PCT_MEAN + HARD_CORAL_COVER_PCT_SE,
+      group = CB_METHOD_BENTHIC
+    ),
+    width = 0.2,
+    position = position_dodge(width = 0.6)
+  ) +
+  facet_grid(
+    ~ REGIONCODE,
+    scales = 'free_x',
+    space = 'free'
+    ) +
+  theme_bw() +
+  # scale_fill_manual(values = c("#FF4438","#0085CA", "#1ECAD3"),
+  #                   name = "Method") +
+  scale_fill_manual(values = c("#FF4438", "#ff827a", "#ffbeba"),
+                    name = "") +
+  scale_y_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 10),
+    expand = c(0, 0)
+  ) +
+  ylab(expression(paste(
+    "Coral cover (%)"
   ))) +
   theme(
     axis.title.x = element_blank(),
@@ -349,68 +472,14 @@ urchin_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC != "SfM")) +
 ```
 
 ```{r plot_parrotfish}
-parrotfish_plot <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC = "IPRB")) +
+parrotfish_plot <- ggplot(data = fish_alldata) +
+  geom_hline(yintercept = 0) +
   geom_col(
-    aes(x = OCC_SITENAME,
-        y = -1 * FISH_EROSION_KG_M2_YR_ALL_MEAN),
-    show.legend = FALSE,
-    fill = "#76bc21",
-    color = 'black',
-    position = position_dodge(width = 0.6),
-    width = 0.6
-  ) +
-  geom_errorbar(
     aes(
       x = OCC_SITENAME,
-      ymin = -1 * (FISH_EROSION_KG_M2_YR_ALL_MEAN - FISH_EROSION_KG_M2_YR_ALL_SE),
-      ymax = -1 * (FISH_EROSION_KG_M2_YR_ALL_MEAN + FISH_EROSION_KG_M2_YR_ALL_SE)
+      y = -1 * FISH_EROSION_KG_M2_YR_ALL_MEAN,
+      fill = CB_METHOD
     ),
-    width = 0.2,
-    position = position_dodge(width = 0.6)
-  ) +
-  geom_hline(yintercept = 0) +
-  facet_grid(
-    ~ REGIONCODE,
-    scales = 'free',
-    space = 'free'
-  ) +
-  theme_bw() +
-  scale_x_discrete(position = "top") +
-  scale_y_continuous(
-    limits = c(-6, 0),
-    breaks = seq(-6, 0, by = 1),
-    expand = c(0, 0)
-  ) +
-  ylab(expression(
-    paste("Parrotfish erosion rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  ")
-  )) +
-  theme(
-    axis.title.x = element_blank(),
-    axis.text.x = element_text(size = 12, color = 'black'),
-    axis.text.y = element_text(size = 12, color = 'black'),
-    axis.title.y = element_text(size = 18),
-    strip.text.x = element_blank(),
-    legend.text = element_text(size = 14),
-    legend.title = element_text(size = 12),
-    panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "white"),
-    panel.border = element_rect(
-      colour = "black",
-      fill = NA,
-      size = 1
-    ),
-    legend.key.size = unit(1, "cm"),
-    legend.position = 'top'
-  )
-```
-
-```{r plot_net}
-net_plot <- ggplot(data = net_site) +
-  geom_col(
-    aes(x = OCC_SITENAME,
-        y = NET_CARB_PROD_KG_M2_YR_MEAN,
-        fill = CB_METHOD_BENTHIC),
     show.legend = TRUE,
     color = 'black',
     position = position_dodge(width = 0.6),
@@ -419,27 +488,30 @@ net_plot <- ggplot(data = net_site) +
   geom_errorbar(
     aes(
       x = OCC_SITENAME,
-      ymin = NET_CARB_PROD_KG_M2_YR_MEAN - NET_CARB_PROD_KG_M2_YR_SE,
-      ymax = NET_CARB_PROD_KG_M2_YR_MEAN + NET_CARB_PROD_KG_M2_YR_SE,
-      group = CB_METHOD_BENTHIC
+      ymin = -1 * (FISH_EROSION_KG_M2_YR_ALL_MEAN - FISH_EROSION_KG_M2_YR_ALL_SE),
+      ymax = -1 * (FISH_EROSION_KG_M2_YR_ALL_MEAN + FISH_EROSION_KG_M2_YR_ALL_SE),
+      group = CB_METHOD
     ),
     width = 0.2,
     position = position_dodge(width = 0.6)
   ) +
   geom_hline(yintercept = 0) +
-  facet_grid( ~ REGIONCODE, scales = 'free', space = 'free', labeller = as_labeller(
-    c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
-  )) +
+  facet_grid(
+    ~ REGIONCODE,
+    scales = 'free_x',
+    space = 'free'
+  ) +
   theme_bw() +
-  scale_fill_manual(values = c("#0085ca", "#54addb", "#a6d4ec"),
+  scale_fill_manual(values = c("#76BC21", "#A2D269", "#CEE8B1"),
                     name = "") +
+  scale_x_discrete(position = "top") +
   scale_y_continuous(
-    limits = c(-4, 16),
-    breaks = seq(-4, 16, by = 2),
+    limits = c(-6, 0),
+    breaks = seq(-6, 0, by = 1),
     expand = c(0, 0)
   ) +
   ylab(expression(paste(
-    "Net production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
+    "Parrotfish erosion rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
   ))) +
   theme(
     axis.title.x = element_blank(),
@@ -461,7 +533,383 @@ net_plot <- ggplot(data = net_site) +
     legend.position = 'top'
   )
 
+parrotfish_plot_biomass <- ggplot(data = fish_alldata) +
+  geom_hline(yintercept = 0) +
+  geom_col(
+    aes(
+      x = OCC_SITENAME,
+      y = 1 * FISH_BIOMASS_KG_HA_ALL_MEAN,
+      fill = CB_METHOD
+    ),
+    show.legend = TRUE,
+    color = 'black',
+    position = position_dodge(width = 0.6),
+    width = 0.6
+  ) +
+  geom_errorbar(
+    aes(
+      x = OCC_SITENAME,
+      ymin = 1 * (FISH_BIOMASS_KG_HA_ALL_MEAN - FISH_BIOMASS_KG_HA_ALL_SE),
+      ymax = 1 * (FISH_BIOMASS_KG_HA_ALL_MEAN + FISH_BIOMASS_KG_HA_ALL_SE),
+      group = CB_METHOD
+    ),
+    width = 0.2,
+    position = position_dodge(width = 0.6)
+  ) +
+  geom_hline(yintercept = 0) +
+  facet_grid(
+    ~ REGIONCODE,
+    scales = 'free_x',
+    space = 'free'
+  ) +
+  theme_bw() +
+  scale_fill_manual(values = c("#76BC21", "#A2D269", "#CEE8B1"),
+                    name = "") +
+  scale_y_continuous(
+    limits = c(0,500),
+    breaks = seq(0,500, by = 50),
+    expand = c(0, 0)
+  ) +
+  ylab(expression(paste(
+    "Parrotfish biomass (", "kg", " ha" ^ -`1`, ")  "
+  ))) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 12, color = 'black'),
+    axis.text.y = element_text(size = 12, color = 'black'),
+    axis.title.y = element_text(size = 18),
+    strip.text.x = element_blank(),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white"),
+    panel.border = element_rect(
+      colour = "black",
+      fill = NA,
+      size = 1
+    ),
+    legend.key.size = unit(1, "cm"),
+    legend.position = 'top'
+  )
+
+parrotfish_plot_density <- ggplot(data = fish_alldata) +
+  geom_hline(yintercept = 0) +
+  geom_col(
+    aes(
+      x = OCC_SITENAME,
+      y = 1 * FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN,
+      fill = CB_METHOD
+    ),
+    show.legend = TRUE,
+    color = 'black',
+    position = position_dodge(width = 0.6),
+    width = 0.6
+  ) +
+  geom_errorbar(
+    aes(
+      x = OCC_SITENAME,
+      ymin = 1 * (FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN - FISH_DENSITY_ABUNDANCE_HA_ALL_SE),
+      ymax = 1 * (FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN + FISH_DENSITY_ABUNDANCE_HA_ALL_SE),
+      group = CB_METHOD
+    ),
+    width = 0.2,
+    position = position_dodge(width = 0.6)
+  ) +
+  geom_hline(yintercept = 0) +
+  facet_grid(
+    ~ REGIONCODE,
+    scales = 'free_x',
+    space = 'free'
+  ) +
+  theme_bw() +
+  scale_fill_manual(values = c("#76BC21", "#A2D269", "#CEE8B1"),
+                    name = "") +
+  scale_y_continuous(
+    limits = c(0,3000),
+    breaks = seq(0,3000, by = 500),
+    expand = c(0, 0)
+  ) +
+  ylab(expression(paste(
+    "Parrotfish density (", "inidividuals", " ha" ^ -`1`, ")  "
+  ))) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 12, color = 'black'),
+    axis.text.y = element_text(size = 12, color = 'black'),
+    axis.title.y = element_text(size = 18),
+    strip.text.x = element_blank(),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white"),
+    panel.border = element_rect(
+      colour = "black",
+      fill = NA,
+      size = 1
+    ),
+    legend.key.size = unit(1, "cm"),
+    legend.position = 'top'
+  )
+
+
 ```
+
+```{r plot_net}
+
+net_plot <- ggplot(data = net_site) +
+  geom_col(
+    aes(
+      x = OCC_SITENAME,
+      y = NET_CARB_PROD_KG_M2_YR_MEAN,
+      fill = CB_METHOD_BENTHIC
+    ),
+    color = 'black',
+    show.legend = TRUE,
+    position = position_dodge(width = 0.6),
+    width = 0.6
+  ) +
+  geom_errorbar(
+    aes(
+      x = OCC_SITENAME,
+      ymin = NET_CARB_PROD_KG_M2_YR_MEAN - NET_CARB_PROD_KG_M2_YR_SE,
+      ymax = NET_CARB_PROD_KG_M2_YR_MEAN + NET_CARB_PROD_KG_M2_YR_SE,
+      group = CB_METHOD
+    ),
+    width = 0.2,
+    position = position_dodge(width = 0.6)
+  ) +
+  geom_hline(yintercept = 0) +
+  facet_grid( ~ REGIONCODE, scales = 'free', space = 'free', labeller = as_labeller(
+    c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
+  )) +
+  theme_bw() +
+  scale_fill_manual(values = c("#0085ca", "#54ADDB", "#A6D4EC"),
+                    name = "") +
+  scale_y_continuous(
+    limits = c(-4, 16),
+    breaks = seq(-4, 16, by = 2),
+    expand = c(0, 0)
+  ) +
+  ylab(expression(paste(
+    "Net production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
+  ))) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 12, color = 'black'),
+    axis.text.y = element_text(size = 12, color = 'black'),
+    axis.title.y = element_text(size = 18),
+    strip.text.x = element_blank(),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white"),
+    legend.key.size = unit(1, "cm"),
+    legend.position = 'top'
+  )
+
+
+net_site$NET_CARB_PROD_KG_M2_YR_L95 = net_site$NET_CARB_PROD_KG_M2_YR_MEAN - 1.97 * net_site$NET_CARB_PROD_KG_M2_YR_SE
+net_site$NET_CARB_PROD_KG_M2_YR_U95 = net_site$NET_CARB_PROD_KG_M2_YR_MEAN + 1.97 * net_site$NET_CARB_PROD_KG_M2_YR_SE
+
+for (i in 1:nrow(net_site)) {
+  if (net_site$NET_CARB_PROD_KG_M2_YR_L95[i] > 0) {
+    net_site$CB_class[i] = "Net accreting"
+  }
+  if (net_site$NET_CARB_PROD_KG_M2_YR_U95[i] < 0) {
+    net_site$CB_class[i] = "Net eroding"
+  }
+  if (net_site$NET_CARB_PROD_KG_M2_YR_L95[i] <= 0 &
+      net_site$NET_CARB_PROD_KG_M2_YR_U95[i] >= 0) {
+    net_site$CB_class[i] = "At/near tipping point"
+  }
+}
+
+net_site$CB_class = factor(net_site$CB_class, levels = c("Net accreting", "At/near tipping point"))
+
+net_plot_shaded <- ggplot(data = subset(net_site, CB_METHOD_BENTHIC == "IPRB")) +
+  geom_col(
+    aes(
+      x = OCC_SITENAME,
+      y = NET_CARB_PROD_KG_M2_YR_MEAN,
+      fill = CB_class
+    ),
+    color = 'black',
+    show.legend = TRUE,
+    position = position_dodge(width = 0.6),
+    width = 0.6
+  ) +
+  geom_errorbar(
+    aes(
+      x = OCC_SITENAME,
+      ymin = NET_CARB_PROD_KG_M2_YR_MEAN - 1.97 * NET_CARB_PROD_KG_M2_YR_SE,
+      ymax = NET_CARB_PROD_KG_M2_YR_MEAN + 1.97 * NET_CARB_PROD_KG_M2_YR_SE,
+      group = CB_METHOD
+    ),
+    width = 0.2,
+    position = position_dodge(width = 0.6)
+  ) +
+  geom_hline(yintercept = 0) +
+  facet_grid( ~ REGIONCODE, scales = 'free', space = 'free', labeller = as_labeller(
+    c("MHI" = "Main Hawaiian Islands (2021)", "MARIAN" = "Marianas Archipelago (2022)")
+  )) +
+  theme_bw() +
+  scale_fill_manual(values = c("#0085ca", "#c5c5c53f", "#d6424644"),
+                    name = "") +
+  scale_y_continuous(
+    limits = c(-4, 16),
+    breaks = seq(-4, 16, by = 2),
+    expand = c(0, 0)
+  ) +
+  ylab(expression(paste(
+    "Net production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
+  ))) +
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_text(size = 12, color = 'black'),
+    axis.text.y = element_text(size = 12, color = 'black'),
+    axis.title.y = element_text(size = 18),
+    strip.text.x = element_blank(),
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 12),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white"),
+    legend.key.size = unit(1, "cm"),
+    legend.position = 'top'
+  )
+
+```
+
+```{r plot_cover_prod}
+
+cover_prod_plot_net = ggplot(data = net_site) +
+  geom_point(
+    aes(
+      x = HARD_CORAL_COVER_PCT_MEAN,
+      y = NET_CARB_PROD_KG_M2_YR_MEAN,
+      pch = CB_METHOD_BENTHIC,
+      color = LOCATIONCODE,
+      fill = LOCATIONCODE
+    ),
+    size = 5,
+  ) +
+  geom_errorbar(
+    aes(
+      x = HARD_CORAL_COVER_PCT_MEAN,
+      ymin = NET_CARB_PROD_KG_M2_YR_MEAN - NET_CARB_PROD_KG_M2_YR_SE,
+      ymax = NET_CARB_PROD_KG_M2_YR_MEAN + NET_CARB_PROD_KG_M2_YR_SE,
+      group = CB_METHOD_BENTHIC, 
+      color = LOCATIONCODE
+    )
+  ) +
+  geom_errorbarh(
+    aes(
+      y = NET_CARB_PROD_KG_M2_YR_MEAN,
+      xmin = HARD_CORAL_COVER_PCT_MEAN - HARD_CORAL_COVER_PCT_SE,
+      xmax = HARD_CORAL_COVER_PCT_MEAN +HARD_CORAL_COVER_PCT_SE,
+      group = CB_METHOD_BENTHIC,
+      color = LOCATIONCODE
+    )
+  ) +
+  scale_shape_manual(values=c(21,22,23), name = 'Method')+
+  theme_bw() +
+  ggsci::scale_color_locuszoom(name = "Location") +
+    ggsci::scale_fill_locuszoom(name = "Location") +
+  scale_x_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 20),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    limits = c(-2, 12),
+    breaks = seq(-2, 12, by = 2),
+    expand = c(0, 0)
+  ) +
+  xlab(expression(paste("Coral Cover (%) "))) +
+  ylab(expression(paste(
+    "Net production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
+  ))) +
+  theme(
+    axis.title.x = element_text(size = 15),
+    axis.text.x = element_text(size = 15),
+    axis.text.y = element_text(size = 15),
+    axis.title.y = element_text(size = 15),
+    strip.text.x = element_text(size = 15),
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white")
+  )
+cover_prod_plot_net
+
+cover_prod_gross_plot = ggplot(data = net_site) +
+  geom_point(
+    aes(
+      x = HARD_CORAL_COVER_PCT_MEAN,
+      y = GROSS_CARB_PROD_KG_M2_YR_MEAN,
+      pch = CB_METHOD_BENTHIC,
+      color = LOCATIONCODE,
+      fill = LOCATIONCODE
+    ),
+    size = 5,
+  ) +
+  geom_errorbar(
+    aes(
+      x = HARD_CORAL_COVER_PCT_MEAN,
+      ymin = GROSS_CARB_PROD_KG_M2_YR_MEAN - GROSS_CARB_PROD_KG_M2_YR_SE,
+      ymax = GROSS_CARB_PROD_KG_M2_YR_MEAN + GROSS_CARB_PROD_KG_M2_YR_SE,
+      group = CB_METHOD_BENTHIC, 
+      color = LOCATIONCODE
+    )
+  ) +
+  geom_errorbarh(
+    aes(
+      y = GROSS_CARB_PROD_KG_M2_YR_MEAN,
+      xmin = HARD_CORAL_COVER_PCT_MEAN - HARD_CORAL_COVER_PCT_SE,
+      xmax = HARD_CORAL_COVER_PCT_MEAN +HARD_CORAL_COVER_PCT_SE,
+      group = CB_METHOD_BENTHIC,
+      color = LOCATIONCODE
+    )
+  ) +
+  scale_shape_manual(values=c(21,22,23), name = 'Method')+
+  theme_bw() +
+  ggsci::scale_color_locuszoom(name = "Location") +
+    ggsci::scale_fill_locuszoom(name = "Location") +
+  scale_x_continuous(
+    limits = c(0, 100),
+    breaks = seq(0, 100, by = 20),
+    expand = c(0, 0)
+  ) +
+  scale_y_continuous(
+    limits = c(-2, 12),
+    breaks = seq(-2, 12, by = 2),
+    expand = c(0, 0)
+  ) +
+  xlab(expression(paste("Coral Cover (%) "))) +
+  ylab(expression(paste(
+    "Gross production rate (", "kg CaCO"[3], " m" ^ -2, " yr" ^ -1, ")  "
+  ))) +
+  theme(
+    axis.title.x = element_text(size = 15),
+    axis.text.x = element_text(size = 15),
+    axis.text.y = element_text(size = 15),
+    axis.title.y = element_text(size = 15),
+    strip.text.x = element_text(size = 15),
+    legend.text = element_text(size = 15),
+    legend.title = element_text(size = 15),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_rect(fill = "white")
+  )
+cover_prod_gross_plot
+
+cover_prod_plot <- ggpubr::ggarrange(cover_prod_gross_plot, cover_prod_plot_net, common.legend = TRUE, legend = 'right')
+```
+
 
 ```{r plots, echo = FALSE}
 production_plot
@@ -469,5 +917,95 @@ bioerosion_plot
 urchin_plot
 parrotfish_plot
 net_plot
+net_plot_shaded
 ```
 
+
+
+```{r save_plots}
+
+ggsave(
+  production_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Production.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  bioerosion_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Bioerosion.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  urchin_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Urchin.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  parrotfish_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Parrotfish.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  parrotfish_plot_biomass,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Parrotfish_Biomass.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  parrotfish_plot_density,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Parrotfish_Density.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  net_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Net.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  net_plot_shaded,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Net_shaded.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  rugosity_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Rugosity.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  cover_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Cover.jpeg",
+  height = 10,
+  width = 20,
+  dpi = 600
+)
+ggsave(
+  cover_prod_plot_net,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Cover_Prod.jpeg",
+  height = 10,
+  width = 12,
+  dpi = 600
+)
+ggsave(
+  cover_prod_gross_plot,
+  filename = "T:/Oceanography/Carbonate Budgets/Figures/CB_Cover_GrossProd.jpeg",
+  height = 10,
+  width = 12,
+  dpi = 600
+)
+```

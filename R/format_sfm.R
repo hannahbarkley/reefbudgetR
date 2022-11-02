@@ -7,10 +7,10 @@
 #'@export format_sfm
 
 format_sfm <- function(data) {
-  data$OCC_SITEID <- data$SiteID
-  data$CB_TRANSECTID <- data$TransectID
-  data$SUBSTRATE_CODE <- data$TaxonID
-  data$MORPHOLOGYCODE <- data$MorphID
+  data$OCC_SITEID <- data$Site
+  data$CB_TRANSECTID <- data$Transect
+  data$SUBSTRATE_CODE <- data$Taxon
+  data$MORPHOLOGYCODE <- data$Morph
   data$LINEAR_METER <- as.numeric(data$Shape_Length)
   data$SUBSTRATE_COVER_CM <- as.numeric(data$SLength) * 100
   data$OBS_ID <- data$OBJECTID

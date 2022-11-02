@@ -38,8 +38,8 @@ benthic_sfm$SURVEYOR <- surveyor
 benthic_sfm <- benthic_sfm[with(
   benthic_sfm,
   order(
-    benthic_sfm$SiteID,
-    benthic_sfm$TransectID,
+    benthic_sfm$Site,
+    benthic_sfm$Transect,
     benthic_sfm$OBJECTID..
   )
 ), ]
