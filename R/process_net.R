@@ -65,7 +65,7 @@ process_net <- function(prod,
         "LOCATIONCODE",
         "OCC_SITEID",
         "OCC_SITENAME",
-        "LATITUTE",
+        "LATITUDE",
         "LONGITUDE"
       )
     )

@@ -70,7 +70,8 @@ prod_sfm <- process_prod(
 prod_site <- bind_rows(
   prod_iprb$summary_site,
   prod_chords$summary_site,
-  prod_sfm$summary_site
+  prod_sfm$summary_site,
+  prod_sfm_gua015$summary_site
 )
 
 ```

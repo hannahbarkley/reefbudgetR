@@ -22,7 +22,7 @@ format_4ncei <- function(net_prod) {
     "LOCATIONCODE",
     "OCC_SITEID",
     "OCC_SITENAME",
-    "LATITUTE",
+    "LATITUDE",
     "LONGITUDE",
     "DEPTH_M",
     "LOCALDATE",
