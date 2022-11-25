@@ -32,6 +32,13 @@ run_calc_prod <- function(data,
     prod_dbase <- prod_dbase_ncrmp
   }
 
+  if(transect_id == NULL & transect_length == NULL){
+    transect_summary_pairs <- unique(data[c("CB_TRANSECTID","TRANSECT_PLANAR_LENGTH_M")])
+    transect_id <- unique(transect_summary_pairs$CB_TRANSECTID)
+    transect_length <- unique(transect_summary_pairs$TRANSECT_PLANAR_LENGTH_M)
+  }
+
+
   if (data_type == "SfM") {
     transect_summary <- summarize_transect(data,
                                           transect_id,

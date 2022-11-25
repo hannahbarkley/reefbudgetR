@@ -21,9 +21,9 @@ library(reefbudgetR)
 
 ```{r load_data}
 
-benthic_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_Benthic_alldata.csv", na = "", check.names = FALSE)
+benthic_data <- read.csv("T:/Oceanography/Carbonate Budgets/NCEI/ESD_CarbBudget_Combined/ESD_CarbonateBudget_Benthic_Combined.csv", na = "", check.names = FALSE)
 
-urchin_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_Urchin_alldata.csv", na = "", check.names = FALSE)
+urchin_data <- read.csv("T:/Oceanography/Carbonate Budgets/NCEI/ESD_CarbBudget_Combined/ESD_CarbonateBudget_Urchins_Combined.csv", na = "", check.names = FALSE)
 
 fish_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
@@ -36,8 +36,6 @@ fish_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/CB_FishBelt_alldat
 # Process IPRB benthic data
 prod_iprb <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
-  transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-  transect_length = c(10, 10, 10, 10, 10, 10),
   dbase_type = "NCRMP",
   method_name = "IPRB",
   data_type = "In water",

@@ -28,7 +28,7 @@ process_urchins <- function(data,
 
   # Convert to long format
   data_long <- data %>%
-    select(-c(URCH_OBS_YN, CBURCHID)) %>%
+    select(-c(URCH_OBS_TF, CBURCHID)) %>%
     #filter(is.na(TAXON_CODE) == FALSE) %>%
     pivot_longer(
       cols = !c(
@@ -156,6 +156,9 @@ process_urchins <- function(data,
     summary_transect$transect_length[match(
       data_full$CB_TRANSECTID, summary_transect$transect_id)]
 
+  data$TRANSECT_LENGTH_M <-
+    summary_transect$transect_length[match(
+      data$CB_TRANSECTID, summary_transect$transect_id)]
 
   # Remove non-eroding urchin taxa
   data_eroders <- subset(data_full, data_full$GROUP != "NON")
@@ -324,11 +327,41 @@ process_urchins <- function(data,
         length(.data$URCHIN_EROSION_KG_M2_YR)
     )
 
+  data <- data[c(
+  "REGION",
+  "REGIONCODE",
+  "YEAR",
+  "CRUISE_ID",
+  "LOCATION",
+  "LOCATIONCODE",
+  "OCC_SITEID",
+  "OCC_SITENAME",
+  "LATITUDE",
+  "LONGITUDE",
+  "DEPTH_M",
+  "LOCALDATE",
+  "CB_METHOD",
+  "CB_TRANSECTID",
+  "TRANSECT_LENGTH_M",
+  "URCH_OBS_TF",
+  "TAXON_NAME",
+  "TAXON_CODE",
+  "TEST_SIZE_BIN_0_20_MM",
+  "TEST_SIZE_BIN_21_40_MM",
+  "TEST_SIZE_BIN_41_60_MM",
+  "TEST_SIZE_BIN_61_80_MM",
+  "TEST_SIZE_BIN_81_100_MM",
+  "TEST_SIZE_BIN_101_120_MM",
+  "TEST_SIZE_BIN_121_140_MM",
+  "TEST_SIZE_BIN_141_160_MM")]
+
+
   if (full_summary == TRUE) {
     return(
       list(
         site_erosion = site_erosion,
-        transect_erosion = transect_density_sum
+        transect_erosion = transect_density_sum,
+        data = data
       )
     )
   }
