@@ -17,7 +17,7 @@ calc_prod(
 \arguments{
 \item{substrate_class}{Type of substrate observed ("CORAL", "CCA", "TURF", "MA", ...).}
 
-\item{substrate_code}{NCRMP taxa code observed ("PLOB", "MCAP", "PMEA", "CCA", ...).}
+\item{substrate_code}{Taxa code observed (e.g. "PLOB", "MCAP", "PMEA", "CCA", ...).}
 
 \item{morphology_code}{Taxa morphology observed (corals only; "BR", "MD", "EM", ...). Non-corals default to NA.}
 
@@ -26,7 +26,7 @@ calc_prod(
 \item{region_code}{Survey region ("MHI", "MARIAN", ...).}
 
 \item{prod_dbase}{Production database to reference, either Indo-Pacific ReefBudget ("IPRB")
-or NCRMP-specific ("NCRMP").}
+or NCRMP-specific ("NCRMP"). Defaults to "NCRMP".}
 }
 \description{
 Calculate production rates for each benthic component measured on

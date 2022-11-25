@@ -9,7 +9,7 @@
 #'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 #'database is derived from "IP Calcification and bioerosion rates database v.1.3",
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.
-#'@param data_type Type of data collection ("In water" or "SfM").
+#'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
 #'
 #'@import dplyr
 #'@importFrom sjmisc seq_row
@@ -20,7 +20,7 @@ run_calc_prod <- function(data,
                           transect_id,
                           transect_length,
                           dbase_type,
-                          data_type,
+                          method_name,
                           ...) {
 
   if (dbase_type == "IPRB") {
@@ -32,24 +32,30 @@ run_calc_prod <- function(data,
     prod_dbase <- prod_dbase_ncrmp
   }
 
-  if(transect_id == NULL & transect_length == NULL){
+  if(is.null(transect_id) == TRUE & is.null(transect_length) == TRUE){
     transect_summary_pairs <- unique(data[c("CB_TRANSECTID","TRANSECT_PLANAR_LENGTH_M")])
     transect_id <- unique(transect_summary_pairs$CB_TRANSECTID)
     transect_length <- unique(transect_summary_pairs$TRANSECT_PLANAR_LENGTH_M)
   }
 
-
-  if (data_type == "SfM") {
+  if (method_name == "SfM") {
     transect_summary <- summarize_transect(data,
                                           transect_id,
                                           transect_length,
-                                          data_type = "SfM")
+                                          method_name = "SfM")
   }
-  if (data_type == "In water") {
+  if (method_name == "IPRB") {
     transect_summary <- summarize_transect(data,
                                           transect_id,
                                           transect_length,
-                                          data_type = "In water")
+                                          method_name = "IPRB")
+  }
+
+  if (method_name == "Chords") {
+    transect_summary <- summarize_transect(data,
+                                           transect_id,
+                                           transect_length,
+                                           method_name = "Chords")
   }
 
   data$SUBSTRATE_CLASS <- NA

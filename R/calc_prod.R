@@ -4,12 +4,12 @@
 #'@author Hannah Barkley
 #'
 #'@param substrate_class Type of substrate observed ("CORAL", "CCA", "TURF", "MA", ...).
-#'@param substrate_code NCRMP taxa code observed ("PLOB", "MCAP", "PMEA", "CCA", ...).
+#'@param substrate_code Taxa code observed (e.g. "PLOB", "MCAP", "PMEA", "CCA", ...).
 #'@param morphology_code Taxa morphology observed (corals only; "BR", "MD", "EM", ...). Non-corals default to NA.
 #'@param substrate_cover_cm Measure surface distance of benthic component, in cm.
 #'@param region_code Survey region ("MHI", "MARIAN", ...).
 #'@param prod_dbase Production database to reference, either Indo-Pacific ReefBudget ("IPRB")
-#'or NCRMP-specific ("NCRMP").
+#'or NCRMP-specific ("NCRMP"). Defaults to "NCRMP".
 #'
 #'@details See included carbonate production databases `prod_dbase_iprb` and `prod_dbase_ncrmp`
 #'for acceptable `substrate_class`, `substrate_code`, and `morphology_code` values.

@@ -6,12 +6,12 @@
 \usage{
 process_prod(
   data,
-  transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-  transect_length = c(10, 10, 10, 10, 10, 10),
-  dbase_type = c("IPRB", "NCRMP"),
+  transect_id = NULL,
+  transect_length = NULL,
+  dbase_type = "NCRMP",
   method_name = c("IPRB", "Chords"),
   data_type = c("In water", "SfM"),
-  full_summary = FALSE,
+  full_summary = TRUE,
   label = NULL,
   ...
 )
@@ -26,7 +26,7 @@ process_prod(
 \item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 database is derived from "IP Calcification and bioerosion rates database v.1.3",
-downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
+downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".}
 
 \item{method_name}{Transect design by which data were collected ("IPRB" or "Chords").}
 

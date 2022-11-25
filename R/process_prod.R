@@ -9,8 +9,7 @@
 #'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 #'database is derived from "IP Calcification and bioerosion rates database v.1.3",
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".
-#'@param method_name Transect design by which data were collected ("IPRB" or "Chords").
-#'@param data_type Type of data collection ("In water" or "SfM").
+#'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
 #'
 #'@import dplyr
 #'@import tools
@@ -24,9 +23,8 @@ process_prod <- function(data,
                          transect_id = NULL,
                          transect_length = NULL,
                          dbase_type = "NCRMP",
-                         method_name = c("IPRB", "Chords"),
-                         data_type = c("In water", "SfM"),
-                         full_summary = FALSE,
+                         method_name = c("IPRB", "Chords", "SfM"),
+                         full_summary = TRUE,
                          label = NULL,
                          ...) {
 
@@ -37,7 +35,7 @@ process_prod <- function(data,
                                     transect_id,
                                     transect_length,
                                     dbase_type,
-                                    data_type)
+                                    method_name)
   data <- calc_prod_output$data
   transect_summary <- calc_prod_output$transect_summary
   prod_dbase <- calc_prod_output$prod_dbase
