@@ -3,10 +3,9 @@
 #'@author Hannah Barkley
 #'
 #'@param data Urchin observation data set.
-#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).
-#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).
+#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.
+#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.
 #'@param method_name Transect design by which data were collected ("IPRB" or "Chords").
-#'@param data_type Type of data collection ("In water" or "SfM").
 #'
 #'@import tidyr
 #'@import dplyr
@@ -15,20 +14,28 @@
 #'@export process_urchins
 
 process_urchins <- function(data,
-                            transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-                            transect_length = c(10, 10, 10, 10, 10, 10),
+                            transect_id = NULL,
+                            transect_length = NULL,
                             method_name = c("IPRB", "Chords"),
-                            data_type = c("In water", "SfM"),
-                            full_summary = FALSE) {
+                            full_summary = TRUE) {
 
   options(dplyr.summarise.inform = FALSE)
 
   # Create data frame with transect info
-  summary_transect <- data.frame(transect_id, transect_length)
+  if (is.null(transect_id) == TRUE &
+      is.null(transect_length) == TRUE) {
+    transect_summary_pairs <-
+      unique(data[c("CB_TRANSECTID", "TRANSECT_LENGTH_M")])
+    transect_id <- unique(transect_summary_pairs$CB_TRANSECTID)
+    transect_length <-
+      unique(transect_summary_pairs$TRANSECT_LENGTH_M )
+  }
+    summary_transect <- data.frame(transect_id, transect_length)
+
 
   # Convert to long format
   data_long <- data %>%
-    select(-c(URCH_OBS_TF, CBURCHID)) %>%
+    select(-c(URCH_OBS_TF)) %>%
     #filter(is.na(TAXON_CODE) == FALSE) %>%
     pivot_longer(
       cols = !c(
@@ -46,6 +53,7 @@ process_urchins <- function(data,
         "LOCALDATE",
         "CB_METHOD",
         "CB_TRANSECTID",
+        "TRANSECT_LENGTH_M",
         "TAXON_NAME",
         "TAXON_CODE"
       ),
@@ -110,7 +118,8 @@ process_urchins <- function(data,
         "LATITUDE",
         "LONGITUDE",
         "DEPTH_M",
-        "CB_METHOD"
+        "CB_METHOD",
+        "TRANSECT_LENGTH_M"
       ),
       .direction = "downup"
     ) %>% group_by(OCC_SITEID, CB_METHOD) %>%

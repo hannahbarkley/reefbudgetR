@@ -3,8 +3,8 @@
 #'@author Hannah Barkley
 #'
 #'@param data Benthic field data set.
-#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).
-#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).
+#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.
+#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.
 #'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 #'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 #'database is derived from "IP Calcification and bioerosion rates database v.1.3",
