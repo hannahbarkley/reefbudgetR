@@ -37,7 +37,13 @@ See included carbonate production databases \code{prod_dbase_iprb} and \code{pro
 for acceptable \code{substrate_class}, \code{substrate_code}, and \code{morphology_code} values.
 }
 \examples{
-calc_prod("CORAL","PLOB","MD",10,"MHI","NCRMP")
+calc_prod(
+substrate_class = "CORAL",
+substrate_code = "PLOB",
+morphology_code = "MD",
+substrate_cover_cm = 10,
+region_code = "MHI",
+prod_dbase = "NCRMP")
 
 
 }

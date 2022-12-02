@@ -21,6 +21,45 @@
 #'@importFrom rlang .data
 #'
 #'@export summarize_prod
+#'
+#'@examples
+#' calc_prod_output <- run_calc_prod(
+#'     data = data,
+#'     transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
+#'     transect_length = c(10, 10, 10, 10, 10, 10),
+#'     method_name = "IPRB",
+#'     dbase_type = "NCRMP")
+#'
+#' data <- calc_prod_output$data
+#' transect_summary <- calc_prod_output$transect_summary
+#'
+#' prod_transect_substratecode <-
+#'   summarize_prod(data,
+#'                  transect_summary,
+#'                  dbase_type,
+#'                  summarize_by = "substrate code",
+#'                  level = "transect")
+#'
+#' prod_transect_substrateclass <-
+#'   summarize_prod(data,
+#'                  transect_summary,
+#'                  dbase_type,
+#'                  summarize_by = "substrate class",
+#'                  level = "transect")
+#'
+#' prod_transect_coral <-
+#'   summarize_prod(data,
+#'                  transect_summary,
+#'                  dbase_type,
+#'                  summarize_by = "coral group",
+#'                  level = "transect")
+#'
+#' prod_transect <-
+#'   summarize_prod(data,
+#'                  transect_summary,
+#'                  dbase_type,
+#'                  summarize_by = "overall",
+#'                  level = "transect")
 
 summarize_prod <- function(data,
                            transect_summary,

@@ -30,6 +30,16 @@ combine_sfm(
 \description{
 Combine individual SfM benthic data transect files
 }
+\examples{
+combine_sfm(
+   sfm_folder = "...",
+   region_code = "MHI",
+   location_code = "OAH",
+   local_date = "2020-01-01",
+   cruise_id = "MP2108",
+   surveyor = "HCB"
+)
+}
 \author{
 Hannah Barkley
 }

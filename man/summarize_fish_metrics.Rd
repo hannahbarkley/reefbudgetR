@@ -26,6 +26,28 @@ summarize_fish_metrics(
 Calculate metrics for density, biomass, and bioerosion at the transect
 and site level
 }
+\examples{
+calc_eros_fish_output <- calc_eros_fish(data, rates_dbase = rates_dbase)
+
+density_average <- summarize_fish_metrics(
+ data = calc_eros_fish_output,
+ metric = "density",
+ level = "transect",
+ summarize_by = "species"
+)
+biomass_average <- summarize_fish_metrics(
+ data = calc_eros_fish_output,
+ metric = "biomass",
+ level = "transect",
+ summarize_by = "species"
+ )
+bioerosion_average <- summarize_fish_metrics(
+ data = calc_eros_fish_output,
+ metric = "bioerosion",
+ level = "transect",
+ summarize_by = "species"
+ )
+}
 \author{
 Rebecca Weible
 }

@@ -4,7 +4,7 @@
 \alias{process_fish}
 \title{Calculate parrotfish erosion rates from belt data}
 \usage{
-process_fish(data, rates_dbase = "Kindinger", full_summary = FALSE)
+process_fish(data, rates_dbase = "Kindinger", full_summary = TRUE)
 }
 \arguments{
 \item{data}{Parrotfish belt data.}
@@ -15,6 +15,12 @@ by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").}
 }
 \description{
 Calculate parrotfish erosion rates from belt data
+}
+\examples{
+fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
+
+fish_belt <- process_fish(data = fish_data, rates_dbase = "Kindinger",
+full_summary = TRUE)
 }
 \author{
 Rebecca Weible

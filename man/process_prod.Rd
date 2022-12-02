@@ -9,8 +9,7 @@ process_prod(
   transect_id = NULL,
   transect_length = NULL,
   dbase_type = "NCRMP",
-  method_name = c("IPRB", "Chords"),
-  data_type = c("In water", "SfM"),
+  method_name = c("IPRB", "Chords", "SfM"),
   full_summary = TRUE,
   label = NULL,
   ...
@@ -19,21 +18,36 @@ process_prod(
 \arguments{
 \item{data}{Benthic field data set.}
 
-\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).}
+\item{transect_id}{String of transect names (e.g., c("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.}
 
-\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).}
+\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.}
 
 \item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 database is derived from "IP Calcification and bioerosion rates database v.1.3",
 downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".}
 
-\item{method_name}{Transect design by which data were collected ("IPRB" or "Chords").}
-
-\item{data_type}{Type of data collection ("In water" or "SfM").}
+\item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
 }
 \description{
 Calculate carbonate production rates from benthic census data
+}
+\examples{
+benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv",
+   na = "", check.names = FALSE)
+
+prod_iprb <- process_prod(
+   data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
+   method_name = "IPRB"
+)
+prod_chords <- process_prod(
+   data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
+   method_name = "Chords"
+)
+prod_sfm <- process_prod(
+   data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
+   method_name = "SfM"
+)
 }
 \author{
 Hannah Barkley

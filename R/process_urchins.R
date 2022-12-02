@@ -12,6 +12,20 @@
 #'@importFrom sjmisc seq_row
 #'
 #'@export process_urchins
+#'
+#'@examples
+#' urchin_data <- read.csv("ESD_CarbBudget_Urchins_OAHU_2021.csv",
+#'   na = "", check.names = FALSE)
+#'
+#' urch_iprb <- process_urchins(
+#'   data = urchin_data[urchin_data$CB_METHOD == "IPRB", ],
+#'   method_name = "IPRB"
+#' )
+#'
+#' urch_chords <- process_urchins(
+#'   data = urchin_data[urchin_data$CB_METHOD == "Chords", ],
+#'   method_name = "Chords"
+#' )
 
 process_urchins <- function(data,
                             transect_id = NULL,

@@ -12,6 +12,9 @@
 #'@importFrom rlang .data
 #'
 #'@export calc_eros_fish
+#'
+#'@examples fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
+#'@examples calc_eros_fish_output <- calc_eros_fish(fish_data, rates_dbase = "Kindinger")
 
 calc_eros_fish <- function(data,
                              rates_dbase = c("IPRB", "Kindinger")) {

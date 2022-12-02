@@ -8,7 +8,7 @@ summarize_transect(
   data,
   transect_id,
   transect_length,
-  data_type = c("In water", "SfM")
+  method_name = c("IPRB", "Chords", "SfM")
 )
 }
 \arguments{
@@ -18,10 +18,19 @@ summarize_transect(
 
 \item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).}
 
-\item{data_type}{Type of data collection ("In water" or "SfM").}
+\item{method_name}{Method by which benthic data were collected ("IPRB" "Chords", or "SfM").}
 }
 \description{
 Summarize benthic transect metadata
+}
+\examples{
+summarize_transect(
+    data = data,
+    transect_id = c("A1", "A2", "A3", "B1", "B2", "B3")
+    transect_length = c(10, 10, 10, 10, 10, 10),
+    method_name = "IPRB"
+)
+
 }
 \author{
 Hannah Barkley

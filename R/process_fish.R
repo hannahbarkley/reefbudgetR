@@ -12,10 +12,16 @@
 #'@import dplyr
 #'
 #'@export process_fish
+#'
+#'@examples
+#'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
+#'
+#'fish_belt <- process_fish(data = fish_data, rates_dbase = "Kindinger",
+#'full_summary = TRUE)
 
 process_fish <- function(data,
                          rates_dbase = "Kindinger",
-                         full_summary = FALSE) {
+                         full_summary = TRUE) {
 
   # Calculate erosion rates per fish -------------------------------------------
 

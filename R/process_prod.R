@@ -3,7 +3,7 @@
 #'@author Hannah Barkley
 #'
 #'@param data Benthic field data set.
-#'@param transect_id String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.
+#'@param transect_id String of transect names (e.g., c("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.
 #'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.
 #'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 #'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
@@ -17,6 +17,25 @@
 #'@import reshape2
 #'
 #'@export process_prod
+#'
+#'@examples
+#' benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv",
+#'    na = "", check.names = FALSE)
+#'
+#' prod_iprb <- process_prod(
+#'    data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
+#'    method_name = "IPRB"
+#' )
+
+#' prod_chords <- process_prod(
+#'    data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
+#'    method_name = "Chords"
+#' )
+
+#' prod_sfm <- process_prod(
+#'    data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
+#'    method_name = "SfM"
+#' )
 
 
 process_prod <- function(data,

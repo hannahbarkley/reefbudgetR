@@ -12,11 +12,21 @@
 #'
 #'@export summarize_transect
 #'
+#'@examples
+#' summarize_transect(
+#'     data = data,
+#'     transect_id = c("A1", "A2", "A3", "B1", "B2", "B3")
+#'     transect_length = c(10, 10, 10, 10, 10, 10),
+#'     method_name = "IPRB"
+#' )
+#'
+
 summarize_transect <-
   function(data,
            transect_id,
            transect_length,
            method_name = c("IPRB", "Chords", "SfM")) {
+
     options(dplyr.summarise.inform = FALSE)
 
     if (method_name == "IPRB" | method_name ==  "Chords") {

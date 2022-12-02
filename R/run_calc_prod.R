@@ -15,6 +15,19 @@
 #'@importFrom sjmisc seq_row
 #'
 #'@export run_calc_prod
+#'
+#' @examples
+#' benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv",
+#'     na = "", check.names = FALSE)
+#'
+#' calc_prod_output <- run_calc_prod(
+#'     data = benthic_data,
+#'     transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
+#'     transect_length = c(10, 10, 10, 10, 10, 10),
+#'     method_name = "IPRB",
+#'     dbase_type = "NCRMP"
+#'     )
+
 
 run_calc_prod <- function(data,
                           transect_id,

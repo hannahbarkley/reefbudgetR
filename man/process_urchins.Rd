@@ -6,26 +6,37 @@
 \usage{
 process_urchins(
   data,
-  transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-  transect_length = c(10, 10, 10, 10, 10, 10),
+  transect_id = NULL,
+  transect_length = NULL,
   method_name = c("IPRB", "Chords"),
-  data_type = c("In water", "SfM"),
-  full_summary = FALSE
+  full_summary = TRUE
 )
 }
 \arguments{
 \item{data}{Urchin observation data set.}
 
-\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).}
+\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.}
 
-\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).}
+\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.}
 
 \item{method_name}{Transect design by which data were collected ("IPRB" or "Chords").}
-
-\item{data_type}{Type of data collection ("In water" or "SfM").}
 }
 \description{
 Calculate urchin erosion rates from urchin census data
+}
+\examples{
+urchin_data <- read.csv("ESD_CarbBudget_Urchins_OAHU_2021.csv",
+  na = "", check.names = FALSE)
+
+urch_iprb <- process_urchins(
+  data = urchin_data[urchin_data$CB_METHOD == "IPRB", ],
+  method_name = "IPRB"
+)
+
+urch_chords <- process_urchins(
+  data = urchin_data[urchin_data$CB_METHOD == "Chords", ],
+  method_name = "Chords"
+)
 }
 \author{
 Hannah Barkley

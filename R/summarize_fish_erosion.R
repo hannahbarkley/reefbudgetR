@@ -2,18 +2,47 @@
 #'
 #' @author Rebecca Weible
 #'
-#' @param species_table Species table with average density, biomass, and bioersion metrics,
+#' @param species_table Species table with average density, biomass, and bioerosion metrics,
 #' outputs of `summarize_fish_metrics`.
-#' @param full_summary Return full summary of results (default is FALSE)
+#' @param full_summary Return full summary of results (default is TRUE)
 #'
 #' @import dplyr
 #'
 #' @export summarize_fish_erosion
 #'
+#' @examples
+#'density_average <- summarize_fish_metrics(
+#'  data = calc_eros_fish_output,
+#'  metric = "density",
+#'  level = "transect",
+#'  summarize_by = "species"
+#')
+
+#'biomass_average <- suppressWarnings(
+#'  summarize_fish_metrics(
+#'    data = calc_eros_fish_output,
+#'    metric = "biomass",
+#'    level = "transect",
+#'    summarize_by = "species"
+#'  )
+
+#'bioerosion_average <- suppressWarnings(
+#'  summarize_fish_metrics(
+#'    data = calc_eros_fish_output,
+#'    metric = "bioerosion",
+#'    level = "transect",
+#'    summarize_by = "species"
+#'  )
+
+#'species_table <-
+#'  rbind(density_average, biomass_average, bioerosion_average)
+
+#' summary_fish_erosion <- summarize_fish_erosion(species_table, full_summary)
+#'
 
 
 summarize_fish_erosion <- function(species_table,
-                                   full_summary = FALSE) {
+                                   full_summary = TRUE) {
   options(scipen = 999) #prevent scientific notation
 
   # Final bioerosion calculations per transect

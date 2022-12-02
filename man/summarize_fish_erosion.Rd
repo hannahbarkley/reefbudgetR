@@ -4,16 +4,42 @@
 \alias{summarize_fish_erosion}
 \title{Summarize site-level parrotfish bioerosion rates}
 \usage{
-summarize_fish_erosion(species_table, full_summary = FALSE)
+summarize_fish_erosion(species_table, full_summary = TRUE)
 }
 \arguments{
-\item{species_table}{Species table with average density, biomass, and bioersion metrics,
+\item{species_table}{Species table with average density, biomass, and bioerosion metrics,
 outputs of \code{summarize_fish_metrics}.}
 
-\item{full_summary}{Return full summary of results (default is FALSE)}
+\item{full_summary}{Return full summary of results (default is TRUE)}
 }
 \description{
 Summarize site-level parrotfish bioerosion rates
+}
+\examples{
+density_average <- summarize_fish_metrics(
+ data = calc_eros_fish_output,
+ metric = "density",
+ level = "transect",
+ summarize_by = "species"
+)
+biomass_average <- suppressWarnings(
+ summarize_fish_metrics(
+   data = calc_eros_fish_output,
+   metric = "biomass",
+   level = "transect",
+   summarize_by = "species"
+ )
+bioerosion_average <- suppressWarnings(
+ summarize_fish_metrics(
+   data = calc_eros_fish_output,
+   metric = "bioerosion",
+   level = "transect",
+   summarize_by = "species"
+ )
+species_table <-
+ rbind(density_average, biomass_average, bioerosion_average)
+summary_fish_erosion <- summarize_fish_erosion(species_table, full_summary)
+
 }
 \author{
 Rebecca Weible

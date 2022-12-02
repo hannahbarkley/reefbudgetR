@@ -17,7 +17,13 @@
 #'@export calc_prod
 #'
 #'@examples
-#' calc_prod("CORAL","PLOB","MD",10,"MHI","NCRMP")
+#' calc_prod(
+#' substrate_class = "CORAL",
+#' substrate_code = "PLOB",
+#' morphology_code = "MD",
+#' substrate_cover_cm = 10,
+#' region_code = "MHI",
+#' prod_dbase = "NCRMP")
 #'
 #'
 calc_prod <- function(substrate_class,

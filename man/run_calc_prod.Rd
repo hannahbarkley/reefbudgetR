@@ -4,24 +4,36 @@
 \alias{run_calc_prod}
 \title{Run calc_prod function}
 \usage{
-run_calc_prod(data, transect_id, transect_length, dbase_type, data_type, ...)
+run_calc_prod(data, transect_id, transect_length, dbase_type, method_name, ...)
 }
 \arguments{
 \item{data}{Benthic data set to process}
 
-\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")).}
+\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.}
 
-\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)).}
+\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.}
 
 \item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 database is derived from "IP Calcification and bioerosion rates database v.1.3",
 downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
 
-\item{data_type}{Type of data collection ("In water" or "SfM").}
+\item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
 }
 \description{
 Run calc_prod function
+}
+\examples{
+benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv",
+    na = "", check.names = FALSE)
+
+calc_prod_output <- run_calc_prod(
+    data = benthic_data,
+    transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
+    transect_length = c(10, 10, 10, 10, 10, 10),
+    method_name = "IPRB",
+    dbase_type = "NCRMP"
+    )
 }
 \author{
 Hannah Barkley

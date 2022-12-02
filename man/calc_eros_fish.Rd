@@ -17,6 +17,10 @@ by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").}
 \description{
 Calculate parrotfish biomass, density, and bioerosion rates
 }
+\examples{
+fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
+calc_eros_fish_output <- calc_eros_fish(fish_data, rates_dbase = "Kindinger")
+}
 \author{
 Rebecca Weible
 }
