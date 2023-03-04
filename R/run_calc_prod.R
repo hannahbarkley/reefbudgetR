@@ -46,10 +46,11 @@ run_calc_prod <- function(data,
       .data$LOCATIONCODE,
       .data$OCC_SITEID,
       .data$CB_METHOD,
-      .data$CB_TRANSECTID
+      .data$CB_TRANSECTID,
+      .data$TRANSECT_PLANAR_LENGTH_M
     ) %>%
     summarize(
-      TRANSECT_PLANAR_LENGTH_M = mean(.data$TRANSECT_PLANAR_LENGTH_M),
+      TRANSECT_PLANAR_LENGTH_M = mean(as.numeric(.data$TRANSECT_PLANAR_LENGTH_M)),
       TRANSECT_TOTAL_SUBSTRATE_COVER_M =
         sum(.data$SUBSTRATE_COVER_CM / 100, na.rm = TRUE),
       TRANSECT_RUGOSITY =
