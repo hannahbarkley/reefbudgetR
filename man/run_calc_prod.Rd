@@ -4,14 +4,10 @@
 \alias{run_calc_prod}
 \title{Run calc_prod function}
 \usage{
-run_calc_prod(data, transect_id, transect_length, dbase_type, method_name, ...)
+run_calc_prod(data, dbase_type, method_name, ...)
 }
 \arguments{
 \item{data}{Benthic data set to process}
-
-\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.}
-
-\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.}
 
 \item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
@@ -29,8 +25,6 @@ benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv",
 
 calc_prod_output <- run_calc_prod(
     data = benthic_data,
-    transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-    transect_length = c(10, 10, 10, 10, 10, 10),
     method_name = "IPRB",
     dbase_type = "NCRMP"
     )

@@ -6,8 +6,6 @@
 \usage{
 process_prod(
   data,
-  transect_id = NULL,
-  transect_length = NULL,
   dbase_type = "NCRMP",
   method_name = c("IPRB", "Chords", "SfM"),
   full_summary = TRUE,
@@ -17,10 +15,6 @@ process_prod(
 }
 \arguments{
 \item{data}{Benthic field data set.}
-
-\item{transect_id}{String of transect names (e.g., c("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.}
-
-\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.}
 
 \item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget

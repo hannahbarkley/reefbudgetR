@@ -4,26 +4,12 @@
 \alias{combine_sfm}
 \title{Combine individual SfM benthic data transect files}
 \usage{
-combine_sfm(
-  sfm_folder,
-  region_code,
-  location_code,
-  local_date,
-  cruise_id,
-  surveyor
-)
+combine_sfm(sfm_folder, region_code, cruise_id)
 }
 \arguments{
 \item{sfm_folder}{Directory containing SfM transect files.}
 
-\item{location_code}{Location code where surveys were conducted
-("OAH", "GUA", "SAI", ...).}
-
-\item{local_date}{Local Date of imagery collection (yyyy-mm-dd).}
-
 \item{cruise_id}{Cruise ID for survey collection ("MP2108", "RA2201", ...).}
-
-\item{surveyor}{Initials of data collector.}
 
 \item{region_codeSurvey}{region ("MHI", "MARIAN", ...).}
 }
@@ -34,7 +20,6 @@ Combine individual SfM benthic data transect files
 combine_sfm(
    sfm_folder = "...",
    region_code = "MHI",
-   location_code = "OAH",
    local_date = "2020-01-01",
    cruise_id = "MP2108",
    surveyor = "HCB"

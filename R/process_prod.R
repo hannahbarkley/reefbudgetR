@@ -3,8 +3,6 @@
 #'@author Hannah Barkley
 #'
 #'@param data Benthic field data set.
-#'@param transect_id String of transect names (e.g., c("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.
-#'@param transect_length String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.
 #'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
 #'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 #'database is derived from "IP Calcification and bioerosion rates database v.1.3",
@@ -39,8 +37,6 @@
 
 
 process_prod <- function(data,
-                         transect_id = NULL,
-                         transect_length = NULL,
                          dbase_type = "NCRMP",
                          method_name = c("IPRB", "Chords", "SfM"),
                          full_summary = TRUE,
@@ -51,8 +47,6 @@ process_prod <- function(data,
           scipen = 999)
 
   calc_prod_output <- run_calc_prod(data,
-                                    transect_id,
-                                    transect_length,
                                     dbase_type,
                                     method_name)
   data <- calc_prod_output$data
