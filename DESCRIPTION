@@ -1,6 +1,6 @@
 Package: reefbudgetR
 Title: process ReefBudget carbonate budget data
-Version: 0.0.0.9001
+Version: 0.0.1.0000
 Authors@R: 
     c(person("Hannah", "Barkley", , "hannah.barkley@noaa.gov", 
     role = c("aut", "cre")),
