@@ -35,7 +35,6 @@
 #'    method_name = "SfM"
 #' )
 
-
 process_prod <- function(data,
                          dbase_type = "NCRMP",
                          method_name = c("IPRB", "Chords", "SfM"),
