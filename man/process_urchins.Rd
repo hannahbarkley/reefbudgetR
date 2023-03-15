@@ -6,7 +6,6 @@
 \usage{
 process_urchins(
   data,
-  transect_id = NULL,
   transect_length = NULL,
   method_name = c("IPRB", "Chords"),
   full_summary = TRUE
@@ -14,10 +13,6 @@ process_urchins(
 }
 \arguments{
 \item{data}{Urchin observation data set.}
-
-\item{transect_id}{String of transect names (e.g., ("A1", "A2", "A3", "B1", "B2", "B3")). Defaults to NULL.}
-
-\item{transect_length}{String of transect lengths in meters (e.g., c(10, 10, 10, 10, 10, 10)). Defaults to NULL.}
 
 \item{method_name}{Transect design by which data were collected ("IPRB" or "Chords").}
 }
