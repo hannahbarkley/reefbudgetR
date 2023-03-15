@@ -25,8 +25,6 @@
 #'@examples
 #' calc_prod_output <- run_calc_prod(
 #'     data = data,
-#'     transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-#'     transect_length = c(10, 10, 10, 10, 10, 10),
 #'     method_name = "IPRB",
 #'     dbase_type = "NCRMP")
 #'
@@ -88,7 +86,7 @@ summarize_prod <- function(data,
 
   # Summarize production by SUBSTRATE_CODE at TRANSECT level  ----------------
 
-  summary_transect_substratecode <- suppressMessages(
+  transect_substratecode <- suppressMessages(
     data %>% dplyr::group_by(
       .data$REGION,
       .data$REGIONCODE,
@@ -111,7 +109,7 @@ summarize_prod <- function(data,
       .data$MORPHOLOGY,
       .data$MORPHOLOGYCODE
     ) %>%
-      summarize(
+      reframe(
         TRANSECT_PLANAR_LENGTH_M =
           first(.data$TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
@@ -139,6 +137,115 @@ summarize_prod <- function(data,
       )
   )
 
+  substrate_code_morphology_all <-
+    unique(data[c("SUBSTRATE_CODE", "MORPHOLOGYCODE")])
+
+  substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE <-
+    paste0(substrate_code_morphology_all$SUBSTRATE_CODE, "-", substrate_code_morphology_all$MORPHOLOGYCODE)
+
+  substrate_code_full_table <- expand.grid(
+    OCC_SITEID = unique(transect_summary$OCC_SITEID),
+    CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
+    SUBSTRATE_CODE_MORPHOLOGYCODE = substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE
+  )
+
+  substrate_code_full_table$SUBSTRATE_CODE <- substrate_code_morphology_all$SUBSTRATE_CODE[
+    match(substrate_code_full_table$SUBSTRATE_CODE_MORPHOLOGYCODE,
+          substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE)]
+
+  substrate_code_full_table$MORPHOLOGYCODE <- substrate_code_morphology_all$MORPHOLOGYCODE[
+    match(substrate_code_full_table$SUBSTRATE_CODE_MORPHOLOGYCODE,
+          substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE)]
+
+  substrate_code_full_table$OCC_SITEID_TRANSECT <-
+    paste(substrate_code_full_table$OCC_SITEID,
+          substrate_code_full_table$CB_TRANSECTID,
+          sep = "-")
+
+  # Populate full table with transect-level data
+  summary_transect_substratecode <-  merge(
+    substrate_code_full_table,
+    transect_substratecode,
+    by = c(
+      "OCC_SITEID",
+      "CB_TRANSECTID",
+      "OCC_SITEID_TRANSECT",
+      "SUBSTRATE_CODE",
+      "MORPHOLOGYCODE"
+    ),
+    all.x = TRUE
+  )
+
+  prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE <-
+    paste0(prod_dbase$SUBSTRATE_CODE, "-", prod_dbase$MORPHOLOGYCODE)
+
+  summary_transect_substratecode$MORPHOLOGY <- prod_dbase$MORPHOLOGY[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
+
+  summary_transect_substratecode$SUBSTRATE_CLASS <- prod_dbase$SUBSTRATE_CLASS[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
+
+  summary_transect_substratecode$SUBSTRATE_NAME <- prod_dbase$SUBSTRATE_NAME[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
+
+  summary_transect_substratecode <- summary_transect_substratecode[c(
+    "REGION",
+    "REGIONCODE",
+    "YEAR",
+    "CRUISE_ID",
+    "LOCATION",
+    "LOCATIONCODE",
+    "OCC_SITEID",
+    "OCC_SITENAME",
+    "LATITUDE",
+    "LONGITUDE",
+    "DEPTH_M",
+    "LOCALDATE",
+    "CB_METHOD",
+    "CB_TRANSECTID",
+    "OCC_SITEID_TRANSECT",
+    "SUBSTRATE_CLASS",
+    "SUBSTRATE_NAME",
+    "SUBSTRATE_CODE",
+    "MORPHOLOGY",
+    "MORPHOLOGYCODE",
+    "TRANSECT_PLANAR_LENGTH_M",
+    "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
+    "SUBSTRATE_COVER_CM",
+    "SUBSTRATE_COVER_PCT",
+    "SUBSTRATE_PLANAR_PROD_KG_CM_YR",
+    "SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95",
+    "SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95",
+    "SUBSTRATE_CARB_PROD_KG_M2_YR",
+    "SUBSTRATE_CARB_PROD_KG_M2_YR_L95",
+    "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
+  )]
+
+
+  summary_transect_substratecode <-
+    summary_transect_substratecode %>%
+    group_by(OCC_SITEID) %>%
+    fill(
+      c(
+        "REGION",
+        "REGIONCODE",
+        "YEAR",
+        "CRUISE_ID",
+        "LOCATION",
+        "LOCATIONCODE",
+        "OCC_SITEID",
+        "OCC_SITENAME",
+        "LATITUDE",
+        "LONGITUDE",
+        "DEPTH_M",
+        "LOCALDATE",
+        "CB_METHOD",
+        "TRANSECT_PLANAR_LENGTH_M",
+        "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
+      ),
+      .direction = 'downup'
+    )
+
+  summary_transect_substratecode[, 23:30][is.na(summary_transect_substratecode[, 23:30])] <- 0
+
+
   # Summarize production by SUBSTRATE_CLASS at TRANSECT level  ---------------
   transect_substrateclass <- suppressMessages(
     data %>% dplyr::group_by(
@@ -159,7 +266,7 @@ summarize_prod <- function(data,
       .data$OCC_SITEID_TRANSECT,
       .data$SUBSTRATE_CLASS
     ) %>%
-      summarize(
+      reframe(
         TRANSECT_PLANAR_LENGTH_M = first(.data$TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
           first(.data$TRANSECT_TOTAL_SUBSTRATE_COVER_M),
@@ -266,12 +373,14 @@ summarize_prod <- function(data,
         "LONGITUDE",
         "DEPTH_M",
         "LOCALDATE",
-        "CB_METHOD"
+        "CB_METHOD",
+        "TRANSECT_PLANAR_LENGTH_M",
+        "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
       ),
       .direction = 'downup'
     )
 
-  summary_transect_substrateclass[, 17:26][is.na(summary_transect_substrateclass[, 17:26])] <- 0
+  summary_transect_substrateclass[, 19:26][is.na(summary_transect_substrateclass[, 19:26])] <- 0
 
   # Summarize production by CORAL_GROUP at TRANSECT level  -------------------
   transect_coral_group <- data %>% dplyr::group_by(
@@ -293,7 +402,7 @@ summarize_prod <- function(data,
     .data$CORAL_GROUP,
     .data$CORAL_GROUP_NAME,
   ) %>%
-    summarize(
+    reframe(
       TRANSECT_PLANAR_LENGTH_M =
         first(.data$TRANSECT_PLANAR_LENGTH_M),
       TRANSECT_TOTAL_SUBSTRATE_COVER_M =
@@ -413,7 +522,9 @@ summarize_prod <- function(data,
         "LONGITUDE",
         "DEPTH_M",
         "LOCALDATE",
-        "CB_METHOD"
+        "CB_METHOD",
+        "TRANSECT_PLANAR_LENGTH_M",
+        "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
       ),
       .direction = "downup"
     )
@@ -427,12 +538,15 @@ summarize_prod <- function(data,
       .direction = "downup"
     )
 
+  summary_transect_coral$CORAL_GROUP_NAME <- prod_dbase$CORAL_GROUP_NAME[match(summary_transect_coral$CORAL_GROUP, as.factor(prod_dbase$CORAL_GROUP))]
+
   summary_transect_coral[, 18:27][is.na(summary_transect_coral[, 18:27])] <- 0
 
 
 
   # Summarize production by TRANSECT ----------------------------------------
   if (dbase_type == "IPRB") {
+
     summary_transect <- summary_transect_substratecode  %>%
       dplyr::group_by(
         .data$REGION,
@@ -449,11 +563,11 @@ summarize_prod <- function(data,
         .data$LOCALDATE,
         .data$CB_METHOD,
         .data$CB_TRANSECTID,
-        .data$OCC_SITEID_TRANSECT,
+        .data$OCC_SITEID_TRANSECT
       ) %>%
-      summarize(
+      reframe(
         TRANSECT_PLANAR_LENGTH_M =
-          (.data$TRANSECT_PLANAR_LENGTH_M),
+          mean(.data$TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
           mean(.data$TRANSECT_TOTAL_SUBSTRATE_COVER_M),
         GROSS_CARB_PROD_KG_M2_YR =
@@ -539,7 +653,7 @@ summarize_prod <- function(data,
         .data$CB_TRANSECTID,
         .data$OCC_SITEID_TRANSECT,
       ) %>%
-      summarize(
+      reframe(
         TRANSECT_PLANAR_LENGTH_M =
           mean(.data$TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
@@ -635,7 +749,7 @@ summarize_prod <- function(data,
       .data$MORPHOLOGY,
       .data$MORPHOLOGYCODE
     ) %>%
-    dplyr::summarize(across(
+    dplyr::reframe(across(
       c(SUBSTRATE_COVER_PCT,
         SUBSTRATE_CARB_PROD_KG_M2_YR),
       list(
@@ -666,7 +780,7 @@ summarize_prod <- function(data,
       .data$CB_METHOD,
       .data$SUBSTRATE_CLASS
     ) %>%
-  dplyr::summarize(across(
+  dplyr::reframe(across(
     c(SUBSTRATE_COVER_PCT,
       SUBSTRATE_CARB_PROD_KG_M2_YR),
     list(
@@ -697,7 +811,7 @@ summarize_prod <- function(data,
       .data$CORAL_GROUP,
       .data$CORAL_GROUP_NAME
     ) %>%
-    dplyr::summarize(across(
+    dplyr::reframe(across(
       c(SUBSTRATE_COVER_PCT,
         SUBSTRATE_CARB_PROD_KG_M2_YR),
       list(
@@ -727,7 +841,7 @@ summarize_prod <- function(data,
       .data$LOCALDATE,
       .data$CB_METHOD,
     ) %>%
-    dplyr::summarize(across(
+    dplyr::reframe(across(
       c(RUGOSITY,
         HARD_CORAL_COVER_PCT,
         CCA_COVER_PCT,
@@ -774,4 +888,5 @@ summarize_prod <- function(data,
     return(summary_site)
   }
 }
+
 
