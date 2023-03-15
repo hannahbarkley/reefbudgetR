@@ -4,26 +4,25 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, fig.width=20, fig.height=8)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, eval = FALSE)
 
 library(reefbudgetR)
 library(tidyverse)
 library(dplyr)
 
-options(digits = 3)
 
 ```
 
 ```{r load_data}
 # Set working directory containing data
-setwd("T:/Oceanography/Carbonate Budgets/Data/")
+setwd("T:/Oceanography/Carbonate Budgets/NCEI/ESD_CarbBudget_OAHU_2021/Raw_data/")
 
 # Load benthic, urchin, and fish data
-benthic_data <- read.csv("CB_Benthic_alldata.csv", na = "", check.names = FALSE)
+benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv", na = "", check.names = FALSE)
 
-urchin_data <- read.csv("CB_Urchin_alldata.csv", na = "", check.names = FALSE)
+urchin_data <- read.csv("ESD_CarbBudget_Urchins_OAHU_2021.csv", na = "", check.names = FALSE)
 
-fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
+fish_data <- read.csv("ESD_CarbBudget_FishBelt_OAHU_2021.csv", na = "", check.names = FALSE)
 
 ```
 
@@ -31,37 +30,22 @@ fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
 #### Process benthic data by method type
 
-# Process "Indo-Pacific ReefBudget (IPRB)" methodology benthic data
+# Process IPRB benthic data
 prod_iprb <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
-  transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-  transect_length = c(10, 10, 10, 10, 10, 10),
-  dbase_type = "NCRMP",
-  method_name = "IPRB",
-  data_type = "In water",
-  full_summary = TRUE
+  method_name = "IPRB"
 )
 
-# Process "Chords" methodology benthic data
+# Process chords benthic data
 prod_chords <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
-  transect_id = c("A", "B", "C", "D", "E", "F"),
-  transect_length = c(8, 9, 10, 10, 9, 8),
-  dbase_type = "NCRMP",
-  method_name = "Chords",
-  data_type = "In water",
-  full_summary = TRUE
+  method_name = "Chords"
 )
 
-# Process "SfM" methodology benthic data
+# Process SfM benthic data
 prod_sfm <- process_prod(
   data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
-  transect_id = c("A", "B", "C", "D", "E", "F"),
-  transect_length = c(8, 9, 10, 10, 9, 8),
-  dbase_type = "NCRMP",
-  method_name = "Chords",
-  data_type = "SfM",
-  full_summary = TRUE
+  method_name = "SfM"
 )
 
 # Combine site-level production data back together
@@ -80,21 +64,13 @@ prod_site <- bind_rows(
 # Process IPRB urchin data
 urch_iprb <- process_urchins(
   data = urchin_data[urchin_data$CB_METHOD == "IPRB", ],
-  method_name = "IPRB",
-  data_type = "In water",
-  transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-  transect_length = c(10, 10, 10, 10, 10, 10),
-  full_summary = TRUE
+  method_name = "IPRB"
 )
 
 # Process chords urchin data
 urch_chords <- process_urchins(
   data = urchin_data[urchin_data$CB_METHOD == "Chords", ],
-  method_name = "Chords",
-  data_type = "In water",
-  transect_id = c("A", "B", "C", "D", "E", "F"),
-  transect_length = c(8, 9, 10, 10, 9, 8),
-  full_summary = TRUE
+  method_name = "Chords"
 )
 
 
@@ -107,7 +83,6 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 
 ```{r process_parrotfish}
 
-# Process fish data
 fish_belt <- process_fish(
   data = fish_data, 
   rates_dbase = "Kindinger", 
@@ -120,10 +95,11 @@ fish_site <- fish_belt$fish_erosion_site
 ```{r process_net}
 
 # Process net production data
-net_site <- process_net(
+net_site = process_net(
   prod = prod_site,
   urch = urch_site,
   fish = fish_site
 )
+
 
 ```
