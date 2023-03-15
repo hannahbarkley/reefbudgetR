@@ -28,57 +28,47 @@ calc_eros_fish <- function(data,
 
   # Format dataframe for biomass and bioerosion calculations below
   data_formatted <- data %>%
-    select(.data$REGION:.data$PHASE) %>%
+    select(CRUISE_ID:PHASE) %>%
     #change characters to factors
     dplyr::mutate_at(vars(
       c(
-        .data$REGION:.data$VISIBILITY_M,
-        .data$CB_TRANSECTID,
-        .data$HABITAT_TYPE:.data$SPECIES,
-        .data$PHASE
+        REGION:VISIBILITY_M,
+        TRANSECT,
+        HABITAT_TYPE:SPECIES,
+        PHASE
       )
     ), as.factor) %>%
     # convert integers to numbers
     mutate_at(vars(c(
-      .data$TRANSECT_LENGTH_M:.data$AREA_M2,
-      "SIZE_CLASS_0_10_CM":"SIZE_CLASS_51_60_CM"
+      TRANSECT_LENGTH_M:AREA_M2,
+      "0-10cm":"51-60cm"
     )), as.numeric) %>%
     # select only the important columns
-    select(.data$REGION:.data$CB_TRANSECTID,
-           .data$AREA_M2,
-           .data$SPECIES:PHASE) %>%
+    select(CRUISE_ID:TRANSECT,
+           AREA_M2,
+           SPECIES:PHASE) %>%
     #column names to row values
     gather(.,
            "SIZE_CLASS",
-           "COUNT", -c(.data$REGION:.data$SPECIES),
-           -.data$PHASE, na.rm = TRUE) %>%
+           "COUNT", -c(CRUISE_ID:SPECIES),
+           -PHASE, na.rm = TRUE) %>%
     # make size bins into factors
     mutate_at(vars(SIZE_CLASS), as.factor) %>%
     #remove all size classes above 10cm for J classification
     filter(!(
-      SIZE_CLASS %in% c("SIZE_CLASS_11_20_CM",
-                        "SIZE_CLASS_21_30_CM",
-                        "SIZE_CLASS_31_40_CM",
-                        "SIZE_CLASS_41_50_CM",
-                        "SIZE_CLASS_51_60_CM") &
+      SIZE_CLASS %in% c("11-20cm",
+                        "21-30cm",
+                        "31-40cm",
+                        "41-50cm",
+                        "51-60cm") &
         PHASE == "J"
     )) %>%
     # remove all I and T for 0-10cm classification
     filter(!(SIZE_CLASS %in% "SIZE_CLASS_0_10_CM" &
                PHASE %in% c("I", "T"))) %>%
     # remove all sizes above 51cm for initial phases
-    filter(!(SIZE_CLASS %in% "SIZE_CLASS_51_60_CM" &
+    filter(!(SIZE_CLASS %in% "51-60cm" &
                PHASE == "I"))
-
-  data_formatted$SIZE_CLASS <- recode_factor(
-    data_formatted$SIZE_CLASS,
-    "SIZE_CLASS_0_10_CM" = "0-10cm",
-    "SIZE_CLASS_11_20_CM" = "11-20cm",
-    "SIZE_CLASS_21_30_CM" = "21-30cm",
-    "SIZE_CLASS_31_40_CM" = "31-40cm",
-    "SIZE_CLASS_41_50_CM" = "41-50cm",
-    "SIZE_CLASS_51_60_CM" = "51-60cm"
-  )
 
   # calculate Biomass
   fish_biomass <- data_formatted %>%

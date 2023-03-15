@@ -63,30 +63,29 @@ summarize_fish_metrics <- function(data,
   # Summarize SIZE CLASS at TRANSECT level ---------------------------------------
 
   summary_transect_sizeclass <- data %>%
-    select(REGION:SIZE_CLASS, all_of(metric)) %>%
+    select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
     ungroup() %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID,
-      .data$SIZE_CLASS,
-      .data$PHASE) %>%
+      REGION,
+      REGIONCODE,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      CB_METHOD,
+      TRANSECT,
+      SIZE_CLASS,
+      PHASE) %>%
     #calculate density/biomass/bioerosion per size class in individuals per
     # hectare (converted from m^2 to hectare by /10000)
-    dplyr::summarize('SIZE_CLASS_SUM' = (sum(!!sym(metric)) /
+    dplyr::reframe('SIZE_CLASS_SUM' = (sum(!!sym(metric)) /
                                               (AREA_M2 / 10000))) %>%
     distinct() %>%
     #organize dataframe by Transect and size bin
-    pivot_wider(names_from = CB_TRANSECTID, values_from = SIZE_CLASS_SUM, names_prefix = paste0("TRANSECT_")) %>%
+    pivot_wider(names_from = TRANSECT, values_from = SIZE_CLASS_SUM, names_prefix = paste0("TRANSECT_")) %>%
     mutate_at(-c(1:13), ~ replace_na(., 0))
 
 
@@ -110,47 +109,45 @@ summarize_fish_metrics <- function(data,
   # Summarize SPECIES at TRANSECT LEVEL -------------------------------------
 
   summary_transect_species <- data %>%
-    select(REGION:SIZE_CLASS, all_of(metric)) %>%
+    select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
     ungroup() %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID,
-      .data$SPECIES) %>%
+      REGION,
+      REGIONCODE,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      CB_METHOD,
+      TRANSECT,
+      SPECIES) %>%
     # calculate metric by species
-    dplyr::summarize('SPECIES_SUM' = sum(!!sym(metric)) / (AREA_M2 / 10000)) %>%
+    dplyr::reframe('SPECIES_SUM' = sum(!!sym(metric)) / (AREA_M2 / 10000)) %>%
     distinct() %>%
     # organize dataframe by Transect and species
-    pivot_wider(names_from = CB_TRANSECTID, values_from = SPECIES_SUM, names_prefix = paste0("TRANSECT_")) %>%
+    pivot_wider(names_from = TRANSECT, values_from = SPECIES_SUM, names_prefix = paste0("TRANSECT_")) %>%
     mutate_at(-c(1:12), ~ replace_na(., 0))
 
   # Summarize SPECIES at SITE LEVEL -------------------------------------
 
   summary_site_species <- data %>%
-    select(REGION:SIZE_CLASS, all_of(metric)) %>%
+    select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
         dplyr::group_by(
-          .data$REGION,
-          .data$REGIONCODE,
-          .data$YEAR,
-          .data$CRUISE_ID,
-          .data$LOCATION,
-          .data$LOCATIONCODE,
-          .data$OCC_SITEID,
-          .data$OCC_SITENAME,
-          .data$LATITUDE,
-          .data$LONGITUDE,
-          .data$CB_METHOD
+          REGION,
+          REGIONCODE,
+          CRUISE_ID,
+          LOCATION,
+          LOCATIONCODE,
+          OCC_SITEID,
+          OCC_SITENAME,
+          LATITUDE,
+          LONGITUDE,
+          CB_METHOD
     ) %>%
-    summarize(AREA_AVG = mean(AREA_M2)) %>%
+    reframe(AREA_AVG = mean(AREA_M2)) %>%
     right_join(., data, by = colnames(.)[colnames(.) %in% colnames(data)]) %>%
     # Create Standard Deviation table (put together all the transects)
     Rmisc::summarySE(
@@ -159,7 +156,6 @@ summarize_fish_metrics <- function(data,
       groupvars = c(
         "REGION",
         "REGIONCODE",
-        "YEAR",
         "CRUISE_ID",
         "LOCATION",
         "LOCATIONCODE",
@@ -177,19 +173,18 @@ summarize_fish_metrics <- function(data,
     ) %>%
     replace(is.na(.), 0) %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$CB_METHOD,
-      .data$SPECIES) %>%
-    dplyr::summarize(
+      REGION,
+      REGIONCODE,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      CB_METHOD,
+      SPECIES) %>%
+    dplyr::reframe(
       'value' = (sum(!!sym(metric)) / (AREA_AVG / 10000)),
       #calculate average density per sp
       'sd' = (sqrt(sum(sd ^
@@ -208,56 +203,53 @@ summarize_fish_metrics <- function(data,
   # Summarize OVERALL at TRANSECT LEVEL -------------------------------------
 
   summary_transect <- summary_transect_sizeclass %>%
-    gather(., "CB_TRANSECTID", "value",-c(REGION:PHASE)) %>%
+    gather(., "TRANSECT", "value",-c(REGION:PHASE)) %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID) %>%
-    dplyr::summarize('TRANSECT_SUM' = sum(value)) %>%
-    spread(., CB_TRANSECTID, "TRANSECT_SUM")
+      REGION,
+      REGIONCODE,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      CB_METHOD,
+      TRANSECT) %>%
+    dplyr::reframe('TRANSECT_SUM' = sum(value)) %>%
+    spread(., TRANSECT, "TRANSECT_SUM")
 
   # Summarize OVERALL at SITE LEVEL -------------------------------------
 
   summary_site <- summary_transect_sizeclass %>%
-    gather(., "CB_TRANSECTID", "value",-c(REGION:PHASE)) %>%
+    gather(., "TRANSECT", "value",-c(REGION:PHASE)) %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID
+      REGION,
+      REGIONCODE,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      CB_METHOD,
+      TRANSECT
     ) %>%
-    summarize('TRANSECT_SUM' = sum(value)) %>%
+    reframe('TRANSECT_SUM' = sum(value)) %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$CB_METHOD
+      REGION,
+      REGIONCODE,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      CB_METHOD
     ) %>%
-    summarize(
+    reframe(
       TOTAL = sum(TRANSECT_SUM),
       MEAN = mean(TRANSECT_SUM, na.rm = TRUE),
       SD = sd(TRANSECT_SUM),
