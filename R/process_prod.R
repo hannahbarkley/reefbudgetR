@@ -35,7 +35,6 @@
 #'    method_name = "SfM"
 #' )
 
-
 process_prod <- function(data,
                          dbase_type = "NCRMP",
                          method_name = c("IPRB", "Chords", "SfM"),
@@ -51,7 +50,6 @@ process_prod <- function(data,
                                     method_name)
   data <- calc_prod_output$data
   transect_summary <- calc_prod_output$transect_summary
-  prod_dbase <- calc_prod_output$prod_dbase
 
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CODE on each TRANSECT
@@ -187,3 +185,4 @@ process_prod <- function(data,
     return(summary_site = prod_site)
   }
 }
+

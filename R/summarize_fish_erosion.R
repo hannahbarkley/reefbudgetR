@@ -60,14 +60,13 @@ summarize_fish_erosion <- function(species_table,
     # Collapse dataframe to be workable with group_by()
     gather(
       .,
-      "CB_TRANSECT_ID",
+      "TRANSECT",
       "value",-c(GRAZ_TYPE:SPECIES),
       -GENUS,-FISH_sciname,-METRIC
     ) %>%
     dplyr::group_by(
       REGION,
       REGIONCODE,
-      YEAR,
       CRUISE_ID,
       LOCATION,
       LOCATIONCODE,
@@ -76,14 +75,14 @@ summarize_fish_erosion <- function(species_table,
       LATITUDE,
       LONGITUDE,
       CB_METHOD,
-      CB_TRANSECT_ID,
+      TRANSECT,
       GRAZ_TYPE,
       METRIC
     ) %>%
     # Summarize all species by Graze Type and Transect
     dplyr::summarize(.sum = sum(value)) %>%
     # Spread back out by Transect to look like CP Excel outputs
-    spread(., CB_TRANSECT_ID, .sum, fill = NA) %>%
+    spread(., TRANSECT, .sum, fill = NA) %>%
     # reorder Transect 10 to the end
         select(-c("TRANSECT_10"), everything()) %>%
     #exclude "other" if only want to look at excavators and scrapers
@@ -94,7 +93,6 @@ summarize_fish_erosion <- function(species_table,
         group_by(
           REGION,
           REGIONCODE,
-          YEAR,
           CRUISE_ID,
           LOCATION,
           LOCATIONCODE,
@@ -117,13 +115,12 @@ summarize_fish_erosion <- function(species_table,
   # Calculate bioerosion per site and metric
   fish_erosion_transect <- fish_erosion_transect_wide %>%
     pivot_longer(.,
-                 cols = 14:23,
-                 names_to = "CB_TRANSECTID",
+                 cols = 14:22,
+                 names_to = "TRANSECT",
                  values_to = "Values") %>%
     select(
       REGION,
       REGIONCODE,
-      YEAR,
       CRUISE_ID,
       LOCATION,
       LOCATIONCODE,
@@ -137,12 +134,12 @@ summarize_fish_erosion <- function(species_table,
     ) %>%
     spread(., METRIC, Values, fill = 0)
 
-  fish_erosion_transect$CB_TRANSECTID <- as.factor(str_split(fish_erosion_transect$CB_TRANSECTID, "\\_", simplify=T)[,2])
+  fish_erosion_transect$TRANSECT <- as.factor(str_split(fish_erosion_transect$TRANSECT, "\\_", simplify=T)[,2])
 
-  fish_erosion_transect$CB_TRANSECTID <- factor(fish_erosion_transect$CB_TRANSECTID, levels = seq(1,10,1))
+  fish_erosion_transect$TRANSECT <- factor(fish_erosion_transect$TRANSECT, levels = seq(1,10,1))
 
   fish_erosion_transect <- fish_erosion_transect[
-    with(fish_erosion_transect, order(REGION, LOCATION, CB_METHOD, CB_TRANSECTID, GRAZ_TYPE)),
+    with(fish_erosion_transect, order(REGION, LOCATION, CB_METHOD, TRANSECT, GRAZ_TYPE)),
   ]
 
   # final bioerosion calculations per site and metric
@@ -150,7 +147,6 @@ summarize_fish_erosion <- function(species_table,
     select(
       REGION,
       REGIONCODE,
-      YEAR,
       CRUISE_ID,
       LOCATION,
       LOCATIONCODE,
@@ -178,7 +174,6 @@ summarize_fish_erosion <- function(species_table,
     select(
       REGION,
       REGIONCODE,
-      YEAR,
       CRUISE_ID,
       LOCATION,
       LOCATIONCODE,
@@ -191,7 +186,7 @@ summarize_fish_erosion <- function(species_table,
       everything()
     ) %>%
     pivot_longer(.,
-                 cols = 14:18,
+                 cols = 14:17,
                  names_to = "Variables",
                  values_to = "Values") %>%
     unite("METRIC", METRIC:GRAZ_TYPE) %>% #combine columns with underscore
@@ -213,3 +208,4 @@ summarize_fish_erosion <- function(species_table,
 
 
 }
+

@@ -200,51 +200,51 @@ process_urchins <- function(data,
   # Calculate transect-level density and abundance
   transect_density_group <- data_eroders %>%
     group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID,
-      .data$GROUP,
-      .data$TEST_SIZE_BIN_MM,
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      CB_TRANSECTID,
+      GROUP,
+      TEST_SIZE_BIN_MM,
     ) %>%
     summarize(
-      TRANSECT_LENGTH_M = mean(.data$TRANSECT_LENGTH_M),
-      TRANSECT_URCHIN_ABUNDANCE_NO = sum(.data$COUNT),
-      TRANSECT_URCHIN_DENSITY_NO_M2 = sum(.data$COUNT) / mean(.data$TRANSECT_LENGTH_M)
+      TRANSECT_LENGTH_M = mean(TRANSECT_LENGTH_M),
+      TRANSECT_URCHIN_ABUNDANCE_NO = sum(COUNT),
+      TRANSECT_URCHIN_DENSITY_NO_M2 = sum(COUNT) / mean(TRANSECT_LENGTH_M)
     )
 
   # Calculate site level density
   site_density_group <- transect_density_group %>%
     group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$GROUP,
-      .data$TEST_SIZE_BIN_MM
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      GROUP,
+      TEST_SIZE_BIN_MM
     ) %>%
     summarize(
-      SITE_URCHIN_DENSITY_NO_M2_MEAN = mean(.data$TRANSECT_URCHIN_DENSITY_NO_M2),
-      SITE_URCHIN_DENSITY_NO_M2_SD = sd(.data$TRANSECT_URCHIN_DENSITY_NO_M2)
+      SITE_URCHIN_DENSITY_NO_M2_MEAN = mean(TRANSECT_URCHIN_DENSITY_NO_M2),
+      SITE_URCHIN_DENSITY_NO_M2_SD = sd(TRANSECT_URCHIN_DENSITY_NO_M2)
     )
 
   # Initiate data columns
@@ -295,22 +295,22 @@ process_urchins <- function(data,
   # Summary transect and site level erosion
   transect_density_sum <- transect_density_group %>%
     group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID,
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      CB_TRANSECTID,
     ) %>%
-    summarize(URCHIN_EROSION_KG_M2_YR = sum(.data$TRANSECT_EROSION_G_URCHIN_DAY) / 1000)
+    summarize(URCHIN_EROSION_KG_M2_YR = sum(TRANSECT_EROSION_G_URCHIN_DAY) / 1000)
 
   transect_density_sum$OCC_SITEID_TRANSECT <-
     paste(transect_density_sum$OCC_SITEID,
@@ -319,30 +319,30 @@ process_urchins <- function(data,
 
   site_erosion <- transect_density_sum %>%
     group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD
     ) %>%
     summarize(
-      URCHIN_EROSION_KG_M2_YR_MEAN = mean(.data$URCHIN_EROSION_KG_M2_YR),
-      URCHIN_EROSION_KG_M2_YR_SD = sd(.data$URCHIN_EROSION_KG_M2_YR),
-      URCHIN_EROSION_KG_M2_YR_N = length(.data$URCHIN_EROSION_KG_M2_YR),
+      URCHIN_EROSION_KG_M2_YR_MEAN = mean(URCHIN_EROSION_KG_M2_YR),
+      URCHIN_EROSION_KG_M2_YR_SD = sd(URCHIN_EROSION_KG_M2_YR),
+      URCHIN_EROSION_KG_M2_YR_N = length(URCHIN_EROSION_KG_M2_YR),
       URCHIN_EROSION_KG_M2_YR_SE =
-        sd(.data$URCHIN_EROSION_KG_M2_YR) /
-        length(.data$URCHIN_EROSION_KG_M2_YR),
+        sd(URCHIN_EROSION_KG_M2_YR) /
+        length(URCHIN_EROSION_KG_M2_YR),
       URCHIN_EROSION_KG_M2_YR_CI = 1.97 *
-        sd(.data$URCHIN_EROSION_KG_M2_YR) /
-        length(.data$URCHIN_EROSION_KG_M2_YR)
+        sd(URCHIN_EROSION_KG_M2_YR) /
+        length(URCHIN_EROSION_KG_M2_YR)
     )
 
   data <- data[c(
