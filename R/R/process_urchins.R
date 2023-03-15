@@ -107,8 +107,7 @@ process_urchins <- function(data,
       "CB_TRANSECTID",
       "TAXON_CODE",
       "TEST_SIZE_BIN_MM"
-    ),
-    all.x = TRUE
+    )
   )
 
   data_full <-
