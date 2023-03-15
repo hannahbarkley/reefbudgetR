@@ -46,8 +46,6 @@ Summarize carbonate production rates at transect and site level
 \examples{
 calc_prod_output <- run_calc_prod(
     data = data,
-    transect_id = c("A1", "A2", "A3", "B1", "B2", "B3"),
-    transect_length = c(10, 10, 10, 10, 10, 10),
     method_name = "IPRB",
     dbase_type = "NCRMP")
 
