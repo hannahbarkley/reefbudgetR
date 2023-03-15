@@ -88,52 +88,52 @@ summarize_prod <- function(data,
 
   transect_substratecode <- suppressMessages(
     data %>% dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID,
-      .data$OCC_SITEID_TRANSECT,
-      .data$SUBSTRATE_CLASS,
-      .data$SUBSTRATE_NAME,
-      .data$SUBSTRATE_CODE,
-      .data$MORPHOLOGY,
-      .data$MORPHOLOGYCODE
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      CB_TRANSECTID,
+      OCC_SITEID_TRANSECT,
+      SUBSTRATE_CLASS,
+      SUBSTRATE_NAME,
+      SUBSTRATE_CODE,
+      MORPHOLOGY,
+      MORPHOLOGYCODE
     ) %>%
-      summarize(
+      reframe(
         TRANSECT_PLANAR_LENGTH_M =
-          first(.data$TRANSECT_PLANAR_LENGTH_M),
+          first(TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-          first(.data$TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+          first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
         SUBSTRATE_COVER_CM =
-          sum(.data$SUBSTRATE_COVER_CM, na.rm = TRUE),
+          sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
         SUBSTRATE_COVER_PCT =
-          .data$SUBSTRATE_COVER_CM /
-          .data$TRANSECT_TOTAL_SUBSTRATE_COVER_M,
+          SUBSTRATE_COVER_CM /
+          TRANSECT_TOTAL_SUBSTRATE_COVER_M,
         SUBSTRATE_PLANAR_PROD_KG_CM_YR =
-          sum(.data$COLONY_PROD_G_YR, na.rm = TRUE) /
-          (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+          sum(COLONY_PROD_G_YR, na.rm = TRUE) /
+          (TRANSECT_PLANAR_LENGTH_M * 100),
         SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 =
-          sum(.data$COLONY_PROD_G_YR_L95, na.rm = TRUE) /
-          (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+          sum(COLONY_PROD_G_YR_L95, na.rm = TRUE) /
+          (TRANSECT_PLANAR_LENGTH_M * 100),
         SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 =
-          sum(.data$COLONY_PROD_G_YR_U95, na.rm = TRUE) /
-          (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+          sum(COLONY_PROD_G_YR_U95, na.rm = TRUE) /
+          (TRANSECT_PLANAR_LENGTH_M * 100),
         SUBSTRATE_CARB_PROD_KG_M2_YR =
-          .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR * 10,
+          SUBSTRATE_PLANAR_PROD_KG_CM_YR * 10,
         SUBSTRATE_CARB_PROD_KG_M2_YR_L95 =
-          .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 * 10,
+          SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 * 10,
         SUBSTRATE_CARB_PROD_KG_M2_YR_U95 =
-          .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 * 10
+          SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 * 10
       )
   )
 
@@ -249,46 +249,46 @@ summarize_prod <- function(data,
   # Summarize production by SUBSTRATE_CLASS at TRANSECT level  ---------------
   transect_substrateclass <- suppressMessages(
     data %>% dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$CB_TRANSECTID,
-      .data$OCC_SITEID_TRANSECT,
-      .data$SUBSTRATE_CLASS
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      CB_TRANSECTID,
+      OCC_SITEID_TRANSECT,
+      SUBSTRATE_CLASS
     ) %>%
-      summarize(
-        TRANSECT_PLANAR_LENGTH_M = first(.data$TRANSECT_PLANAR_LENGTH_M),
+      reframe(
+        TRANSECT_PLANAR_LENGTH_M = first(TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-          first(.data$TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+          first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
         SUBSTRATE_COVER_CM =
-          sum(.data$SUBSTRATE_COVER_CM, na.rm = TRUE),
+          sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
         SUBSTRATE_COVER_PCT =
-          .data$SUBSTRATE_COVER_CM / .data$TRANSECT_TOTAL_SUBSTRATE_COVER_M,
+          SUBSTRATE_COVER_CM / TRANSECT_TOTAL_SUBSTRATE_COVER_M,
         SUBSTRATE_PLANAR_PROD_KG_CM_YR =
-          sum(.data$COLONY_PROD_G_YR, na.rm = TRUE) /
-          (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+          sum(COLONY_PROD_G_YR, na.rm = TRUE) /
+          (TRANSECT_PLANAR_LENGTH_M * 100),
         SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 =
-          sum(.data$COLONY_PROD_G_YR_L95, na.rm = TRUE) /
-          (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+          sum(COLONY_PROD_G_YR_L95, na.rm = TRUE) /
+          (TRANSECT_PLANAR_LENGTH_M * 100),
         SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 =
-          sum(.data$COLONY_PROD_G_YR_U95, na.rm = TRUE) /
-          (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+          sum(COLONY_PROD_G_YR_U95, na.rm = TRUE) /
+          (TRANSECT_PLANAR_LENGTH_M * 100),
         SUBSTRATE_CARB_PROD_KG_M2_YR =
-          .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR * 10,
+          SUBSTRATE_PLANAR_PROD_KG_CM_YR * 10,
         SUBSTRATE_CARB_PROD_KG_M2_YR_L95 =
-          .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 * 10,
+          SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 * 10,
         SUBSTRATE_CARB_PROD_KG_M2_YR_U95 =
-          .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 * 10
+          SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 * 10
       )
   )
 
@@ -384,48 +384,48 @@ summarize_prod <- function(data,
 
   # Summarize production by CORAL_GROUP at TRANSECT level  -------------------
   transect_coral_group <- data %>% dplyr::group_by(
-    .data$REGION,
-    .data$REGIONCODE,
-    .data$YEAR,
-    .data$CRUISE_ID,
-    .data$LOCATION,
-    .data$LOCATIONCODE,
-    .data$OCC_SITEID,
-    .data$OCC_SITENAME,
-    .data$LATITUDE,
-    .data$LONGITUDE,
-    .data$DEPTH_M,
-    .data$LOCALDATE,
-    .data$CB_METHOD,
-    .data$CB_TRANSECTID,
-    .data$OCC_SITEID_TRANSECT,
-    .data$CORAL_GROUP,
-    .data$CORAL_GROUP_NAME,
+    REGION,
+    REGIONCODE,
+    YEAR,
+    CRUISE_ID,
+    LOCATION,
+    LOCATIONCODE,
+    OCC_SITEID,
+    OCC_SITENAME,
+    LATITUDE,
+    LONGITUDE,
+    DEPTH_M,
+    LOCALDATE,
+    CB_METHOD,
+    CB_TRANSECTID,
+    OCC_SITEID_TRANSECT,
+    CORAL_GROUP,
+    CORAL_GROUP_NAME,
   ) %>%
-    summarize(
+    reframe(
       TRANSECT_PLANAR_LENGTH_M =
-        first(.data$TRANSECT_PLANAR_LENGTH_M),
+        first(TRANSECT_PLANAR_LENGTH_M),
       TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-        first(.data$TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+        first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
       SUBSTRATE_COVER_CM =
-        sum(.data$SUBSTRATE_COVER_CM, na.rm = TRUE),
+        sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
       SUBSTRATE_COVER_PCT =
-        .data$SUBSTRATE_COVER_CM / .data$TRANSECT_TOTAL_SUBSTRATE_COVER_M,
+        SUBSTRATE_COVER_CM / TRANSECT_TOTAL_SUBSTRATE_COVER_M,
       SUBSTRATE_PLANAR_PROD_KG_CM_YR =
-        sum(.data$COLONY_PROD_G_YR, na.rm = TRUE) /
-        (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+        sum(COLONY_PROD_G_YR, na.rm = TRUE) /
+        (TRANSECT_PLANAR_LENGTH_M * 100),
       SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 =
-        sum(.data$COLONY_PROD_G_YR_L95, na.rm = TRUE) /
-        (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+        sum(COLONY_PROD_G_YR_L95, na.rm = TRUE) /
+        (TRANSECT_PLANAR_LENGTH_M * 100),
       SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 =
-        sum(.data$COLONY_PROD_G_YR_U95, na.rm = TRUE) /
-        (.data$TRANSECT_PLANAR_LENGTH_M * 100),
+        sum(COLONY_PROD_G_YR_U95, na.rm = TRUE) /
+        (TRANSECT_PLANAR_LENGTH_M * 100),
       SUBSTRATE_CARB_PROD_KG_M2_YR =
-        .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR * 10,
+        SUBSTRATE_PLANAR_PROD_KG_CM_YR * 10,
       SUBSTRATE_CARB_PROD_KG_M2_YR_L95 =
-        .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 * 10,
+        SUBSTRATE_PLANAR_PROD_KG_CM_YR_L95 * 10,
       SUBSTRATE_CARB_PROD_KG_M2_YR_U95 =
-        .data$SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 * 10
+        SUBSTRATE_PLANAR_PROD_KG_CM_YR_U95 * 10
     )
 
   transect_coral_group <-
@@ -549,38 +549,38 @@ summarize_prod <- function(data,
 
     summary_transect <- summary_transect_substratecode  %>%
       dplyr::group_by(
-        .data$REGION,
-        .data$REGIONCODE,
-        .data$YEAR,
-        .data$CRUISE_ID,
-        .data$LOCATION,
-        .data$LOCATIONCODE,
-        .data$OCC_SITEID,
-        .data$OCC_SITENAME,
-        .data$LATITUDE,
-        .data$LONGITUDE,
-        .data$DEPTH_M,
-        .data$LOCALDATE,
-        .data$CB_METHOD,
-        .data$CB_TRANSECTID,
-        .data$OCC_SITEID_TRANSECT
+        REGION,
+        REGIONCODE,
+        YEAR,
+        CRUISE_ID,
+        LOCATION,
+        LOCATIONCODE,
+        OCC_SITEID,
+        OCC_SITENAME,
+        LATITUDE,
+        LONGITUDE,
+        DEPTH_M,
+        LOCALDATE,
+        CB_METHOD,
+        CB_TRANSECTID,
+        OCC_SITEID_TRANSECT
       ) %>%
-      summarize(
+      reframe(
         TRANSECT_PLANAR_LENGTH_M =
-          mean(.data$TRANSECT_PLANAR_LENGTH_M),
+          mean(TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-          mean(.data$TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+          mean(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
         GROSS_CARB_PROD_KG_M2_YR =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR, na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR, na.rm = TRUE),
         GROSS_CARB_PROD_KG_M2_YR_L95 =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR_L95, na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR_L95, na.rm = TRUE),
         GROSS_CARB_PROD_KG_M2_YR_U95 =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR_U95, na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR_U95, na.rm = TRUE),
         RUGOSITY =
-          .data$TRANSECT_TOTAL_SUBSTRATE_COVER_M /
-          .data$TRANSECT_PLANAR_LENGTH_M,
+          TRANSECT_TOTAL_SUBSTRATE_COVER_M /
+          TRANSECT_PLANAR_LENGTH_M,
         SUBSTRATE_AVAILABLE_MACRO_PCT =
-          sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CODE %in% c("CCA",
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("CCA",
                                                                "MCA",
                                                                "RUBC",
                                                                "SCA",
@@ -593,82 +593,82 @@ summarize_prod <- function(data,
                                                                "RUBT",
                                                                "TF")]),
         SUBSTRATE_AVAILABLE_MACRO_INDEX =
-          .data$RUGOSITY * (.data$SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
+          RUGOSITY * (SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
         SUBSTRATE_AVAILABLE_MICRO_PCT =
-          100 - sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CODE %in%
+          100 - sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in%
                                                  c("SG", "RCK", "SAND")]),
         SUBSTRATE_AVAILABLE_MICRO_INDEX =
-          .data$RUGOSITY * (.data$SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
+          RUGOSITY * (SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
         HARD_CORAL_COVER_PCT =
-          sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CLASS == "CORAL"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CORAL"]),
         CCA_COVER_PCT =
-          sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CLASS == "CCA"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CCA"]),
         HARD_CORAL_CARB_PROD_KG_M2_YR =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR[
-            .data$SUBSTRATE_CLASS == "CORAL"],
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
+            SUBSTRATE_CLASS == "CORAL"],
               na.rm = TRUE),
         CCA_CARB_PROD_KG_M2_YR =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR[
-            .data$SUBSTRATE_CLASS == "CCA"],
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
+            SUBSTRATE_CLASS == "CCA"],
               na.rm = TRUE),
         MACROBIOEROSION_KG_M2_YR =
-          .data$SUBSTRATE_AVAILABLE_MACRO_INDEX * macro_rate,
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * macro_rate,
         MACROBIOEROSION_KG_M2_YR_L95 =
-          .data$SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate - macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate - macro_rate_ci),
         MACROBIOEROSION_KG_M2_YR_U95 =
-          .data$SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate + macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate + macro_rate_ci),
         MICROBIOEROSION_KG_M2_YR =
-          .data$SUBSTRATE_AVAILABLE_MICRO_INDEX * micro_rate,
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * micro_rate,
         MICROBIOEROSION_KG_M2_YR_L95 =
-          .data$SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate - micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate - micro_rate_ci),
         MICROBIOEROSION_KG_M2_YR_U95 =
-          .data$SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate + micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate + micro_rate_ci),
         BIOEROSION_KG_M2_YR =
-          .data$MACROBIOEROSION_KG_M2_YR +
-          .data$MICROBIOEROSION_KG_M2_YR,
+          MACROBIOEROSION_KG_M2_YR +
+          MICROBIOEROSION_KG_M2_YR,
         BIOEROSION_KG_M2_YR_L95 =
-          .data$MACROBIOEROSION_KG_M2_YR_L95 +
-          .data$MICROBIOEROSION_KG_M2_YR_L95,
+          MACROBIOEROSION_KG_M2_YR_L95 +
+          MICROBIOEROSION_KG_M2_YR_L95,
         BIOEROSION_KG_M2_YR_U95 =
-          .data$MACROBIOEROSION_KG_M2_YR_U95 +
-          .data$MICROBIOEROSION_KG_M2_YR_U95
+          MACROBIOEROSION_KG_M2_YR_U95 +
+          MICROBIOEROSION_KG_M2_YR_U95
       )
   }
   if (dbase_type == "NCRMP") {
     summary_transect <-
       summary_transect_substratecode  %>% dplyr::group_by(
-        .data$REGION,
-        .data$REGIONCODE,
-        .data$YEAR,
-        .data$CRUISE_ID,
-        .data$LOCATION,
-        .data$LOCATIONCODE,
-        .data$OCC_SITEID,
-        .data$OCC_SITENAME,
-        .data$LATITUDE,
-        .data$LONGITUDE,
-        .data$DEPTH_M,
-        .data$LOCALDATE,
-        .data$CB_METHOD,
-        .data$CB_TRANSECTID,
-        .data$OCC_SITEID_TRANSECT,
+        REGION,
+        REGIONCODE,
+        YEAR,
+        CRUISE_ID,
+        LOCATION,
+        LOCATIONCODE,
+        OCC_SITEID,
+        OCC_SITENAME,
+        LATITUDE,
+        LONGITUDE,
+        DEPTH_M,
+        LOCALDATE,
+        CB_METHOD,
+        CB_TRANSECTID,
+        OCC_SITEID_TRANSECT,
       ) %>%
-      summarize(
+      reframe(
         TRANSECT_PLANAR_LENGTH_M =
-          mean(.data$TRANSECT_PLANAR_LENGTH_M),
+          mean(TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-          mean(.data$TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+          mean(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
         GROSS_CARB_PROD_KG_M2_YR =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR, na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR, na.rm = TRUE),
         GROSS_CARB_PROD_KG_M2_YR_L95 =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR_L95, na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR_L95, na.rm = TRUE),
         GROSS_CARB_PROD_KG_M2_YR_U95 =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR_U95, na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR_U95, na.rm = TRUE),
         RUGOSITY =
-          .data$TRANSECT_TOTAL_SUBSTRATE_COVER_M /
-          .data$TRANSECT_PLANAR_LENGTH_M,
+          TRANSECT_TOTAL_SUBSTRATE_COVER_M /
+          TRANSECT_PLANAR_LENGTH_M,
         SUBSTRATE_AVAILABLE_MACRO_PCT =
-          sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CODE %in% c("HARD",
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("HARD",
                                                                      "RUB",
                                                                      "DC",
                                                                      "CCA",
@@ -677,45 +677,45 @@ summarize_prod <- function(data,
                                                                      "TURF",
                                                                      "SP")]),
         SUBSTRATE_AVAILABLE_MACRO_INDEX =
-          .data$RUGOSITY * (.data$SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
+          RUGOSITY * (SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
         SUBSTRATE_AVAILABLE_MICRO_PCT =
-          100 - sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CODE %in%
+          100 - sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in%
                                                  c("SG", "RCK", "SAND")]),
         SUBSTRATE_AVAILABLE_MICRO_INDEX =
-          .data$RUGOSITY * (.data$SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
+          RUGOSITY * (SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
         HARD_CORAL_COVER_PCT =
-          sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CLASS == "CORAL"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CORAL"]),
         CCA_COVER_PCT =
-          sum(.data$SUBSTRATE_COVER_PCT[.data$SUBSTRATE_CLASS == "CCA"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CCA"]),
         HARD_CORAL_CARB_PROD_KG_M2_YR =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR[
-            .data$SUBSTRATE_CLASS == "CORAL"],
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
+            SUBSTRATE_CLASS == "CORAL"],
               na.rm = TRUE),
         CCA_CARB_PROD_KG_M2_YR =
-          sum(.data$SUBSTRATE_CARB_PROD_KG_M2_YR[
-            .data$SUBSTRATE_CLASS == "CCA"],
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
+            SUBSTRATE_CLASS == "CCA"],
               na.rm = TRUE),
         MACROBIOEROSION_KG_M2_YR =
-          .data$SUBSTRATE_AVAILABLE_MACRO_INDEX * macro_rate,
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * macro_rate,
         MACROBIOEROSION_KG_M2_YR_L95 =
-          .data$SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate - macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate - macro_rate_ci),
         MACROBIOEROSION_KG_M2_YR_U95 =
-          .data$SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate + macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate + macro_rate_ci),
         MICROBIOEROSION_KG_M2_YR =
-          .data$SUBSTRATE_AVAILABLE_MICRO_INDEX * micro_rate,
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * micro_rate,
         MICROBIOEROSION_KG_M2_YR_L95 =
-          .data$SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate - micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate - micro_rate_ci),
         MICROBIOEROSION_KG_M2_YR_U95 =
-          .data$SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate + micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate + micro_rate_ci),
         BIOEROSION_KG_M2_YR =
-          .data$MACROBIOEROSION_KG_M2_YR +
-          .data$MICROBIOEROSION_KG_M2_YR,
+          MACROBIOEROSION_KG_M2_YR +
+          MICROBIOEROSION_KG_M2_YR,
         BIOEROSION_KG_M2_YR_L95 =
-          .data$MACROBIOEROSION_KG_M2_YR_L95 +
-          .data$MICROBIOEROSION_KG_M2_YR_L95,
+          MACROBIOEROSION_KG_M2_YR_L95 +
+          MICROBIOEROSION_KG_M2_YR_L95,
         BIOEROSION_KG_M2_YR_U95 =
-          .data$MACROBIOEROSION_KG_M2_YR_U95 +
-          .data$MICROBIOEROSION_KG_M2_YR_U95
+          MACROBIOEROSION_KG_M2_YR_U95 +
+          MICROBIOEROSION_KG_M2_YR_U95
       )
   }
 
@@ -731,25 +731,25 @@ summarize_prod <- function(data,
 
   summary_site_substratecode <-
     summary_transect_substratecode %>% dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$SUBSTRATE_CLASS,
-      .data$SUBSTRATE_CODE,
-      .data$MORPHOLOGY,
-      .data$MORPHOLOGYCODE
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      SUBSTRATE_CLASS,
+      SUBSTRATE_CODE,
+      MORPHOLOGY,
+      MORPHOLOGYCODE
     ) %>%
-    dplyr::summarize(across(
+    dplyr::reframe(across(
       c(SUBSTRATE_COVER_PCT,
         SUBSTRATE_CARB_PROD_KG_M2_YR),
       list(
@@ -765,22 +765,22 @@ summarize_prod <- function(data,
   summary_site_substrateclass <-
     summary_transect_substrateclass %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$SUBSTRATE_CLASS
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      SUBSTRATE_CLASS
     ) %>%
-  dplyr::summarize(across(
+  dplyr::reframe(across(
     c(SUBSTRATE_COVER_PCT,
       SUBSTRATE_CARB_PROD_KG_M2_YR),
     list(
@@ -795,23 +795,23 @@ summarize_prod <- function(data,
   # Summarize production by CORAL_GROUP at SITE level -----------------------
   summary_site_coral <- summary_transect_coral %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
-      .data$CORAL_GROUP,
-      .data$CORAL_GROUP_NAME
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      CORAL_GROUP,
+      CORAL_GROUP_NAME
     ) %>%
-    dplyr::summarize(across(
+    dplyr::reframe(across(
       c(SUBSTRATE_COVER_PCT,
         SUBSTRATE_CARB_PROD_KG_M2_YR),
       list(
@@ -827,21 +827,21 @@ summarize_prod <- function(data,
   # Summarize production by SITE --------------------------------------------
   summary_site <- summary_transect %>%
     dplyr::group_by(
-      .data$REGION,
-      .data$REGIONCODE,
-      .data$YEAR,
-      .data$CRUISE_ID,
-      .data$LOCATION,
-      .data$LOCATIONCODE,
-      .data$OCC_SITEID,
-      .data$OCC_SITENAME,
-      .data$LATITUDE,
-      .data$LONGITUDE,
-      .data$DEPTH_M,
-      .data$LOCALDATE,
-      .data$CB_METHOD,
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
     ) %>%
-    dplyr::summarize(across(
+    dplyr::reframe(across(
       c(RUGOSITY,
         HARD_CORAL_COVER_PCT,
         CCA_COVER_PCT,
