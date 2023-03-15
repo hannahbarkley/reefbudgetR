@@ -137,13 +137,25 @@ summarize_prod <- function(data,
       )
   )
 
-  substrate_code_all <- unique(transect_substratecode$SUBSTRATE_CODE)
+  substrate_code_morphology_all <-
+    unique(data[c("SUBSTRATE_CODE", "MORPHOLOGYCODE")])
+
+  substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE <-
+    paste0(substrate_code_morphology_all$SUBSTRATE_CODE, "-", substrate_code_morphology_all$MORPHOLOGYCODE)
 
   substrate_code_full_table <- expand.grid(
     OCC_SITEID = unique(transect_summary$OCC_SITEID),
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
-    SUBSTRATE_CODE = substrate_code_all
+    SUBSTRATE_CODE_MORPHOLOGYCODE = substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE
   )
+
+  substrate_code_full_table$SUBSTRATE_CODE <- substrate_code_morphology_all$SUBSTRATE_CODE[
+    match(substrate_code_full_table$SUBSTRATE_CODE_MORPHOLOGYCODE,
+          substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE)]
+
+  substrate_code_full_table$MORPHOLOGYCODE <- substrate_code_morphology_all$MORPHOLOGYCODE[
+    match(substrate_code_full_table$SUBSTRATE_CODE_MORPHOLOGYCODE,
+          substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE)]
 
   substrate_code_full_table$OCC_SITEID_TRANSECT <-
     paste(substrate_code_full_table$OCC_SITEID,
@@ -158,10 +170,20 @@ summarize_prod <- function(data,
       "OCC_SITEID",
       "CB_TRANSECTID",
       "OCC_SITEID_TRANSECT",
-      "SUBSTRATE_CODE"
+      "SUBSTRATE_CODE",
+      "MORPHOLOGYCODE"
     ),
     all.x = TRUE
   )
+
+  prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE <-
+    paste0(prod_dbase$SUBSTRATE_CODE, "-", prod_dbase$MORPHOLOGYCODE)
+
+  summary_transect_substratecode$MORPHOLOGY <- prod_dbase$MORPHOLOGY[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
+
+  summary_transect_substratecode$SUBSTRATE_CLASS <- prod_dbase$SUBSTRATE_CLASS[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
+
+  summary_transect_substratecode$SUBSTRATE_NAME <- prod_dbase$SUBSTRATE_NAME[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
 
   summary_transect_substratecode <- summary_transect_substratecode[c(
     "REGION",
@@ -195,11 +217,6 @@ summarize_prod <- function(data,
     "SUBSTRATE_CARB_PROD_KG_M2_YR_L95",
     "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
   )]
-
-  summary_transect_substratecode$MORPHOLOGY <- prod_dbase$MORPHOLOGY[match(summary_transect_substratecode$SUBSTRATE_CODE, as.factor(prod_dbase$SUBSTRATE_CODE))]
-  summary_transect_substratecode$MORPHOLOGYCODE <- prod_dbase$MORPHOLOGYCODE[match(summary_transect_substratecode$SUBSTRATE_CODE, as.factor(prod_dbase$SUBSTRATE_CODE))]
-  summary_transect_substratecode$SUBSTRATE_CLASS <- prod_dbase$SUBSTRATE_CLASS[match(summary_transect_substratecode$SUBSTRATE_CODE, as.factor(prod_dbase$SUBSTRATE_CODE))]
-  summary_transect_substratecode$SUBSTRATE_NAME <- prod_dbase$SUBSTRATE_NAME[match(summary_transect_substratecode$SUBSTRATE_CODE, as.factor(prod_dbase$SUBSTRATE_CODE))]
 
 
   summary_transect_substratecode <-
@@ -728,7 +745,9 @@ summarize_prod <- function(data,
       .data$LOCALDATE,
       .data$CB_METHOD,
       .data$SUBSTRATE_CLASS,
-      .data$SUBSTRATE_CODE
+      .data$SUBSTRATE_CODE,
+      .data$MORPHOLOGY,
+      .data$MORPHOLOGYCODE
     ) %>%
     dplyr::summarize(across(
       c(SUBSTRATE_COVER_PCT,
