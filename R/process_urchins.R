@@ -81,7 +81,7 @@ process_urchins <- function(data,
                  "MEGL")
   all_bins <- c(
     "TEST_SIZE_BIN_0_20_MM",
-    "TEST_SIZE_BIN_0_20_MM",
+    "TEST_SIZE_BIN_21_40_MM",
     "TEST_SIZE_BIN_41_60_MM",
     "TEST_SIZE_BIN_61_80_MM",
     "TEST_SIZE_BIN_81_100_MM",
@@ -216,11 +216,11 @@ process_urchins <- function(data,
       CB_TRANSECTID,
       GROUP,
       TEST_SIZE_BIN_MM,
+      TRANSECT_LENGTH_M
     ) %>%
     summarize(
-      TRANSECT_LENGTH_M = mean(TRANSECT_LENGTH_M),
       TRANSECT_URCHIN_ABUNDANCE_NO = sum(COUNT),
-      TRANSECT_URCHIN_DENSITY_NO_M2 = sum(COUNT) / mean(TRANSECT_LENGTH_M)
+      TRANSECT_URCHIN_DENSITY_NO_M2 = sum(COUNT) / mean(TRANSECT_LENGTH_M, na.rm = TRUE)
     )
 
   # Calculate site level density
@@ -334,14 +334,14 @@ process_urchins <- function(data,
       CB_METHOD
     ) %>%
     summarize(
-      URCHIN_EROSION_KG_M2_YR_MEAN = mean(URCHIN_EROSION_KG_M2_YR),
-      URCHIN_EROSION_KG_M2_YR_SD = sd(URCHIN_EROSION_KG_M2_YR),
+      URCHIN_EROSION_KG_M2_YR_MEAN = mean(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE),
+      URCHIN_EROSION_KG_M2_YR_SD = sd(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE),
       URCHIN_EROSION_KG_M2_YR_N = length(URCHIN_EROSION_KG_M2_YR),
       URCHIN_EROSION_KG_M2_YR_SE =
-        sd(URCHIN_EROSION_KG_M2_YR) /
+        sd(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE) /
         length(URCHIN_EROSION_KG_M2_YR),
       URCHIN_EROSION_KG_M2_YR_CI = 1.97 *
-        sd(URCHIN_EROSION_KG_M2_YR) /
+        sd(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE) /
         length(URCHIN_EROSION_KG_M2_YR)
     )
 
