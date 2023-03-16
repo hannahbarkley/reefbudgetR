@@ -18,13 +18,10 @@
 
 calc_eros_fish <- function(data,
                              rates_dbase = c("IPRB", "Kindinger")) {
-  if (rates_dbase == "IPRB") {
-    rates_dbase <- fish_erosion_dbase_iprb
-  }
 
-  if (rates_dbase == "Kindinger") {
-    rates_dbase <- fish_erosion_dbase_kindinger
-  }
+
+  ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
+
 
   # Format dataframe for biomass and bioerosion calculations below
   data_formatted <- data %>%

@@ -59,7 +59,6 @@ process_net <- function(prod,
       by = c(
         "REGION",
         "REGIONCODE",
-        "YEAR",
         "CRUISE_ID",
         "LOCATION",
         "LOCATIONCODE",
