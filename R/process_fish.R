@@ -71,13 +71,13 @@ process_fish <- function(data,
 
   if (full_summary == TRUE) {
     return(list(
-      fish_erosion_transect = fish_erosion_transect,
-      fish_erosion_site = fish_erosion_site)
+      fish_erosion_transect = summary_fish_erosion$fish_erosion_transect,
+      fish_erosion_site = summary_fish_erosion$fish_erosion_site)
     )
   }
 
   if (full_summary == FALSE) {
-    return(summary_fish_erosion)
+    return(summary_fish_erosion$fish_erosion_site)
   }
 
 

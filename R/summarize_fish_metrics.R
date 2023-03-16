@@ -86,7 +86,7 @@ summarize_fish_metrics <- function(data,
     distinct() %>%
     #organize dataframe by Transect and size bin
     pivot_wider(names_from = TRANSECT, values_from = SIZE_CLASS_SUM, names_prefix = paste0("TRANSECT_")) %>%
-    mutate_at(-c(1:13), ~ replace_na(., 0))
+    mutate_at(-c(1:12), ~ replace_na(., 0))
 
 
   # Summarize SIZE CLASS at SITE level --------------------------------------
@@ -129,7 +129,7 @@ summarize_fish_metrics <- function(data,
     distinct() %>%
     # organize dataframe by Transect and species
     pivot_wider(names_from = TRANSECT, values_from = SPECIES_SUM, names_prefix = paste0("TRANSECT_")) %>%
-    mutate_at(-c(1:12), ~ replace_na(., 0))
+    mutate_at(-c(1:11), ~ replace_na(., 0))
 
   # Summarize SPECIES at SITE LEVEL -------------------------------------
 

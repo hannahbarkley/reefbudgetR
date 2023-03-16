@@ -115,7 +115,7 @@ summarize_fish_erosion <- function(species_table,
   # Calculate bioerosion per site and metric
   fish_erosion_transect <- fish_erosion_transect_wide %>%
     pivot_longer(.,
-                 cols = 14:22,
+                 cols = 13:22,
                  names_to = "TRANSECT",
                  values_to = "Values") %>%
     select(
@@ -186,7 +186,7 @@ summarize_fish_erosion <- function(species_table,
       everything()
     ) %>%
     pivot_longer(.,
-                 cols = 14:17,
+                 cols = 13:17,
                  names_to = "Variables",
                  values_to = "Values") %>%
     unite("METRIC", METRIC:GRAZ_TYPE) %>% #combine columns with underscore
