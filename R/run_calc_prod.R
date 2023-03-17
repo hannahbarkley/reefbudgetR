@@ -103,14 +103,30 @@ run_calc_prod <- function(data,
       unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
                                      prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
 
-    calc_i <- calc_prod(
-      data$SUBSTRATE_CLASS[i],
-      data$SUBSTRATE_CODE[i],
-      data$MORPHOLOGYCODE[i],
-      data$SUBSTRATE_COVER_CM[i],
-      data$REGIONCODE[i],
-      prod_dbase
-    )
+    if (dbase_type == "IPRB") {
+      calc_i <- calc_prod(
+        data$SUBSTRATE_CLASS[i],
+        data$SUBSTRATE_CODE[i],
+        data$MORPHOLOGYCODE[i],
+        data$SUBSTRATE_COVER_CM[i],
+        "ALL",
+        prod_dbase
+      )
+    }
+
+    if (dbase_type == "NCRMP") {
+      calc_i <- calc_prod(
+        data$SUBSTRATE_CLASS[i],
+        data$SUBSTRATE_CODE[i],
+        data$MORPHOLOGYCODE[i],
+        data$SUBSTRATE_COVER_CM[i],
+        data$REGIONCODE[i],
+        prod_dbase
+      )
+    }
+
+
+
 
     data$COLONY_PROD_G_YR[i] <- calc_i$cp_i
     data$COLONY_PROD_G_YR_L95[i] <- calc_i$cp_l95_i
