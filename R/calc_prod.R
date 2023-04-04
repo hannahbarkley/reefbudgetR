@@ -30,7 +30,6 @@ calc_prod <- function(substrate_class,
                       substrate_code,
                       morphology_code,
                       substrate_cover_cm,
-                      region_code,
                       prod_dbase) {
 
   # Set production rate for all non-calcifiers to zero
@@ -48,31 +47,28 @@ calc_prod <- function(substrate_class,
       # Get extension, density, and confidence intervals from the prod database
       g <-
         prod_dbase$EXTENSION_CM_YR[
-        prod_dbase$SUBSTRATE_CODE == substrate_code &
-        prod_dbase$REGIONCODE == region_code
+        prod_dbase$SUBSTRATE_CODE == substrate_code
           ]
 
       g_ci <-
         prod_dbase$EXTENSION_CM_YR_CI[
-        prod_dbase$SUBSTRATE_CODE == substrate_code &
-        prod_dbase$REGIONCODE == region_code
+        prod_dbase$SUBSTRATE_CODE == substrate_code
           ]
 
       d <-
         prod_dbase$DENSITY_G_CM3[
-        prod_dbase$SUBSTRATE_CODE == substrate_code &
-        prod_dbase$REGIONCODE == region_code
+        prod_dbase$SUBSTRATE_CODE == substrate_code
                                  ]
 
       d_ci <-
         prod_dbase$DENSITY_G_CM3_CI[
-        prod_dbase$SUBSTRATE_CODE == substrate_code &
-        prod_dbase$REGIONCODE == region_code]
+        prod_dbase$SUBSTRATE_CODE == substrate_code
+        ]
 
       c <-
         prod_dbase$CONVERSION_FACTOR[
-        prod_dbase$SUBSTRATE_CODE == substrate_code &
-        prod_dbase$REGIONCODE == region_code]
+        prod_dbase$SUBSTRATE_CODE == substrate_code
+        ]
 
       x <- substrate_cover_cm
 
@@ -87,36 +83,31 @@ calc_prod <- function(substrate_class,
       g <-
         prod_dbase$EXTENSION_CM_YR[
           prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code &
-          prod_dbase$REGIONCODE == region_code
+          prod_dbase$MORPHOLOGYCODE == morphology_code
           ]
 
       g_ci <-
         prod_dbase$EXTENSION_CM_YR_CI[
           prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code &
-          prod_dbase$REGIONCODE == region_code
+          prod_dbase$MORPHOLOGYCODE == morphology_code
           ]
 
       d <-
         prod_dbase$DENSITY_G_CM3[
           prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code &
-          prod_dbase$REGIONCODE == region_code
+          prod_dbase$MORPHOLOGYCODE == morphology_code
           ]
 
       d_ci <-
         prod_dbase$DENSITY_G_CM3_CI[
           prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code &
-          prod_dbase$REGIONCODE == region_code
+          prod_dbase$MORPHOLOGYCODE == morphology_code
           ]
 
       c <-
         prod_dbase$CONVERSION_FACTOR[
           prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code &
-          prod_dbase$REGIONCODE == region_code
+          prod_dbase$MORPHOLOGYCODE == morphology_code
           ]
 
       x <- substrate_cover_cm
