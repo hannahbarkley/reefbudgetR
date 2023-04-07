@@ -81,27 +81,39 @@ run_calc_prod <- function(data,
 
     if (data$SUBSTRATE_CLASS[i] == "CORAL") {
       if (data$TAXA_LEVEL[i] == "SPECIES") {
-        if (data$SUBSTRATE_CODE[i] == "MCAP") {
-          data$MORPHOLOGYCODE[i] <- data$MORPHOLOGYCODE[i]
 
-        } else {
+        if (data$SUBSTRATE_CODE[i] == "PRUS") {
+          data$MORPHOLOGYCODE[i] <- "LC"
+
+          data$CORAL_GROUP[i] <- "POLC"
+
+          data$CORAL_GROUP_NAME[i] <- "Laminar columnar Porites"
+
+          data$MORPHOLOGY[i] <- "Laminar columnar"
+        }
+
+        else {
           data$MORPHOLOGYCODE[i] <-
             as.character(paste0(unique(prod_dbase$MORPHOLOGYCODE[prod_dbase$SUBSTRATE_CODE == substrate_code_i])))
+
+          data$CORAL_GROUP[i] <-
+            unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                            prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+
+          data$CORAL_GROUP_NAME[i] <-
+            unique(prod_dbase$CORAL_GROUP_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                                 prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+
+          data$MORPHOLOGY[i] <-
+            unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                           prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+
+
         }
       }
     }
 
-    data$CORAL_GROUP[i] <-
-      unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
-                                      prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
 
-    data$CORAL_GROUP_NAME[i] <-
-      unique(prod_dbase$CORAL_GROUP_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
-                                           prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
-
-    data$MORPHOLOGY[i] <-
-      unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
-                                     prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
 
     if (dbase_type == "IPRB") {
       calc_i <- calc_prod(

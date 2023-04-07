@@ -78,7 +78,7 @@ calc_prod <- function(substrate_class,
       cp_u95_i <- x * (g + g_ci) * d
 
     }
-    if (substrate_class == "CORAL") {
+    if (substrate_class == "CORAL" & morphology_code != "LC") {
       # Get extension, density, and confidence intervals from the prod database
       g <-
         prod_dbase$EXTENSION_CM_YR[
@@ -169,54 +169,93 @@ calc_prod <- function(substrate_class,
           ((((1 - c) * df$x) * (g + g_ci) * 0.1) +
              (c * df$x * (g + g_ci))) * (d + d_ci)
       }
+    }
 
       # Calculate production rate for laminar columnar morphology (
-      if ((morphology_code %in% c("LC")) == TRUE) {
+    if (substrate_class == "CORAL" & morphology_code == "LC") {
 
-        df <- data.frame(x = seq(0, 135, 1))
+      g_la <-
+        prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                     prod_dbase$MORPHOLOGYCODE == "LC-LA"]
 
-        # Laminar portion
-        h <- 2
+      g_la_ci <-
+        prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                        prod_dbase$MORPHOLOGYCODE == "LC-LA"]
 
-        prop_la <- 0.55 #Proportion of surface distance that is laminar
+      g_co <-
+        prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                     prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-        df_la <- data.frame(x_la = seq(0, 135, 1))
+      g_co_ci <-
+        prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                        prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-        df_la$y_la <-
-          h * g * d + 0.1 * g * ((prop_la * df_la$x_la) + (h * g)) * d
+      d <-
+        prod_dbase$DENSITY_G_CM3[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                   prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-        df_la$y_la_l95 <-
-          h * (g - g_ci) * (d - d_ci) + 0.1 * (g - g_ci) *
-          ((prop_la * df_la$x_la) + (h * (g - g_ci))) * (d - d_ci)
+      d_ci <-
+        prod_dbase$DENSITY_G_CM3_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                      prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-        df_la$y_la_u95 <-
-          h * (g + g_ci) * (d + d_ci) + 0.1 * (g + g_ci) *
-          ((prop_la * df_la$x_la) + (h * (g + g_ci))) * (d + d_ci)
+      c <-
+        prod_dbase$CONVERSION_FACTOR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                       prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-        # Columnar portion
-        df_co <- data.frame(x_co = seq(0, 135, 1))
+      x <- substrate_cover_cm
 
-        prop_co <- 0.45 # Proportion of surface distance that is columnar
+      df <- data.frame(x = seq(0, 135, 1))
 
-        df_co$y_co <-
-          ((((1 - c) * (prop_co * df_co$x_co)) * g * 0.1) +
-             (c * (prop_co * df_co$x_co) * g)) * d
+      # Laminar portion
+      h <- 2
 
-        df_co$y_co_l95 <-
-          ((((1 - c) * (prop_co * df_co$x_co)) * (g - g_ci) * 0.1) +
-             (c * (prop_co * df_co$x_co) * (g - g_ci))) * (d - d_ci)
+      prop_la <-
+        0.55 #Proportion of surface distance that is laminar
 
-        df_co$y_co_u95 <-
-          ((((1 - c) * (prop_co * df_co$x_co)) * (g + g_ci) * 0.1) +
-             (c * (prop_co * df_co$x_co) * (g + g_ci))) * (d + d_ci)
+      df_la <- data.frame(x_la = seq(0, 135, 1))
 
-        # Add together laminar and columnar portions to get overall production
-        df$y <- df_la$y_la + df_co$y_co
+      df_la$y_la <-
+        h * g_la * d + 0.1 * g_la * ((prop_la * df_la$x_la) + (h * g_la)) * d
 
-        df$y_l95 <- df_la$y_la_l95 + df_co$y_co_l95
+      df_la$y_la_l95 <-
+        h * (g_la - g_la_ci) * (d - d_ci) + 0.1 * (g_la - g_la_ci) *
+        ((prop_la * df_la$x_la) + (h * (g_la - g_la_ci))) * (d - d_ci)
 
-        df$y_u95 <- df_la$y_la_u95 + df_co$y_co_u95
-      }
+      df_la$y_la_u95 <-
+        h * (g_la + g_la_ci) * (d + d_ci) + 0.1 * (g_la + g_la_ci) *
+        ((prop_la * df_la$x_la) + (h * (g_la + g_la_ci))) * (d + d_ci)
+
+      # Columnar portion
+      df_co <- data.frame(x_co = seq(0, 135, 1))
+
+      prop_co <-
+        0.45 # Proportion of surface distance that is columnar
+
+      df_co$y_co <-
+        ((((1 - c) * (
+          prop_co * df_co$x_co
+        )) * g_co * 0.1) +
+          (c * (prop_co * df_co$x_co) * g_co)) * d
+
+      df_co$y_co_l95 <-
+        ((((1 - c) * (
+          prop_co * df_co$x_co
+        )) * (g_co - g_co_ci) * 0.1) +
+          (c * (prop_co * df_co$x_co) * (g_co - g_co_ci))) * (d - d_ci)
+
+      df_co$y_co_u95 <-
+        ((((1 - c) * (
+          prop_co * df_co$x_co
+        )) * (g_co + g_co_ci) * 0.1) +
+          (c * (prop_co * df_co$x_co) * (g_co + g_co_ci))) * (d + d_ci)
+
+      # Add together laminar and columnar portions to get overall production
+      df$y <- df_la$y_la + df_co$y_co
+
+      df$y_l95 <- df_la$y_la_l95 + df_co$y_co_l95
+
+      df$y_u95 <- df_la$y_la_u95 + df_co$y_co_u95
+    }
 
       df[1, ] <- 0
 
@@ -236,6 +275,5 @@ calc_prod <- function(substrate_class,
       cp_u95_i <- coefficient_mean_u95 * x + intercept_mean_u95
 
     }
-  }
   return(data.frame(cp_i, cp_l95_i, cp_u95_i))
 }
