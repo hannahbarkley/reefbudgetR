@@ -580,23 +580,36 @@ summarize_prod <- function(data,
           TRANSECT_TOTAL_SUBSTRATE_COVER_M /
           TRANSECT_PLANAR_LENGTH_M,
         SUBSTRATE_AVAILABLE_MACRO_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("CCA",
-                                                               "MCA",
-                                                               "RUBC",
-                                                               "SCA",
-                                                               "BOR",
-                                                               "DC",
-                                                               "MAC",
-                                                               "OCE",
-                                                               "OTH",
-                                                               "RUB",
-                                                               "RUBT",
-                                                               "TF")]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("ART",
+                                                        "BOR",
+                                                        "CCA",
+                                                        "CYA",
+                                                        "DC",
+                                                        "HA",
+                                                        "LSP",
+                                                        "MAC",
+                                                        "MCA",
+                                                        "OCE",
+                                                        "OTH",
+                                                        "RUB",
+                                                        "RUBT",
+                                                        "RUBC",
+                                                        "SCA",
+                                                        "TF"
+                                                        )]),
         SUBSTRATE_AVAILABLE_MACRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
         SUBSTRATE_AVAILABLE_MICRO_PCT =
-          100 - sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in%
-                                                 c("SG", "RCK", "SAND")]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("ART",
+                                                        "CYA",
+                                                        "DC",
+                                                        "HA",
+                                                        "LSP",
+                                                        "MAC",
+                                                        "RUB",
+                                                        "RUBT",
+                                                        "TF"
+                                                        )]),
         SUBSTRATE_AVAILABLE_MICRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
         HARD_CORAL_COVER_PCT =
@@ -669,18 +682,27 @@ summarize_prod <- function(data,
           TRANSECT_PLANAR_LENGTH_M,
         SUBSTRATE_AVAILABLE_MACRO_PCT =
           sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("HARD",
-                                                                     "RUB",
-                                                                     "DC",
-                                                                     "CCA",
-                                                                     "MA",
-                                                                     "PESP",
-                                                                     "TURF",
-                                                                     "SP")]),
+                                                        "DC",
+                                                        "RUB",
+                                                        "TURF",
+                                                        "CYANO",
+                                                        "CCA",
+                                                        "MA",
+                                                        "PESP",
+                                                        "HALI",
+                                                        "SP"
+                                                        )]),
         SUBSTRATE_AVAILABLE_MACRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
         SUBSTRATE_AVAILABLE_MICRO_PCT =
-          100 - sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in%
-                                                 c("SG", "RCK", "SAND")]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("HARD",
+                                                        "DC",
+                                                        "RUB",
+                                                        "TURF",
+                                                        "CYANO",
+                                                        "MA",
+                                                        "HALI"
+                                                        )]),
         SUBSTRATE_AVAILABLE_MICRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
         HARD_CORAL_COVER_PCT =
