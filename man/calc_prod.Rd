@@ -10,7 +10,6 @@ calc_prod(
   substrate_code,
   morphology_code,
   substrate_cover_cm,
-  region_code,
   prod_dbase
 )
 }
@@ -23,10 +22,10 @@ calc_prod(
 
 \item{substrate_cover_cm}{Measure surface distance of benthic component, in cm.}
 
-\item{region_code}{Survey region ("MHI", "MARIAN", ...).}
-
 \item{prod_dbase}{Production database to reference, either Indo-Pacific ReefBudget ("IPRB")
 or NCRMP-specific ("NCRMP"). Defaults to "NCRMP".}
+
+\item{region_code}{Survey region ("MHI", "MARIAN", ...).}
 }
 \description{
 Calculate production rates for each benthic component measured on
