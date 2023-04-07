@@ -249,7 +249,7 @@ process_urchins <- function(data,
 
   # Initiate data columns
   transect_density_group$TEST_SIZE_MEDIAN_MM <- NA
-  transect_density_group$TRANSECT_EROSION_G_URCHIN_DAY <- NA
+  transect_density_group$TRANSECT_EROSION_G_URCHIN_YR <- NA
 
   # Set median test size for each test size bin
   transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_0_20_MM"] <-
@@ -273,19 +273,19 @@ process_urchins <- function(data,
   # Calculate group-specific erosion rate
   for (i in sjmisc::seq_row(transect_density_group)) {
     if (transect_density_group$GROUP[i] == "ECMA") {
-      transect_density_group$TRANSECT_EROSION_G_URCHIN_DAY[i] <- 0.0003 *
+      transect_density_group$TRANSECT_EROSION_G_M2_YR[i] <- 0.0003 *
         (transect_density_group$TEST_SIZE_MEDIAN_MM[i] ^ 1.9671) *
         transect_density_group$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
     }
     if (transect_density_group$GROUP[i] == "DISP-ECTH") {
-      transect_density_group$TRANSECT_EROSION_G_URCHIN_DAY[i] <- 0.000003 *
+      transect_density_group$TRANSECT_EROSION_G_M2_YR[i] <- 0.000003 *
         (transect_density_group$TEST_SIZE_MEDIAN_MM[i] ^ 3.2887) *
         transect_density_group$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
     }
     if (transect_density_group$GROUP[i] == "OTHER") {
-      transect_density_group$TRANSECT_EROSION_G_URCHIN_DAY[i] <- 0.00004 *
+      transect_density_group$TRANSECT_EROSION_G_UM2_YR[i] <- 0.00004 *
         (transect_density_group$TEST_SIZE_MEDIAN_MM[i] ^ 2.6025) *
         transect_density_group$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
@@ -310,7 +310,7 @@ process_urchins <- function(data,
       CB_METHOD,
       CB_TRANSECTID,
     ) %>%
-    summarize(URCHIN_EROSION_KG_M2_YR = sum(TRANSECT_EROSION_G_URCHIN_DAY) / 1000)
+    summarize(URCHIN_EROSION_KG_M2_YR = sum(TRANSECT_EROSION_G_M2_YR) / 1000)
 
   transect_density_sum$OCC_SITEID_TRANSECT <-
     paste(transect_density_sum$OCC_SITEID,
