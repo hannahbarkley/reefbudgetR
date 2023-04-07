@@ -185,7 +185,6 @@ summarize_prod <- function(data,
 
   summary_transect_substratecode$SUBSTRATE_CLASS[summary_transect_substratecode$SUBSTRATE_CODE == "PRUS"] <- "CORAL"
 
-
   summary_transect_substratecode$SUBSTRATE_NAME <- prod_dbase$SUBSTRATE_NAME[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
 
   summary_transect_substratecode <- summary_transect_substratecode[c(

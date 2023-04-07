@@ -8,6 +8,10 @@
 #'@param morphology_code Taxa morphology observed (corals only; "BR", "MD", "EM", ...). Non-corals default to NA.
 #'@param substrate_cover_cm Measure surface distance of benthic component, in cm.
 #'@param region_code Survey region ("MHI", "MARIAN", ...).
+#'#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
+#'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+#'database is derived from "IP Calcification and bioerosion rates database v.1.3",
+#'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.
 #'@param prod_dbase Production database to reference, either Indo-Pacific ReefBudget ("IPRB")
 #'or NCRMP-specific ("NCRMP"). Defaults to "NCRMP".
 #'
@@ -22,7 +26,7 @@
 #' substrate_code = "PLOB",
 #' morphology_code = "MD",
 #' substrate_cover_cm = 10,
-#' region_code = "MHI",
+#' dbase_type = "NCRMP",
 #' prod_dbase = "NCRMP")
 #'
 #'
@@ -30,6 +34,7 @@ calc_prod <- function(substrate_class,
                       substrate_code,
                       morphology_code,
                       substrate_cover_cm,
+                      dbase_type,
                       prod_dbase) {
   # Set production rate for all non-calcifiers to zero
   if (substrate_class %in% c("CORAL", "CCA") == FALSE) {
@@ -148,7 +153,47 @@ calc_prod <- function(substrate_class,
       }
 
       # Calculate production rate for laminar columnar morphology (
-      if (morphology_code == "LC") {
+      if (dbase_type == "IPRB" & morphology_code == "LC") {
+        g <-
+          prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                       prod_dbase$MORPHOLOGYCODE == morphology_code]
+
+        g_ci <-
+          prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                          prod_dbase$MORPHOLOGYCODE == morphology_code]
+
+        d <-
+          prod_dbase$DENSITY_G_CM3[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                     prod_dbase$MORPHOLOGYCODE == morphology_code]
+
+        d_ci <-
+          prod_dbase$DENSITY_G_CM3_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                        prod_dbase$MORPHOLOGYCODE == morphology_code]
+
+        c <-
+          prod_dbase$CONVERSION_FACTOR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                         prod_dbase$MORPHOLOGYCODE == morphology_code]
+
+        x <- substrate_cover_cm
+
+        # Use columnar morphology equation
+
+        df <- data.frame(x = seq(0, 135, 1))
+
+        df$y <-
+          ((((1 - c) * df$x) * g * 0.1) + (c * df$x * g)) * d
+
+        df$y_l95 <-
+          ((((1 - c) * df$x) * (g - g_ci) * 0.1) +
+             (c * df$x * (g - g_ci))) * (d - d_ci)
+
+        df$y_u95 <-
+          ((((1 - c) * df$x) * (g + g_ci) * 0.1) +
+             (c * df$x * (g + g_ci))) * (d + d_ci)
+
+      }
+
+      if (dbase_type == "NCRMP" & morphology_code == "LC") {
         g_la <-
           prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
                                        prod_dbase$MORPHOLOGYCODE == "LC-LA"]
@@ -231,6 +276,7 @@ calc_prod <- function(substrate_class,
 
         df$y_u95 <- df_la$y_la_u95 + df_co$y_co_u95
       }
+
 
       df[1,] <- 0
 
