@@ -249,7 +249,7 @@ process_urchins <- function(data,
 
   # Initiate data columns
   transect_density_group$TEST_SIZE_MEDIAN_MM <- NA
-  transect_density_group$TRANSECT_EROSION_G_URCHIN_YR <- NA
+  transect_density_group$TRANSECT_EROSION_G_M2_YR <- NA
 
   # Set median test size for each test size bin
   transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_0_20_MM"] <-
@@ -285,7 +285,7 @@ process_urchins <- function(data,
 
     }
     if (transect_density_group$GROUP[i] == "OTHER") {
-      transect_density_group$TRANSECT_EROSION_G_UM2_YR[i] <- 0.00004 *
+      transect_density_group$TRANSECT_EROSION_G_M2_YR[i] <- 0.00004 *
         (transect_density_group$TEST_SIZE_MEDIAN_MM[i] ^ 2.6025) *
         transect_density_group$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
