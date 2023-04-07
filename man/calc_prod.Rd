@@ -10,6 +10,7 @@ calc_prod(
   substrate_code,
   morphology_code,
   substrate_cover_cm,
+  dbase_type,
   prod_dbase
 )
 }
@@ -25,7 +26,11 @@ calc_prod(
 \item{prod_dbase}{Production database to reference, either Indo-Pacific ReefBudget ("IPRB")
 or NCRMP-specific ("NCRMP"). Defaults to "NCRMP".}
 
-\item{region_code}{Survey region ("MHI", "MARIAN", ...).}
+\item{region_code}{Survey region ("MHI", "MARIAN", ...).
+#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
+or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+database is derived from "IP Calcification and bioerosion rates database v.1.3",
+downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
 }
 \description{
 Calculate production rates for each benthic component measured on
@@ -41,7 +46,7 @@ substrate_class = "CORAL",
 substrate_code = "PLOB",
 morphology_code = "MD",
 substrate_cover_cm = 10,
-region_code = "MHI",
+dbase_type = "NCRMP",
 prod_dbase = "NCRMP")
 
 
