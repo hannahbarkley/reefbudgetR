@@ -38,7 +38,8 @@ run_calc_prod <- function(data,
     prod_dbase <- prod_dbase_ncrmp
   }
 
-  transects <- unique(data[c("OCC_SITEID_TRANSECT","TRANSECT_PLANAR_LENGTH_M")])
+  transects <-
+    unique(data[c("OCC_SITEID_TRANSECT", "TRANSECT_PLANAR_LENGTH_M")])
   transect_summary <-
     data %>%
     dplyr::group_by(
@@ -66,6 +67,9 @@ run_calc_prod <- function(data,
   data$SUBSTRATE_CLASS <- NA
   data$SUBSTRATE_NAME <- NA
   data$TAXA_LEVEL <- NA
+  data$CORAL_GROUP_NAME <- NA
+  data$CORAL_GROUP <- NA
+
 
   for (i in sjmisc::seq_row(data)) {
     substrate_code_i <- data$SUBSTRATE_CODE[i]
@@ -79,50 +83,43 @@ run_calc_prod <- function(data,
     data$TAXA_LEVEL[i] <-
       unique(prod_dbase$TAXA_LEVEL[prod_dbase$SUBSTRATE_CODE == substrate_code_i])
 
-    if (data$SUBSTRATE_CLASS[i] == "CORAL") {
-      if (data$TAXA_LEVEL[i] == "SPECIES") {
+    if (data$SUBSTRATE_CODE[i] == "PRUS") {
+      data$MORPHOLOGYCODE[i] <- "LC"
 
-        if (data$SUBSTRATE_CODE[i] == "PRUS") {
-          data$MORPHOLOGYCODE[i] <- "LC"
+      data$CORAL_GROUP[i] <- "POLC"
 
-          data$CORAL_GROUP[i] <- "POLC"
+      data$CORAL_GROUP_NAME[i] <- "Laminar columnar Porites"
 
-          data$CORAL_GROUP_NAME[i] <- "Laminar columnar Porites"
-
-          data$MORPHOLOGY[i] <- "Laminar columnar"
-        }
-
-        else {
-          data$MORPHOLOGYCODE[i] <-
-            as.character(paste0(unique(prod_dbase$MORPHOLOGYCODE[prod_dbase$SUBSTRATE_CODE == substrate_code_i])))
-
-          data$CORAL_GROUP[i] <-
-            unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
-                                            prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
-
-          data$CORAL_GROUP_NAME[i] <-
-            unique(prod_dbase$CORAL_GROUP_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
-                                                 prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
-
-          data$MORPHOLOGY[i] <-
-            unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
-                                           prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
-
-
-        }
-      }
+      data$MORPHOLOGY[i] <- "Laminar columnar"
     }
 
+    if (data$SUBSTRATE_CLASS[i] == "CORAL" &
+        data$TAXA_LEVEL[i] == "SPECIES" &
+        data$SUBSTRATE_CODE[i] != "PRUS") {
+      data$MORPHOLOGYCODE[i] <-
+        as.character(paste0(unique(prod_dbase$MORPHOLOGYCODE[prod_dbase$SUBSTRATE_CODE == substrate_code_i])))
 
+      data$CORAL_GROUP[i] <-
+        unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                        prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+
+      data$CORAL_GROUP_NAME[i] <-
+        (unique(prod_dbase$CORAL_GROUP_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                              prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]]))
+
+      data$MORPHOLOGY[i] <-
+        unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                       prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+
+    }
 
     if (dbase_type == "IPRB") {
       calc_i <- calc_prod(
-        data$SUBSTRATE_CLASS[i],
-        data$SUBSTRATE_CODE[i],
-        data$MORPHOLOGYCODE[i],
-        data$SUBSTRATE_COVER_CM[i],
-        "ALL",
-        prod_dbase
+        substrate_class = data$SUBSTRATE_CLASS[i],
+        substrate_code = data$SUBSTRATE_CODE[i],
+        morphology_code = data$MORPHOLOGYCODE[i],
+        substrate_cover_cm = data$SUBSTRATE_COVER_CM[i],
+        prod_dbase = prod_dbase
       )
     }
 
@@ -136,14 +133,12 @@ run_calc_prod <- function(data,
       )
     }
 
-
-
-
     data$COLONY_PROD_G_YR[i] <- calc_i$cp_i
     data$COLONY_PROD_G_YR_L95[i] <- calc_i$cp_l95_i
     data$COLONY_PROD_G_YR_U95[i] <- calc_i$cp_u95_i
 
   }
+
 
   data$OCC_SITEID_TRANSECT <-
     paste(data$OCC_SITEID, data$CB_TRANSECTID, sep = "-")

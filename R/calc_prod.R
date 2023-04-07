@@ -31,7 +31,6 @@ calc_prod <- function(substrate_class,
                       morphology_code,
                       substrate_cover_cm,
                       prod_dbase) {
-
   # Set production rate for all non-calcifiers to zero
   if (substrate_class %in% c("CORAL", "CCA") == FALSE) {
     cp_i <- 0
@@ -41,34 +40,22 @@ calc_prod <- function(substrate_class,
 
   # Calculate production for all calcifiers (corals and CCA)
   if (substrate_class %in% c("CORAL", "CCA") == TRUE) {
-
     if (substrate_class == "CCA") {
-
       # Get extension, density, and confidence intervals from the prod database
       g <-
-        prod_dbase$EXTENSION_CM_YR[
-        prod_dbase$SUBSTRATE_CODE == substrate_code
-          ]
+        prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code]
 
       g_ci <-
-        prod_dbase$EXTENSION_CM_YR_CI[
-        prod_dbase$SUBSTRATE_CODE == substrate_code
-          ]
+        prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code]
 
       d <-
-        prod_dbase$DENSITY_G_CM3[
-        prod_dbase$SUBSTRATE_CODE == substrate_code
-                                 ]
+        prod_dbase$DENSITY_G_CM3[prod_dbase$SUBSTRATE_CODE == substrate_code]
 
       d_ci <-
-        prod_dbase$DENSITY_G_CM3_CI[
-        prod_dbase$SUBSTRATE_CODE == substrate_code
-        ]
+        prod_dbase$DENSITY_G_CM3_CI[prod_dbase$SUBSTRATE_CODE == substrate_code]
 
       c <-
-        prod_dbase$CONVERSION_FACTOR[
-        prod_dbase$SUBSTRATE_CODE == substrate_code
-        ]
+        prod_dbase$CONVERSION_FACTOR[prod_dbase$SUBSTRATE_CODE == substrate_code]
 
       x <- substrate_cover_cm
 
@@ -76,188 +63,176 @@ calc_prod <- function(substrate_class,
       cp_i <- x * g * d
       cp_l95_i <- x * (g - g_ci) * d
       cp_u95_i <- x * (g + g_ci) * d
-
     }
-    if (substrate_class == "CORAL" & morphology_code != "LC") {
-      # Get extension, density, and confidence intervals from the prod database
-      g <-
-        prod_dbase$EXTENSION_CM_YR[
-          prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code
-          ]
 
-      g_ci <-
-        prod_dbase$EXTENSION_CM_YR_CI[
-          prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code
-          ]
+    if (substrate_class == "CORAL") {
+      if (morphology_code != "LC") {
+        # Get extension, density, and confidence intervals from the prod database
+        g <-
+          prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                       prod_dbase$MORPHOLOGYCODE == morphology_code]
 
-      d <-
-        prod_dbase$DENSITY_G_CM3[
-          prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code
-          ]
+        g_ci <-
+          prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                          prod_dbase$MORPHOLOGYCODE == morphology_code]
 
-      d_ci <-
-        prod_dbase$DENSITY_G_CM3_CI[
-          prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code
-          ]
+        d <-
+          prod_dbase$DENSITY_G_CM3[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                     prod_dbase$MORPHOLOGYCODE == morphology_code]
 
-      c <-
-        prod_dbase$CONVERSION_FACTOR[
-          prod_dbase$SUBSTRATE_CODE == substrate_code &
-          prod_dbase$MORPHOLOGYCODE == morphology_code
-          ]
+        d_ci <-
+          prod_dbase$DENSITY_G_CM3_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                        prod_dbase$MORPHOLOGYCODE == morphology_code]
 
-      x <- substrate_cover_cm
+        c <-
+          prod_dbase$CONVERSION_FACTOR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                         prod_dbase$MORPHOLOGYCODE == morphology_code]
 
-      # Calculate production rate for mounding, mounding lobate,
-      # and free-living morphologies
-      if ((morphology_code %in% c("MD", "ML", "FR") == TRUE)) {
+        x <- substrate_cover_cm
 
-        df <- data.frame(x = seq(0, 135, 1))
+        # Calculate production rate for mounding, mounding lobate,
+        # and free-living morphologies
+        if ((morphology_code %in% c("MD", "ML", "FR") == TRUE)) {
+          df <- data.frame(x = seq(0, 135, 1))
 
-        df$y <-  d * (((((((((df$x * 2) / pi
-        ) / 2) + g) ^ 2
-        ) * pi) / 2)) - (((((((df$x * 2) / pi) / 2) ^ 2
-        ) * pi) / 2)))
+          df$y <-  d * (((((((((df$x * 2) / pi
+          ) / 2) + g) ^ 2
+          ) * pi) / 2)) - (((((((df$x * 2) / pi) / 2) ^ 2
+          ) * pi) / 2)))
 
-        df$y_l95 <-  (d - d_ci) * (((((((((df$x * 2) / pi
-        ) / 2) + (g - g_ci)) ^ 2
-        ) * pi) / 2)) - (((((((df$x * 2) / pi) / 2) ^ 2
-        ) * pi) / 2)))
+          df$y_l95 <-  (d - d_ci) * (((((((((df$x * 2) / pi
+          ) / 2) + (g - g_ci)) ^ 2
+          ) * pi) / 2)) - (((((((df$x * 2) / pi) / 2) ^ 2
+          ) * pi) / 2)))
 
-        df$y_u95 <-  (d + d_ci) * (((((((((df$x * 2) / pi
-        ) / 2) + (g + g_ci)) ^ 2
-        ) * pi) / 2)) - (((((((df$x * 2) / pi) / 2) ^ 2
-        ) * pi) / 2)))
+          df$y_u95 <-  (d + d_ci) * (((((((((df$x * 2) / pi
+          ) / 2) + (g + g_ci)) ^ 2
+          ) * pi) / 2)) - (((((((df$x * 2) / pi) / 2) ^ 2
+          ) * pi) / 2)))
+        }
+
+        # Calculate production rate for encrusting, plating, foliose,
+        # and table morphologies
+        if ((morphology_code %in% c("EM", "PL", "FO", "TB") == TRUE)) {
+          h <- 2
+
+          df <- data.frame(x = seq(0, 135, 1))
+
+          df$y <- h * g * d + 0.1 * g * (df$x + (h * g)) * d
+
+          df$y_l95 <-
+            h * (g - g_ci) * (d - d_ci) + 0.1 * (g - g_ci) *
+            (df$x + (h * (g - g_ci))) * (d - d_ci)
+
+          df$y_u95 <-
+            h * (g + g_ci) * (d + d_ci) + 0.1 * (g + g_ci) *
+            (df$x + (h * (g + g_ci))) * (d + d_ci)
+        }
+
+        # Calculate production rate for branching, columnar,
+        # and knobby morphologies
+        if ((morphology_code %in% c("BR", "CO", "KN", "BRFA", "BRSL")) == TRUE) {
+          df <- data.frame(x = seq(0, 135, 1))
+
+          df$y <-
+            ((((1 - c) * df$x) * g * 0.1) + (c * df$x * g)) * d
+
+          df$y_l95 <-
+            ((((1 - c) * df$x) * (g - g_ci) * 0.1) +
+               (c * df$x * (g - g_ci))) * (d - d_ci)
+
+          df$y_u95 <-
+            ((((1 - c) * df$x) * (g + g_ci) * 0.1) +
+               (c * df$x * (g + g_ci))) * (d + d_ci)
+        }
       }
-
-      # Calculate production rate for encrusting, plating, foliose,
-      # and table morphologies
-      if ((morphology_code %in% c("EM", "PL", "FO", "TB") == TRUE)) {
-
-        h <- 2
-
-        df <- data.frame(x = seq(0, 135, 1))
-
-        df$y <- h * g * d + 0.1 * g * (df$x + (h * g)) * d
-
-        df$y_l95 <-
-          h * (g - g_ci) * (d - d_ci) + 0.1 * (g - g_ci) *
-          (df$x + (h * (g - g_ci))) * (d - d_ci)
-
-        df$y_u95 <-
-          h * (g + g_ci) * (d + d_ci) + 0.1 * (g + g_ci) *
-          (df$x + (h * (g + g_ci))) * (d + d_ci)
-      }
-
-      # Calculate production rate for branching, columnar,
-      # and knobby morphologies
-      if ((morphology_code %in% c("BR", "CO", "KN", "BRFA", "BRSL")) == TRUE) {
-
-        df <- data.frame(x = seq(0, 135, 1))
-
-        df$y <-  ((((1 - c) * df$x) * g * 0.1) + (c * df$x * g)) * d
-
-        df$y_l95 <-
-          ((((1 - c) * df$x) * (g - g_ci) * 0.1) +
-             (c * df$x * (g - g_ci))) * (d - d_ci)
-
-        df$y_u95 <-
-          ((((1 - c) * df$x) * (g + g_ci) * 0.1) +
-             (c * df$x * (g + g_ci))) * (d + d_ci)
-      }
-    }
 
       # Calculate production rate for laminar columnar morphology (
-    if (substrate_class == "CORAL" & morphology_code == "LC") {
+      if (morphology_code == "LC") {
+        g_la <-
+          prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                       prod_dbase$MORPHOLOGYCODE == "LC-LA"]
 
-      g_la <-
-        prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
-                                     prod_dbase$MORPHOLOGYCODE == "LC-LA"]
+        g_la_ci <-
+          prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                          prod_dbase$MORPHOLOGYCODE == "LC-LA"]
 
-      g_la_ci <-
-        prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
-                                        prod_dbase$MORPHOLOGYCODE == "LC-LA"]
-
-      g_co <-
-        prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
-                                     prod_dbase$MORPHOLOGYCODE == "LC-CO"]
-
-      g_co_ci <-
-        prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
-                                        prod_dbase$MORPHOLOGYCODE == "LC-CO"]
-
-      d <-
-        prod_dbase$DENSITY_G_CM3[prod_dbase$SUBSTRATE_CODE == substrate_code &
-                                   prod_dbase$MORPHOLOGYCODE == "LC-CO"]
-
-      d_ci <-
-        prod_dbase$DENSITY_G_CM3_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
-                                      prod_dbase$MORPHOLOGYCODE == "LC-CO"]
-
-      c <-
-        prod_dbase$CONVERSION_FACTOR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+        g_co <-
+          prod_dbase$EXTENSION_CM_YR[prod_dbase$SUBSTRATE_CODE == substrate_code &
                                        prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-      x <- substrate_cover_cm
+        g_co_ci <-
+          prod_dbase$EXTENSION_CM_YR_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                          prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-      df <- data.frame(x = seq(0, 135, 1))
+        d <-
+          prod_dbase$DENSITY_G_CM3[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                     prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-      # Laminar portion
-      h <- 2
+        d_ci <-
+          prod_dbase$DENSITY_G_CM3_CI[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                        prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-      prop_la <-
-        0.55 #Proportion of surface distance that is laminar
+        c <-
+          prod_dbase$CONVERSION_FACTOR[prod_dbase$SUBSTRATE_CODE == substrate_code &
+                                         prod_dbase$MORPHOLOGYCODE == "LC-CO"]
 
-      df_la <- data.frame(x_la = seq(0, 135, 1))
+        x <- substrate_cover_cm
 
-      df_la$y_la <-
-        h * g_la * d + 0.1 * g_la * ((prop_la * df_la$x_la) + (h * g_la)) * d
+        df <- data.frame(x = seq(0, 135, 1))
 
-      df_la$y_la_l95 <-
-        h * (g_la - g_la_ci) * (d - d_ci) + 0.1 * (g_la - g_la_ci) *
-        ((prop_la * df_la$x_la) + (h * (g_la - g_la_ci))) * (d - d_ci)
+        # Laminar portion
+        h <- 2
 
-      df_la$y_la_u95 <-
-        h * (g_la + g_la_ci) * (d + d_ci) + 0.1 * (g_la + g_la_ci) *
-        ((prop_la * df_la$x_la) + (h * (g_la + g_la_ci))) * (d + d_ci)
+        prop_la <-
+          0.55 #Proportion of surface distance that is laminar
 
-      # Columnar portion
-      df_co <- data.frame(x_co = seq(0, 135, 1))
+        df_la <- data.frame(x_la = seq(0, 135, 1))
 
-      prop_co <-
-        0.45 # Proportion of surface distance that is columnar
+        df_la$y_la <-
+          h * g_la * d + 0.1 * g_la * ((prop_la * df_la$x_la) + (h * g_la)) * d
 
-      df_co$y_co <-
-        ((((1 - c) * (
-          prop_co * df_co$x_co
-        )) * g_co * 0.1) +
-          (c * (prop_co * df_co$x_co) * g_co)) * d
+        df_la$y_la_l95 <-
+          h * (g_la - g_la_ci) * (d - d_ci) + 0.1 * (g_la - g_la_ci) *
+          ((prop_la * df_la$x_la) + (h * (g_la - g_la_ci))) * (d - d_ci)
 
-      df_co$y_co_l95 <-
-        ((((1 - c) * (
-          prop_co * df_co$x_co
-        )) * (g_co - g_co_ci) * 0.1) +
-          (c * (prop_co * df_co$x_co) * (g_co - g_co_ci))) * (d - d_ci)
+        df_la$y_la_u95 <-
+          h * (g_la + g_la_ci) * (d + d_ci) + 0.1 * (g_la + g_la_ci) *
+          ((prop_la * df_la$x_la) + (h * (g_la + g_la_ci))) * (d + d_ci)
 
-      df_co$y_co_u95 <-
-        ((((1 - c) * (
-          prop_co * df_co$x_co
-        )) * (g_co + g_co_ci) * 0.1) +
-          (c * (prop_co * df_co$x_co) * (g_co + g_co_ci))) * (d + d_ci)
+        # Columnar portion
+        df_co <- data.frame(x_co = seq(0, 135, 1))
 
-      # Add together laminar and columnar portions to get overall production
-      df$y <- df_la$y_la + df_co$y_co
+        prop_co <-
+          0.45 # Proportion of surface distance that is columnar
 
-      df$y_l95 <- df_la$y_la_l95 + df_co$y_co_l95
+        df_co$y_co <-
+          ((((1 - c) * (
+            prop_co * df_co$x_co
+          )) * g_co * 0.1) +
+            (c * (prop_co * df_co$x_co) * g_co)) * d
 
-      df$y_u95 <- df_la$y_la_u95 + df_co$y_co_u95
-    }
+        df_co$y_co_l95 <-
+          ((((1 - c) * (
+            prop_co * df_co$x_co
+          )) * (g_co - g_co_ci) * 0.1) +
+            (c * (prop_co * df_co$x_co) * (g_co - g_co_ci))) * (d - d_ci)
 
-      df[1, ] <- 0
+        df_co$y_co_u95 <-
+          ((((1 - c) * (
+            prop_co * df_co$x_co
+          )) * (g_co + g_co_ci) * 0.1) +
+            (c * (prop_co * df_co$x_co) * (g_co + g_co_ci))) * (d + d_ci)
+
+        # Add together laminar and columnar portions to get overall production
+        df$y <- df_la$y_la + df_co$y_co
+
+        df$y_l95 <- df_la$y_la_l95 + df_co$y_co_l95
+
+        df$y_u95 <- df_la$y_la_u95 + df_co$y_co_u95
+      }
+
+      df[1,] <- 0
 
       lm <- lm(df$y ~ df$x)
       coefficient_mean <- lm$coefficients[2]
@@ -273,7 +248,7 @@ calc_prod <- function(substrate_class,
       coefficient_mean_u95 <- lm_u95$coefficients[2]
       intercept_mean_u95 <- lm_u95$coefficients[1]
       cp_u95_i <- coefficient_mean_u95 * x + intercept_mean_u95
-
     }
+  }
   return(data.frame(cp_i, cp_l95_i, cp_u95_i))
 }
