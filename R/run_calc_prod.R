@@ -130,7 +130,7 @@ run_calc_prod <- function(data,
         substrate_code = data$SUBSTRATE_CODE[i],
         morphology_code = data$MORPHOLOGYCODE[i],
         substrate_cover_cm = data$SUBSTRATE_COVER_CM[i],
-        dbase_type == "NCRMP",
+        dbase_type = "NCRMP",
         prod_dbase = prod_dbase
       )
     }
