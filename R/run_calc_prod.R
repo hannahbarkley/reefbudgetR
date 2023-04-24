@@ -113,6 +113,23 @@ run_calc_prod <- function(data,
 
     }
 
+    if (data$SUBSTRATE_CLASS[i] == "CORAL" &
+        data$TAXA_LEVEL[i] == "GENUS" &
+        data$SUBSTRATE_CODE[i] != "PRUS") {
+      data$CORAL_GROUP[i] <-
+        unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                        prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+
+      data$CORAL_GROUP_NAME[i] <-
+        (unique(prod_dbase$CORAL_GROUP_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                              prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]]))
+
+      data$MORPHOLOGY[i] <-
+        unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                       prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+
+    }
+
     if (dbase_type == "IPRB") {
       calc_i <- calc_prod(
         substrate_class = data$SUBSTRATE_CLASS[i],
