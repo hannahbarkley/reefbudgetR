@@ -3,7 +3,7 @@
 #'@author Hannah Barkley
 #'
 #'@param data Urchin observation data set.
-#'@param method_name Transect design by which data were collected ("IPRB" or "Chords").
+#'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
 #'
 #'@import tidyr
 #'@import dplyr
@@ -27,7 +27,7 @@
 
 process_urchins <- function(data,
                             transect_length = NULL,
-                            method_name = c("IPRB", "Chords"),
+                            method_name = c("IPRB", "Chords", "SfM"),
                             full_summary = TRUE) {
   options(dplyr.summarise.inform = FALSE)
 
@@ -40,7 +40,7 @@ process_urchins <- function(data,
 
   # Convert to long format
   data_long <- data %>%
-    select(-c(URCH_OBS_TF)) %>%
+    dplyr::select(-c(URCH_OBS_TF)) %>%
     #filter(is.na(TAXON_CODE) == FALSE) %>%
     pivot_longer(
       cols = !c(
