@@ -41,7 +41,7 @@ process_urchins <- function(data,
   # Convert to long format
   data_long <- data %>%
     dplyr::select(-c(URCH_OBS_TF)) %>%
-    #filter(is.na(TAXON_CODE) == FALSE) %>%
+    filter(is.na(TAXON_CODE) == FALSE) %>%
     pivot_longer(
       cols = !c(
         "REGION",
@@ -156,18 +156,6 @@ process_urchins <- function(data,
   # Set all NA values to 0
   data_full$COUNT[is.na(data_full$COUNT)] <- 0
 
-  # Assign urchin taxa to equation groups
-  data_full$GROUP <- NA
-
-  data_full$GROUP[data_full$TAXON_CODE %in%
-                    c("ECMA", "ECOB", "ECSP")] <- "ECMA"
-  data_full$GROUP[data_full$TAXON_CODE %in%
-                    c("DISP", "ECTH")] <- "DISP-ECTH"
-  data_full$GROUP[data_full$TAXON_CODE %in%
-                    c("ECST", "PAGR")] <- "OTHER"
-  data_full$GROUP[data_full$TAXON_CODE %in%
-                    c("TRGR", "HEMA", "EUME", "MEGL")] <- "NON"
-
   # Add transect length to data frame
 
   data_full$OCC_SITEID_TRANSECT <-
@@ -177,7 +165,7 @@ process_urchins <- function(data,
     summary_transect$TRANSECT_LENGTH_M[match(data_full$OCC_SITEID_TRANSECT , summary_transect$OCC_SITEID_TRANSECT)]
 
   # Remove non-eroding urchin taxa
-  data_eroders <- subset(data_full, data_full$GROUP != "NON")
+  data_eroders <- data_full[!data_full$TAXON_CODE %in% c("TRGR", "HEMA", "EUME", "MEGL"),]
 
   # Set factor levels and order
   data_eroders$TEST_SIZE_BIN_MM <- factor(
@@ -194,11 +182,8 @@ process_urchins <- function(data,
     )
   )
 
-  data_eroders$GROUP <- factor(data_eroders$GROUP,
-                               levels = c("ECMA", "DISP-ECTH", "OTHER"))
-
   # Calculate transect-level density and abundance
-  transect_density_group <- data_eroders %>%
+  transect_density_taxon <- data_eroders %>%
     group_by(
       REGION,
       REGIONCODE,
@@ -214,7 +199,8 @@ process_urchins <- function(data,
       LOCALDATE,
       CB_METHOD,
       CB_TRANSECTID,
-      GROUP,
+      TAXON_CODE,
+      TAXON_NAME,
       TEST_SIZE_BIN_MM,
       TRANSECT_LENGTH_M
     ) %>%
@@ -224,7 +210,7 @@ process_urchins <- function(data,
     )
 
   # Calculate site level density
-  site_density_group <- transect_density_group %>%
+  site_density_taxon <- transect_density_taxon %>%
     group_by(
       REGION,
       REGIONCODE,
@@ -239,61 +225,66 @@ process_urchins <- function(data,
       DEPTH_M,
       LOCALDATE,
       CB_METHOD,
-      GROUP,
-      TEST_SIZE_BIN_MM
+      TAXON_CODE,
+      TAXON_NAME,
+      TEST_SIZE_BIN_MM,
+      TRANSECT_LENGTH_M
     ) %>%
     summarize(
-      SITE_URCHIN_DENSITY_NO_M2_MEAN = mean(TRANSECT_URCHIN_DENSITY_NO_M2),
-      SITE_URCHIN_DENSITY_NO_M2_SD = sd(TRANSECT_URCHIN_DENSITY_NO_M2)
+      URCHIN_ABUNDANCE_NO = sum(TRANSECT_URCHIN_ABUNDANCE_NO),
+      URCHIN_DENSITY_NO_M2_MEAN = mean(TRANSECT_URCHIN_DENSITY_NO_M2),
+      URCHIN_DENSITY_NO_M2_SD = sd(TRANSECT_URCHIN_DENSITY_NO_M2),
+      URCHIN_DENSITY_NO_M2_SE = sd(TRANSECT_URCHIN_DENSITY_NO_M2)/
+        sqrt(length(sd(TRANSECT_URCHIN_DENSITY_NO_M2))),
+     URCHIN_DENSITY_NO_M2_N = length(TRANSECT_URCHIN_DENSITY_NO_M2)
     )
 
   # Initiate data columns
-  transect_density_group$TEST_SIZE_MEDIAN_MM <- NA
-  transect_density_group$TRANSECT_EROSION_G_M2_YR <- NA
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM <- NA
+  transect_density_taxon$TRANSECT_EROSION_G_M2_YR <- NA
 
   # Set median test size for each test size bin
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_0_20_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_0_20_MM"] <-
     10
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_21_40_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_21_40_MM"] <-
     30
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_41_60_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_41_60_MM"] <-
     50
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_61_80_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_61_80_MM"] <-
     70
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_81_100_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_81_100_MM"] <-
     90
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_101_120_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_101_120_MM"] <-
     110
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_121_140_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_121_140_MM"] <-
     130
-  transect_density_group$TEST_SIZE_MEDIAN_MM[transect_density_group$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_141_160_MM"] <-
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_141_160_MM"] <-
     150
 
-
   # Calculate group-specific erosion rate
-  for (i in sjmisc::seq_row(transect_density_group)) {
-    if (transect_density_group$GROUP[i] == "ECMA") {
-      transect_density_group$TRANSECT_EROSION_G_M2_YR[i] <- 0.0003 *
-        (transect_density_group$TEST_SIZE_MEDIAN_MM[i] ^ 1.9671) *
-        transect_density_group$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
+  for (i in sjmisc::seq_row(transect_density_taxon)) {
+    if (transect_density_taxon$TAXON_CODE[i] %in% c("ECMA", "ECOB", "ECSP") == TRUE) {
+      transect_density_taxon$TRANSECT_EROSION_G_M2_YR[i] <- 0.0003 *
+        (transect_density_taxon$TEST_SIZE_MEDIAN_MM[i] ^ 1.9671) *
+        transect_density_taxon$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
     }
-    if (transect_density_group$GROUP[i] == "DISP-ECTH") {
-      transect_density_group$TRANSECT_EROSION_G_M2_YR[i] <- 0.000003 *
-        (transect_density_group$TEST_SIZE_MEDIAN_MM[i] ^ 3.2887) *
-        transect_density_group$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
+    if (transect_density_taxon$TAXON_CODE[i] %in% c("DISP", "ECTH") == TRUE) {
+      transect_density_taxon$TRANSECT_EROSION_G_M2_YR[i] <- 0.000003 *
+        (transect_density_taxon$TEST_SIZE_MEDIAN_MM[i] ^ 3.2887) *
+        transect_density_taxon$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
     }
-    if (transect_density_group$GROUP[i] == "OTHER") {
-      transect_density_group$TRANSECT_EROSION_G_M2_YR[i] <- 0.00004 *
-        (transect_density_group$TEST_SIZE_MEDIAN_MM[i] ^ 2.6025) *
-        transect_density_group$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
+    if (transect_density_taxon$TAXON_CODE[i] %in% c("ECST", "PAGR") == TRUE) {
+      transect_density_taxon$TRANSECT_EROSION_G_M2_YR[i] <- 0.00004 *
+        (transect_density_taxon$TEST_SIZE_MEDIAN_MM[i] ^ 2.6025) *
+        transect_density_taxon$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
     }
   }
 
   # Summary transect and site level erosion
-  transect_density_sum <- transect_density_group %>%
+  transect_erosion <- transect_density_taxon %>%
     group_by(
       REGION,
       REGIONCODE,
@@ -314,14 +305,39 @@ process_urchins <- function(data,
     summarize(URCHIN_ABUNDANCE_NO = sum(TRANSECT_URCHIN_ABUNDANCE_NO),
       URCHIN_EROSION_KG_M2_YR = sum(TRANSECT_EROSION_G_M2_YR) / 1000)
 
-  transect_density_sum$OCC_SITEID_TRANSECT <-
-    paste(transect_density_sum$OCC_SITEID,
-          transect_density_sum$CB_TRANSECTID,
+  transect_erosion$OCC_SITEID_TRANSECT <-
+    paste(transect_erosion$OCC_SITEID,
+          transect_erosion$CB_TRANSECTID,
           sep = "-")
 
-  transect_density_sum$URCHIN_DENSITY_NO_M2 <- transect_density_sum$URCHIN_ABUNDANCE_NO / transect_density_sum$TRANSECT_LENGTH_M
+  transect_erosion$URCHIN_DENSITY_NO_M2 <- transect_erosion$URCHIN_ABUNDANCE_NO / transect_erosion$TRANSECT_LENGTH_M
 
-  site_erosion <- transect_density_sum %>%
+  transect_erosion_taxon <- transect_density_taxon %>%
+    group_by(
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      CB_TRANSECTID,
+      TAXON_CODE,
+      TAXON_NAME,
+      TRANSECT_LENGTH_M
+    ) %>%
+    summarize(URCHIN_ABUNDANCE_NO = sum(TRANSECT_URCHIN_ABUNDANCE_NO),
+              URCHIN_EROSION_KG_M2_YR = sum(TRANSECT_EROSION_G_M2_YR) / 1000)
+
+  transect_erosion_taxon$URCHIN_DENSITY_NO_M2 <- transect_erosion_taxon$URCHIN_ABUNDANCE_NO / transect_erosion_taxon$TRANSECT_LENGTH_M
+
+  site_erosion <- transect_erosion %>%
     group_by(
       REGION,
       REGIONCODE,
@@ -355,7 +371,48 @@ process_urchins <- function(data,
         length(URCHIN_DENSITY_NO_M2),
       URCHIN_DENSITY_NO_M2_CI = 1.97 *
         sd(URCHIN_DENSITY_NO_M2, na.rm = TRUE) /
-        length(URCHIN_DENSITY_NO_M2)
+        length(URCHIN_DENSITY_NO_M2),
+      URCHIN_ABUNDANCE_NO = sum(URCHIN_ABUNDANCE_NO)
+    )
+
+  site_erosion_taxon <- transect_erosion_taxon %>%
+    group_by(
+      REGION,
+      REGIONCODE,
+      YEAR,
+      CRUISE_ID,
+      LOCATION,
+      LOCATIONCODE,
+      OCC_SITEID,
+      OCC_SITENAME,
+      LATITUDE,
+      LONGITUDE,
+      DEPTH_M,
+      LOCALDATE,
+      CB_METHOD,
+      TAXON_CODE,
+      TAXON_NAME
+    ) %>%
+    summarize(
+      URCHIN_EROSION_KG_M2_YR_MEAN = mean(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE),
+      URCHIN_EROSION_KG_M2_YR_SD = sd(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE),
+      URCHIN_EROSION_KG_M2_YR_N = length(URCHIN_EROSION_KG_M2_YR),
+      URCHIN_EROSION_KG_M2_YR_SE =
+        sd(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE) /
+        length(URCHIN_EROSION_KG_M2_YR),
+      URCHIN_EROSION_KG_M2_YR_CI = 1.97 *
+        sd(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE) /
+        length(URCHIN_EROSION_KG_M2_YR),
+      URCHIN_DENSITY_NO_M2_MEAN = mean(URCHIN_DENSITY_NO_M2, na.rm = TRUE),
+      URCHIN_DENSITY_NO_M2_SD = sd(URCHIN_DENSITY_NO_M2, na.rm = TRUE),
+      URCHIN_DENSITY_NO_M2_N = length(URCHIN_DENSITY_NO_M2),
+      URCHIN_DENSITY_NO_M2_SE =
+        sd(URCHIN_DENSITY_NO_M2, na.rm = TRUE) /
+        length(URCHIN_DENSITY_NO_M2),
+      URCHIN_DENSITY_NO_M2_CI = 1.97 *
+        sd(URCHIN_DENSITY_NO_M2, na.rm = TRUE) /
+        length(URCHIN_DENSITY_NO_M2),
+      URCHIN_ABUNDANCE_NO = sum(URCHIN_ABUNDANCE_NO)
     )
 
   data <- data[c(
@@ -392,7 +449,9 @@ process_urchins <- function(data,
     return(
       list(
         site_erosion = site_erosion,
-        transect_erosion = transect_density_sum,
+        transect_erosion = transect_erosion,
+        site_taxon = site_erosion_taxon,
+        transect_taxon = transect_erosion_taxon,
         data = data
       )
     )
