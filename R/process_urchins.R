@@ -133,7 +133,25 @@ process_urchins <- function(data,
     fill(c("LOCALDATE"),
          .direction = "downup")
 
+  for (i in 1:nrow(data_full)){
+    if (is.na(data_full$OCC_SITENAME[i]) == TRUE){
+      data_full$REGION[i] <- data$REGION[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$REGIONCODE[i] <- data$REGIONCODE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$YEAR[i] <- data$YEAR[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$CRUISE_ID[i] <- data$CRUISE_ID[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$LOCATION[i] <- data$LOCATION[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$LOCATIONCODE[i] <- data$LOCATIONCODE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$OCC_SITENAME[i] <- data$OCC_SITENAME[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$LATITUDE[i] <- data$LATITUDE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$LONGITUDE[i] <- data$LONGITUDE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$DEPTH_M[i] <- data$DEPTH_M[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$CB_METHOD[i] <- data$CB_METHOD[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$TRANSECT_LENGTH_M[i] <- data$TRANSECT_LENGTH_M[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$LOCALDATE[i] <- data$LOCALDATE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
 
+
+    }
+  }
 
   data_full$TAXON_NAME[is.na(data_full$TAXON_NAME)] <-
     data_full$TAXON_CODE[is.na(data_full$TAXON_NAME)]
