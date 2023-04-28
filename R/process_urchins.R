@@ -309,13 +309,17 @@ process_urchins <- function(data,
       LOCALDATE,
       CB_METHOD,
       CB_TRANSECTID,
+      TRANSECT_LENGTH_M
     ) %>%
-    summarize(URCHIN_EROSION_KG_M2_YR = sum(TRANSECT_EROSION_G_M2_YR) / 1000)
+    summarize(URCHIN_ABUNDANCE_NO = sum(TRANSECT_URCHIN_ABUNDANCE_NO),
+      URCHIN_EROSION_KG_M2_YR = sum(TRANSECT_EROSION_G_M2_YR) / 1000)
 
   transect_density_sum$OCC_SITEID_TRANSECT <-
     paste(transect_density_sum$OCC_SITEID,
           transect_density_sum$CB_TRANSECTID,
           sep = "-")
+
+  transect_density_sum$URCHIN_DENSITY_NO_M2 <- transect_density_sum$URCHIN_ABUNDANCE_NO / transect_density_sum$TRANSECT_LENGTH_M
 
   site_erosion <- transect_density_sum %>%
     group_by(
@@ -342,7 +346,16 @@ process_urchins <- function(data,
         length(URCHIN_EROSION_KG_M2_YR),
       URCHIN_EROSION_KG_M2_YR_CI = 1.97 *
         sd(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE) /
-        length(URCHIN_EROSION_KG_M2_YR)
+        length(URCHIN_EROSION_KG_M2_YR),
+      URCHIN_DENSITY_NO_M2_MEAN = mean(URCHIN_DENSITY_NO_M2, na.rm = TRUE),
+      URCHIN_DENSITY_NO_M2_SD = sd(URCHIN_DENSITY_NO_M2, na.rm = TRUE),
+      URCHIN_DENSITY_NO_M2_N = length(URCHIN_DENSITY_NO_M2),
+      URCHIN_DENSITY_NO_M2_SE =
+        sd(URCHIN_DENSITY_NO_M2, na.rm = TRUE) /
+        length(URCHIN_DENSITY_NO_M2),
+      URCHIN_DENSITY_NO_M2_CI = 1.97 *
+        sd(URCHIN_DENSITY_NO_M2, na.rm = TRUE) /
+        length(URCHIN_DENSITY_NO_M2)
     )
 
   data <- data[c(
