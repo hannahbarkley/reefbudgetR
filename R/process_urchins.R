@@ -183,7 +183,7 @@ process_urchins <- function(data,
     summary_transect$TRANSECT_LENGTH_M[match(data_full$OCC_SITEID_TRANSECT , summary_transect$OCC_SITEID_TRANSECT)]
 
   # Remove non-eroding urchin taxa
-  data_eroders <- data_full[!data_full$TAXON_CODE %in% c("TRGR", "HEMA", "EUME", "MEGL"),]
+  data_eroders <- data_full[!data_full$TAXON_CODE %in% c("TRGR", "HEMA", "MEGL"),]
 
   # Set factor levels and order
   data_eroders$TEST_SIZE_BIN_MM <- factor(
@@ -293,7 +293,7 @@ process_urchins <- function(data,
         transect_density_taxon$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365
 
     }
-    if (transect_density_taxon$TAXON_CODE[i] %in% c("ECST", "PAGR") == TRUE) {
+    if (transect_density_taxon$TAXON_CODE[i] %in% c("ECST", "PAGR", "EUME") == TRUE) {
       transect_density_taxon$TRANSECT_EROSION_G_M2_YR[i] <- 0.00004 *
         (transect_density_taxon$TEST_SIZE_MEDIAN_MM[i] ^ 2.6025) *
         transect_density_taxon$TRANSECT_URCHIN_DENSITY_NO_M2[i] * 365

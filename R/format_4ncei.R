@@ -2,7 +2,7 @@
 #'
 #'@author Hannah Barkley
 #'
-#'@param net_prod output of `process_net_prod`.
+#'@param data output of `process_net`.
 #'
 #'@import dplyr
 #'@import tools
@@ -11,9 +11,9 @@
 #'
 #'@export format_4ncei
 #'
-format_4ncei <- function(net_prod) {
+format_4ncei <- function(data) {
 
-  net_ncei <- net_prod[c(
+  net_ncei <- data[c(
     "REGION",
     "REGIONCODE",
     "YEAR",
@@ -44,8 +44,6 @@ format_4ncei <- function(net_prod) {
     "MACROBIOEROSION_KG_M2_YR_SE",
     "MICROBIOEROSION_KG_M2_YR_MEAN",
     "MICROBIOEROSION_KG_M2_YR_SE",
-    "BIOEROSION_KG_M2_YR_MEAN",
-    "BIOEROSION_KG_M2_YR_SE",
     "URCHIN_EROSION_KG_M2_YR_MEAN",
     "URCHIN_EROSION_KG_M2_YR_SE",
     "FISH_BIOMASS_KG_HA_ALL_MEAN",

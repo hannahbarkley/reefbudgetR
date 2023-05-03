@@ -863,7 +863,7 @@ summarize_prod <- function(data,
       LONGITUDE,
       DEPTH_M,
       LOCALDATE,
-      CB_METHOD,
+      CB_METHOD
     ) %>%
     dplyr::reframe(across(
       c(RUGOSITY,
