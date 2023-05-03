@@ -4,12 +4,14 @@
 \alias{process_net}
 \title{Calculate site-level net production rates}
 \usage{
-process_net(prod, urch, fish, format = "wide")
+process_net(prod, urch, fish, sum_by = c("site", "transect"), format = "wide")
 }
 \arguments{
 \item{prod}{Production data, output of \code{process_prod}.}
 
 \item{urch}{Urchin data, output of \code{process_urchins}.}
+
+\item{sum_by}{Calculate net production from transect or site level data.}
 
 \item{format}{Output data frame format ("wide" or "long"). Default is "wide".}
 

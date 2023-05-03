@@ -4,10 +4,10 @@
 \alias{format_4ncei}
 \title{Format net production data for NCEI submission}
 \usage{
-format_4ncei(net_prod)
+format_4ncei(data)
 }
 \arguments{
-\item{net_prod}{output of \code{process_net_prod}.}
+\item{data}{output of \code{process_net}.}
 }
 \description{
 Format net production data for NCEI submission

@@ -7,14 +7,14 @@
 process_urchins(
   data,
   transect_length = NULL,
-  method_name = c("IPRB", "Chords"),
+  method_name = c("IPRB", "Chords", "SfM"),
   full_summary = TRUE
 )
 }
 \arguments{
 \item{data}{Urchin observation data set.}
 
-\item{method_name}{Transect design by which data were collected ("IPRB" or "Chords").}
+\item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
 }
 \description{
 Calculate urchin erosion rates from urchin census data
