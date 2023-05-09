@@ -261,7 +261,7 @@ process_urchins <- function(data,
   transect_density_taxon$TEST_SIZE_MEDIAN_MM <- NA
   transect_density_taxon$TRANSECT_EROSION_G_M2_YR <- NA
 
-  # Set median test size for each test size bin
+  # Set median test size for each test size bin, any urchin >120mm is set to 110mm following IPRB v 1.3
   transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_0_20_MM"] <-
     10
   transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_21_40_MM"] <-
@@ -275,9 +275,9 @@ process_urchins <- function(data,
   transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_101_120_MM"] <-
     110
   transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_121_140_MM"] <-
-    130
+    110
   transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_141_160_MM"] <-
-    150
+    110
 
   # Calculate group-specific erosion rate
   for (i in sjmisc::seq_row(transect_density_taxon)) {
