@@ -16,6 +16,7 @@
 #'@examples fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'@examples calc_eros_fish_output <- calc_eros_fish(fish_data, rates_dbase = "Kindinger")
 
+
 calc_eros_fish <- function(data,
                              rates_dbase = c("IPRB", "Kindinger")) {
 
@@ -61,7 +62,7 @@ calc_eros_fish <- function(data,
         PHASE == "J"
     )) %>%
     # remove all I and T for 0-10cm classification
-    filter(!(SIZE_CLASS %in% "SIZE_CLASS_0_10_CM" &
+    filter(!(SIZE_CLASS %in% "0-10cm" &
                PHASE %in% c("I", "T"))) %>%
     # remove all sizes above 51cm for initial phases
     filter(!(SIZE_CLASS %in% "51-60cm" &
