@@ -20,7 +20,7 @@
 #'full_summary = TRUE)
 
 process_fish <- function(data,
-                         rates_dbase = "Kindinger",
+                         rates_dbase = "IPRB",
                          full_summary = TRUE) {
 
   # Calculate erosion rates per fish -------------------------------------------

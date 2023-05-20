@@ -89,8 +89,8 @@ calc_eros_fish <- function(data,
     mutate(BIOMASS_PER_FISH_G = LW_A * ((length * LENGTH_CONVERSION_FACTOR) ^
                                       LW_B)) %>%
     # calculate biomass for all fish per row and converted g to kg by /1000
-    mutate(BIOMASS_KG_HA = (COUNT * BIOMASS_PER_FISH_G) / 1000) %>%
-    select(REGION:SIZE_CLASS, BIOMASS_KG_HA)
+    mutate(BIOMASS_PER_FISH_KG = (COUNT * BIOMASS_PER_FISH_G) / 1000) %>%
+    select(REGION:SIZE_CLASS, BIOMASS_PER_FISH_KG)
 
 
   fish_bioerosion <- data_formatted %>%
@@ -104,10 +104,9 @@ calc_eros_fish <- function(data,
     # erosion rates do not include 0-10cm, so need to replace NA with 0
     replace(is.na(.), 0) %>%
     mutate_at(vars(EROSION_RATE), as.numeric) %>%
-    # calculate bioerosion value by multiplying COUNT value with
-    # bioerosion rate value, dividing by 10000 to cancel out the /10000 that
-    # happens in the next function
-    mutate(FISH_EROSION_KG_M2_YR = (COUNT * EROSION_RATE) / 10000) %>%
+    # calculate bioerosion value by multiplying COUNT value with bioerosion value
+    # happens in summarize_fish_metrics.R script
+    mutate(FISH_EROSION_KG_M2_YR = COUNT * EROSION_RATE) %>% 
     select(REGION:SPECIES, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
     #change all negative bioerosion values to zero...can use this to change
     # multiple columns to zero based on a single column
@@ -125,7 +124,7 @@ calc_eros_fish <- function(data,
       fish_bioerosion,
       by = colnames(data_formatted)[colnames(data_formatted) %in% colnames(fish_bioerosion)]
     ) %>%
-    mutate(BIOMASS_KG_HA = replace_na(BIOMASS_KG_HA, 0)) %>%
+    mutate(BIOMASS_PER_FISH_KG = replace_na(BIOMASS_PER_FISH_KG, 0)) %>%
     mutate(FISH_EROSION_KG_M2_YR = replace_na(FISH_EROSION_KG_M2_YR, 0))
 
   return(fish_all)
