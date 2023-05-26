@@ -12,7 +12,7 @@
 #'@export format_iprb_erosion_rates
 #'
 
-format_iprb_erosion_rates <- function(iprb_rates, 
+format_iprb_erosion_metrics <- function(iprb_rates, 
                                       output = c("all", "finalerosion")) {
 
   rates <- iprb_rates %>%
