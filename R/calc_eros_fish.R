@@ -18,7 +18,7 @@
 
 
 calc_eros_fish <- function(data,
-                             rates_dbase = c("IPRB", "Kindinger")) {
+                             rates_dbase = "IPRB") {
 
 
   ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
@@ -100,9 +100,13 @@ calc_eros_fish <- function(data,
     dplyr::rename(TAXON_NAME = TAXONNAME) %>%
     #combine COUNT data and equations to determine bioerosion rates
     left_join(., rates_dbase, by = c("TAXON_NAME", "SIZE_CLASS", "PHASE")) %>%
-    mutate(FXN_GRP = case_when(SPECIES == "PARR" ~ "Scraper",
-                               SIZE_CLASS == "0-10cm" ~ "Scraper",
+    # clean up
+    mutate(FXN_GRP = case_when((SPECIES == "PARR" & SIZE_CLASS != "0-10cm") ~ "Scraper",
+                               SIZE_CLASS == "0-10cm" ~ "Browser",
+                               is.na(FXN_GRP) ~ "Scraper",
                                TRUE ~ FXN_GRP)) %>% # Label PARR as "Scraper"
+    mutate(FXN_GRP = case_when((FXN_GRP != "Excavator" & FXN_GRP != "Scraper") ~ "Other",
+                               TRUE ~ FXN_GRP)) %>%
     mutate(TAXON_NAME = case_when(SPECIES == "PARR" ~ "Parrotfish",
                                   TRUE ~ TAXON_NAME)) %>% # Label Taxonname of PARR with Parrotfish
     # erosion rates do not include 0-10cm, so need to replace NA with 0

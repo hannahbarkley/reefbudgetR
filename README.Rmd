@@ -89,7 +89,7 @@ fish_belt <- process_fish(
   rates_dbase = "Kindinger", 
   full_summary = TRUE)
 
-fish_site.k <- fish_belt$fish_erosion_site
+fish_site<- fish_belt$fish_erosion_site
 
 ```
 
