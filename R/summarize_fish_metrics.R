@@ -143,7 +143,7 @@ summarize_fish_metrics <- function(data,
   if (metric == "FISH_EROSION_KG_M2_YR") {
     
     summary_transect_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
+      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       ungroup() %>%
       dplyr::group_by(
         REGION,
@@ -157,6 +157,7 @@ summarize_fish_metrics <- function(data,
         LONGITUDE,
         CB_METHOD,
         TRANSECT,
+        FXN_GRP,
         SPECIES) %>%
       # calculate metric by species
       dplyr::reframe('SPECIES_SUM' = sum(!!sym(metric)) / AREA_M2) %>%
@@ -168,7 +169,7 @@ summarize_fish_metrics <- function(data,
   } else {
     
     summary_transect_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
+      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       ungroup() %>%
       dplyr::group_by(
         REGION,
@@ -182,6 +183,7 @@ summarize_fish_metrics <- function(data,
         LONGITUDE,
         CB_METHOD,
         TRANSECT,
+        FXN_GRP,
         SPECIES) %>%
       # calculate metric by species
       dplyr::reframe('SPECIES_SUM' = sum(!!sym(metric)) / (AREA_M2 / 10000)) %>%
@@ -197,7 +199,7 @@ summarize_fish_metrics <- function(data,
   if (metric == "FISH_EROSION_KG_M2_YR") {
     
     summary_site_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
+      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       dplyr::group_by(
         REGION,
         REGIONCODE,
@@ -224,7 +226,8 @@ summarize_fish_metrics <- function(data,
         LATITUDE,
         LONGITUDE,
         CB_METHOD,
-        SPECIES, 
+        FXN_GRP,
+        SPECIES,
         AREA_AVG, 
         PHASE, 
         SIZE_CLASS) %>%
@@ -245,6 +248,7 @@ summarize_fish_metrics <- function(data,
         LATITUDE,
         LONGITUDE,
         CB_METHOD,
+        FXN_GRP,
         SPECIES) %>%
       dplyr::reframe(
         'value' = (sum(MEAN) / AREA_AVG),
@@ -265,7 +269,7 @@ summarize_fish_metrics <- function(data,
   } else {
     
     summary_site_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
+      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       dplyr::group_by(
         REGION,
         REGIONCODE,
@@ -292,6 +296,7 @@ summarize_fish_metrics <- function(data,
         LATITUDE,
         LONGITUDE,
         CB_METHOD,
+        FXN_GRP,
         SPECIES, 
         AREA_AVG, 
         PHASE, 
@@ -313,6 +318,7 @@ summarize_fish_metrics <- function(data,
         LATITUDE,
         LONGITUDE,
         CB_METHOD,
+        FXN_GRP,
         SPECIES) %>%
       dplyr::reframe(
         'value' = (sum(MEAN) / (AREA_AVG / 10000)),

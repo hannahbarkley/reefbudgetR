@@ -94,20 +94,24 @@ calc_eros_fish <- function(data,
 
 
   fish_bioerosion <- data_formatted %>%
-    left_join(., fish_grazing_types %>%
+    left_join(., fish_functional_groups %>%
                 #join spdata b/c need full scientific name
-                select(SPECIES, FISH_sciname), by = "SPECIES") %>%
-    # remove unwanted columns from the join
-    dplyr::rename(TAXON_NAME = FISH_sciname) %>%
+                select(SPECIES, TAXONNAME), by = "SPECIES") %>% # remove unwanted columns from the join
+    dplyr::rename(TAXON_NAME = TAXONNAME) %>%
     #combine COUNT data and equations to determine bioerosion rates
     left_join(., rates_dbase, by = c("TAXON_NAME", "SIZE_CLASS", "PHASE")) %>%
+    mutate(FXN_GRP = case_when(SPECIES == "PARR" ~ "Scraper",
+                               SIZE_CLASS == "0-10cm" ~ "Scraper",
+                               TRUE ~ FXN_GRP)) %>% # Label PARR as "Scraper"
+    mutate(TAXON_NAME = case_when(SPECIES == "PARR" ~ "Parrotfish",
+                                  TRUE ~ TAXON_NAME)) %>% # Label Taxonname of PARR with Parrotfish
     # erosion rates do not include 0-10cm, so need to replace NA with 0
     replace(is.na(.), 0) %>%
     mutate_at(vars(EROSION_RATE), as.numeric) %>%
     # calculate bioerosion value by multiplying COUNT value with bioerosion value
     # happens in summarize_fish_metrics.R script
     mutate(FISH_EROSION_KG_M2_YR = COUNT * EROSION_RATE) %>% 
-    select(REGION:SPECIES, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
+    select(REGION:SPECIES, FXN_GRP, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
     #change all negative bioerosion values to zero...can use this to change
     # multiple columns to zero based on a single column
     mutate_at(.vars = "FISH_EROSION_KG_M2_YR",

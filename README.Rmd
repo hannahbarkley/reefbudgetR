@@ -5,6 +5,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, eval = FALSE)
+knitr::opts_knit$set(root.dir = 'T:/Oceanography/Carbonate Budgets/NCEI package')
 
 library(reefbudgetR)
 library(tidyverse)
@@ -15,14 +16,14 @@ library(dplyr)
 
 ```{r load_data}
 # Set working directory containing data
-setwd("T:/Oceanography/Carbonate Budgets/NCEI/ESD_CarbBudget_OAHU_2021/Raw_data/")
+setwd("T:/Oceanography/Carbonate Budgets/NCEI package/ESD_CarbBudget_OAHU_2021")
 
 # Load benthic, urchin, and fish data
-benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv", na = "", check.names = FALSE)
+benthic_data <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Benthic_OAHU_2021.csv", na = "", check.names = FALSE)
 
-urchin_data <- read.csv("ESD_CarbBudget_Urchins_OAHU_2021.csv", na = "", check.names = FALSE)
+urchin_data <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Urchins_OAHU_2021.csv", na = "", check.names = FALSE)
 
-fish_data <- read.csv("ESD_CarbBudget_FishBelt_OAHU_2021.csv", na = "", check.names = FALSE)
+fish_data <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Fixed_Belt_OAHU_2021.csv", na = "", check.names = FALSE)
 
 ```
 
@@ -85,10 +86,10 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 
 fish_belt <- process_fish(
   data = fish_data, 
-  rates_dbase = "IPRB", 
+  rates_dbase = "Kindinger", 
   full_summary = TRUE)
 
-fish_site <- fish_belt$fish_erosion_site
+fish_site.k <- fish_belt$fish_erosion_site
 
 ```
 
