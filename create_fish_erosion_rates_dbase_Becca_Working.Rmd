@@ -83,20 +83,20 @@ calc_fish_erosion_rates_output_kindinger <- calc_fish_erosion_rates(calc_kinding
                                                                     perc_day_feeding = 83.3) %>%
                                             select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
                                             separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
-                                            rename(TAXON_NAME = "FISH_sciname",
-                                                   EROSION_RATE = "EROSION_RATE_KG_YEAR",
-                                                   FXN_GRP = "FXN_grp") %>%
-                                            select(PHASE, SIZE_CLASS, TAXON_NAME, EROSION_RATE)
+                                            dplyr::rename(TAXON_NAME = "FISH_sciname",
+                                                          EROSION_RATE = "EROSION_RATE_KG_YEAR",
+                                                          FXN_GRP = "FXN_grp") %>%
+                                            select(PHASE, SIZE_CLASS, FXN_GRP, TAXON_NAME, EROSION_RATE)
 
 calc_fish_erosion_rates_output_iprb <- calc_fish_erosion_rates(calc_iprb_metrics_output,
                                                                 substrate_density = 1.47,
                                                                 perc_day_feeding = 83.3) %>%
                                             select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
                                             separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
-                                            rename(TAXON_NAME = "FISH_sciname",
-                                                   EROSION_RATE = "EROSION_RATE_KG_YEAR",
-                                                   FXN_GRP = "FXN_grp") %>%
-                                            select(PHASE, SIZE_CLASS, TAXON_NAME, EROSION_RATE)
+                                            dplyr::rename(TAXON_NAME = "FISH_sciname",
+                                                          EROSION_RATE = "EROSION_RATE_KG_YEAR",
+                                                          FXN_GRP = "FXN_grp") %>%
+                                            select(PHASE, SIZE_CLASS, FXN_GRP, TAXON_NAME, EROSION_RATE)
 
 ```
 

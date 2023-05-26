@@ -21,7 +21,7 @@ calc_fish_erosion_rates <- function(data,
     # Format erosion metrics as numeric values
     mutate_at(vars(`Bite Rate`:`Proportion of Scars`), as.numeric) %>%
     # Calculate Bites Leaving Scars per Minute
-    mutate(BITES_SCARS_MIN = .data$`Bite Rate` * .data$`Proportion of Scars`) %>%
+    mutate(BITES_SCARS_MIN = .$`Bite Rate` * .$`Proportion of Scars`) %>%
     # Calculate Volume Removed per Day
     mutate(VOLUME_ERODED_DAY = BITES_SCARS_MIN *
              `Bite Volume` * 60 * (12 * (perc_day_feeding / 100))) %>%
