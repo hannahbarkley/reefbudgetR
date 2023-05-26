@@ -7,6 +7,7 @@
 #'@param perc_day_feeding Percent of day that Chlorurus gibbus and
 #'large parrotfish spend eating (from Bellwood et al. 1995); default to 83.3.
 #'
+#'@import tidyverse
 #'@import dplyr
 #'@importFrom rlang .data
 #'
@@ -16,7 +17,9 @@ calc_fish_erosion_rates <- function(data,
                                       substrate_density = 1.47,
                                       perc_day_feeding = 83.3) {
 
-  df %>%
+  data %>%
+    # Format erosion metrics as numeric values
+    mutate_at(vars(`Bite Rate`:`Proportion of Scars`), as.numeric) %>%
     # Calculate Bites Leaving Scars per Minute
     mutate(BITES_SCARS_MIN = .data$`Bite Rate` * .data$`Proportion of Scars`) %>%
     # Calculate Volume Removed per Day

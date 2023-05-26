@@ -1,0 +1,108 @@
+---
+title: "create_fish_erosion_rates_dbase"
+author: "Rebecca Weible"
+date: "2023-05-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, eval = FALSE)
+
+library(reefbudgetR)
+library(tidyverse)
+library(dplyr)
+
+```
+
+```{r load_data}
+# General
+GrazTypes <- read.csv("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/GrazingTypesClassifications_Combo.csv", check.names = F) # call in grazing types .csv to assign sister sp
+
+# Kindinger
+dbase <- read.csv("C:/Users/Rebecca.Weible/Downloads/Kindinger et al_AppendixS2_FINAL.csv", na = "", check.names = FALSE, skip=1)
+sp.fxn <- read.csv("C:/Users/Rebecca.Weible/Downloads/NCRMP_herb_fxn.grps.csv", na = "", check.names = FALSE)
+
+# IPRB
+equations <- read.csv(file = "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/CPMEquations.csv")
+
+```
+
+```{r convert_clean_iprb_excelfiles}
+iprb_input_data <- rbind(convert_iprb("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/CPM_Excel_Input_OCC-OAH-002.csv", "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv" , "Mokuleia", "OCC-OAH-002"), 
+                           convert_iprb("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/CPM_Excel_Input_OCC-OAH-005.csv", "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv" , "Kaneohe", "OCC-OAH-005"),
+                           convert_iprb("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/CPM_Excel_Input_OCC-OAH-010.csv", "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv" , "Kewalo", "OCC-OAH-010"),
+                           convert_iprb("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/CPM_Excel_Input_OCC-OAH-012.csv", "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv" , "Makua", "OCC-OAH-012"),
+                           convert_iprb("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/CPM_Excel_Input_OCC-OAH-038.csv", "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv" , "ReefRunway", "OCC-OAH-038"),
+                           convert_iprb("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/CPM_Excel_Input_OCC-OAH-039.csv", "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv" , "Ewa", "OCC-OAH-039"),
+                           convert_iprb("C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/CPM_Excel_Input_OCC-OAH-040.csv", "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv" , "Barbers", "OCC-OAH-040"))
+
+# remove all zeros (NOTE: this will remove sites with no fish surveyed and transects with no fish surveyed.)
+alldat <- iprb_input_data %>% mutate_at(c(22:27), as.integer); str(alldat)
+
+alldat <- alldat[alldat$`0-10cm` + alldat$`11-20cm` + alldat$`21-30cm` + alldat$`31-40cm` + alldat$`41-50cm` + alldat$`51-60cm` != 0,]
+alldat <- alldat %>% filter(!CRUISEID %in% NA)
+
+
+# add back to complete transect missing transect values
+metadata <- read.csv(file = "C:/Users/Rebecca.Weible/Desktop/OCC/Carbonate Budgets/Data Entry/CPM to R conversion/Input/1.InputFiles/1.MP2108_Metadata.csv", check.names = F) # call in metadata.csv file to add back missing transects in next line of code
+metadata <- metadata %>% mutate_at(10, as.factor); str(alldat)
+
+missing <- anti_join(metadata,alldat,by=c("OCC_SITEID", "LOCALDATE", "DIVER", "BUDDY", "REPLICATE", "TRANSECT"))
+iprb_cleaned_input_data <- full_join(alldat,missing,by=c("OCC_SITEID", "LOCALDATE", "DIVER", "BUDDY", "REPLICATE", "VISIBILITY_M",
+                                                         "TRANSECT_LENGTH_M", "TRANSECT_WIDTH_M", "AREA_M2", "TRANSECT", "BEARING",
+                                                         "START_TIME", "START_DEPTH_FT", "END_TIME", "END_DEPTH_FT", "HABITAT_TYPE"))%>%
+                            mutate(CRUISEID = replace_na(CRUISEID, "MP2108"),
+                                   LOCATIONCODE = replace_na(LOCATIONCODE, "OAH"),
+                                   CB_METHOD = replace_na(CB_METHOD, "IPRB_BELT"),
+                                   SPECIES = replace_na(SPECIES, "PARR"),
+                                   `0-10cm` = replace_na(`0-10cm`, 0),
+                                   `11-20cm` = replace_na(`11-20cm`, 0),
+                                   `21-30cm` = replace_na(`21-30cm`, 0),
+                                   `31-40cm` = replace_na(`31-40cm`, 0),
+                                   `41-50cm` = replace_na(`41-50cm`, 0),
+                                   `51-60cm` = replace_na(`51-60cm`, 0),
+                                   PHASE = replace_na(PHASE, "I"),
+                                   QC1 = replace_na(QC1, ""),
+                                   NOTES = replace_na(NOTES, "No fish observed")) 
+
+```
+
+```{r process_metrics}
+calc_kindinger_metrics_output <- calc_kindinger_erosion_metrics(dbase, sp.fxn, GrazTypes, "26")
+
+calc_iprb_metrics_output <- format_iprb_erosion_metrics(equations, "all") %>%
+                              merge(., calc_kindinger_metrics_output %>% select(SPECIES:sizeclass), 
+                                       by = c("FISH_sciname", "sizeclass", "SPECIES")) %>%
+                              select(SPECIES, FISH_genus, FISH_sciname, FXN_grp, sizeclass, everything(.))
+
+```
+
+```{r process_erosion_rates}
+calc_fish_erosion_rates_output_kindinger <- calc_fish_erosion_rates(calc_kindinger_metrics_output,
+                                                                    substrate_density = 1.47,
+                                                                    perc_day_feeding = 83.3) %>%
+                                            select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
+                                            separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
+                                            rename(TAXON_NAME = "FISH_sciname",
+                                                   EROSION_RATE = "EROSION_RATE_KG_YEAR",
+                                                   FXN_GRP = "FXN_grp") %>%
+                                            select(PHASE, SIZE_CLASS, TAXON_NAME, EROSION_RATE)
+
+calc_fish_erosion_rates_output_iprb <- calc_fish_erosion_rates(calc_iprb_metrics_output,
+                                                                substrate_density = 1.47,
+                                                                perc_day_feeding = 83.3) %>%
+                                            select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
+                                            separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
+                                            rename(TAXON_NAME = "FISH_sciname",
+                                                   EROSION_RATE = "EROSION_RATE_KG_YEAR",
+                                                   FXN_GRP = "FXN_grp") %>%
+                                            select(PHASE, SIZE_CLASS, TAXON_NAME, EROSION_RATE)
+
+```
+
+```{r save_rda}
+
+#save(calc_fish_erosion_rates_output_kindinger, file = "fish_erosion_dbase_kindinger.rda")
+#save(calc_fish_erosion_rates_output_iprb, file = "fish_erosion_dbase_iprb.rda")
+
+```

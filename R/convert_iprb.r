@@ -42,7 +42,7 @@ convert_iprb <- function(iprb_csv, iprb_metadata, add_location, occ_siteid) {
     dplyr::filter(!SPECIES == "Species") %>%
 
     # Split dataframe into list of dataframes by transect
-    split(., cumsum(1:seq_row(.) %in%
+    split(., cumsum(1:nrow(.) %in%
                       c(20, 40, 60, 80, 100, 120, 140, 160, 180))) %>%
 
     # Replace blank values with zeros
