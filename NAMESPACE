@@ -2,12 +2,11 @@
 
 export(calc_eros_fish)
 export(calc_fish_erosion_rates)
-export(calc_fish_metrics)
 export(calc_prod)
 export(combine_sfm)
 export(convert_iprb)
 export(format_4ncei)
-export(format_iprb_erosion_rates)
+export(format_iprb_erosion_metrics)
 export(format_sfm)
 export(process_fish)
 export(process_net)
