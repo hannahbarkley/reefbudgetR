@@ -78,31 +78,31 @@ calc_iprb_metrics_output <- format_iprb_erosion_metrics(equations, "all") %>%
 ```
 
 ```{r process_erosion_rates}
-calc_fish_erosion_rates_output_kindinger <- calc_fish_erosion_rates(calc_kindinger_metrics_output,
-                                                                    substrate_density = 1.47,
-                                                                    perc_day_feeding = 83.3) %>%
-                                            select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
-                                            separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
-                                            dplyr::rename(TAXON_NAME = "FISH_sciname",
-                                                          EROSION_RATE = "EROSION_RATE_KG_YEAR",
-                                                          FXN_GRP = "FXN_grp") %>%
-                                            select(PHASE, SIZE_CLASS, FXN_GRP, TAXON_NAME, EROSION_RATE)
+fish_erosion_dbase_kindinger <- calc_fish_erosion_rates(calc_kindinger_metrics_output,
+                                                        substrate_density = 1.47,
+                                                        perc_day_feeding = 83.3) %>%
+                                select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
+                                separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
+                                dplyr::rename(TAXON_NAME = "FISH_sciname",
+                                              EROSION_RATE = "EROSION_RATE_KG_YEAR",
+                                              FXN_GRP = "FXN_grp") %>%
+                                select(PHASE, SIZE_CLASS, FXN_GRP, TAXON_NAME, EROSION_RATE)
 
-calc_fish_erosion_rates_output_iprb <- calc_fish_erosion_rates(calc_iprb_metrics_output,
-                                                                substrate_density = 1.47,
-                                                                perc_day_feeding = 83.3) %>%
-                                            select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
-                                            separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
-                                            dplyr::rename(TAXON_NAME = "FISH_sciname",
-                                                          EROSION_RATE = "EROSION_RATE_KG_YEAR",
-                                                          FXN_GRP = "FXN_grp") %>%
-                                            select(PHASE, SIZE_CLASS, FXN_GRP, TAXON_NAME, EROSION_RATE)
+fish_erosion_dbase_iprb <- calc_fish_erosion_rates(calc_iprb_metrics_output,
+                                                    substrate_density = 1.47,
+                                                    perc_day_feeding = 83.3) %>%
+                                select(c(SPECIES:sizeclass), EROSION_RATE_KG_YEAR) %>%
+                                separate(., sizeclass, c("PHASE", "SIZE_CLASS"), sep = "_") %>%
+                                dplyr::rename(TAXON_NAME = "FISH_sciname",
+                                              EROSION_RATE = "EROSION_RATE_KG_YEAR",
+                                              FXN_GRP = "FXN_grp") %>%
+                                select(PHASE, SIZE_CLASS, FXN_GRP, TAXON_NAME, EROSION_RATE)
 
 ```
 
 ```{r save_rda}
 
-#save(calc_fish_erosion_rates_output_kindinger, file = "fish_erosion_dbase_kindinger.rda")
-#save(calc_fish_erosion_rates_output_iprb, file = "fish_erosion_dbase_iprb.rda")
+#save(fish_erosion_dbase_kindinger, file = "fish_erosion_dbase_kindinger.rda")
+#save(fish_erosion_dbase_iprb, file = "fish_erosion_dbase_iprb.rda")
 
 ```
