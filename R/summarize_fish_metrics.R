@@ -108,7 +108,7 @@ summarize_fish_metrics <- function(data,
         TRANSECT,
         SIZE_CLASS,
         PHASE) %>%
-      #calculate bioerosion per size class in individuals per
+      #calculate metric per size class in individuals per
       # hectare (converted from m^2 to hectare by /10000)
       dplyr::reframe('SIZE_CLASS_SUM' = (sum(!!sym(metric)) /
                                            (AREA_M2 / 10000))) %>%
