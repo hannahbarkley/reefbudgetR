@@ -33,8 +33,10 @@ process_fish <- function(data,
   ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
   
-  if (method == "IPRB") {  
-        
+  
+  
+  # FOR BELT DATA ----------------------------------------------------------------
+  
         # Calculate erosion rates per fish -------------------------------------------
       
         calc_eros_fish_output <- calc_eros_fish(data,
@@ -79,22 +81,10 @@ process_fish <- function(data,
       
         summary_belt_erosion <- summarize_fish_erosion(species_table, full_summary)
       
-        return(summary_belt_erosion)
-      
-        if (full_summary == TRUE) {
-          return(list(
-            fish_erosion_transect = summary_belt_erosion$fish_erosion_transect,
-            fish_erosion_site = summary_belt_erosion$fish_erosion_site)
-          )
-        }
-      
-        if (full_summary == FALSE) {
-          return(summary_belt_erosion$fish_erosion_site)
-        }
-  }
+        
   
   
-  #SPC DATA ----------------------------------------------------------------
+  # FOR SPC DATA ----------------------------------------------------------------
   
   format_spc_output <- format_fish_spc(data, rates_dbase = rates_dbase)
   
@@ -120,9 +110,8 @@ process_fish <- function(data,
     dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
                                   TRUE ~ as.numeric(L95)))
   
+  # FOR FIXED SPC DATA ----------------------------------------------------------------
   
-  if (method == "Fixed SPC") {
-    
     format_fixed_spc_erosion <- summary_spc_erosion %>%
       filter(!COMMONFAMILYALL %in% "NOTPARROTFISH") %>% # removed non-parrotfish species group
       filter(!SITE %in% NA) %>% # remove NA sites
@@ -163,12 +152,8 @@ process_fish <- function(data,
                                   filter(!is.na(OCC_SITEID)) %>% # remove all non fixed SPC site data
                                   mutate(CB_METHOD = "Fixed SPC")
     
-    return(summary_fixed_spc_erosion)
     
-    }
-    
-    
-  if (method == "StRS SPC") {  
+    # FOR StRS SPC DATA ----------------------------------------------------------------
     
     format_strs_spc_erosion <- summary_spc_erosion %>%
       select(-c(SD:U95)) %>%
@@ -227,9 +212,36 @@ process_fish <- function(data,
       spread(., METRIC, value, fill = "0") %>%
       select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.))
       
-    return(calc_strs_spc_erosion)
       
+    
+    
+    if (method == "IPRB") {
+    
+      return(summary_belt_erosion)
+      
+        if (full_summary == TRUE) {
+          return(list(
+            fish_erosion_transect = summary_belt_erosion$fish_erosion_transect,
+            fish_erosion_site = summary_belt_erosion$fish_erosion_site)
+          )
+        }
+        
+        if (full_summary == FALSE) {
+          return(summary_belt_erosion$fish_erosion_site)
+        }
     }
+    
+    if (method == "Fixed SPC"){
+    
+      return(summary_fixed_spc_erosion)
+    }
+    
+    if (method == "StRS SPC") {
+      return(calc_strs_spc_erosion)
+    }
+    
+    
+    
   
 }
 
