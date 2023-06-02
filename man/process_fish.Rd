@@ -2,7 +2,7 @@
 % Please edit documentation in R/process_fish.R
 \name{process_fish}
 \alias{process_fish}
-\title{Calculate parrotfish erosion rates from belt data}
+\title{Calculate parrotfish erosion rates from belt and spc data}
 \usage{
 process_fish(data, method = c("IPRB", "Fixed SPC", "StRS SPC"),rates_dbase = c("IPRB", "Kindinger"),
                    sites_associated = c("OAH", "MARIAN"),full_summary = TRUE)
