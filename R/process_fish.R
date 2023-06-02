@@ -94,7 +94,7 @@ process_fish <- function(data,
   }
   
   
-  else if (method == "Fixed SPC") {
+  if (method == "Fixed SPC") {
     
     format_spc_output <- format_fish_spc(data, rates_dbase = rates_dbase)
     
@@ -166,7 +166,7 @@ process_fish <- function(data,
     }
     
     
-  else if (method == "StRS SPC") {  
+  if (method == "StRS SPC") {  
     
     format_spc_output <- format_fish_spc(data, rates_dbase = rates_dbase)
     
