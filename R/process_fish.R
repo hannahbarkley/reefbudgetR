@@ -96,7 +96,9 @@ process_fish <- function(data,
           return(summary_belt_erosion$fish_erosion_site)
         }
          
-  } else {
+  } 
+  
+  if (method == "Fixed SPC"){
   
   # FOR SPC DATA ----------------------------------------------------------------
   
@@ -124,8 +126,6 @@ process_fish <- function(data,
     dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
                                   TRUE ~ as.numeric(L95)))
   
-      if (method == "Fixed SPC"){
-        
       # FOR FIXED SPC DATA ----------------------------------------------------------------
       
         format_fixed_spc_erosion <- summary_spc_erosion %>%
@@ -173,7 +173,7 @@ process_fish <- function(data,
   
   
   
-      if (method == "StRS SPC") {
+    if (method == "StRS SPC") {
         
         # FOR StRS SPC DATA ----------------------------------------------------------------
         
@@ -235,8 +235,8 @@ process_fish <- function(data,
           select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.))
           
         return(calc_strs_spc_erosion)
-      }
-  }
+      
+    }
   
 }
 
