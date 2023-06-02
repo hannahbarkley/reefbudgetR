@@ -106,6 +106,8 @@ fish_strs_spc <- process_fish(
 
 
 fish_site_belt <- fish_belt$fish_erosion_site
+
+fish_site_belt
 fish_fixed_spc
 fish_strs_spc
 
