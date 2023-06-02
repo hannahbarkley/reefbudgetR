@@ -20,7 +20,8 @@ format_fish_spc <- function(data,
   ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   
   prepdat <- data %>% 
-    filter(., TRAINING_YN != "-1") %>%
+    filter(., !(TRAINING_YN %in% "-1")) %>%
+    filter(., !(SITE == "GUA-2587" & METHOD == "nSPC")) %>% # must remove special case "GUA-2587" SPC because it's a fixed site and data was collected twice.
     select(SITEVISITID, OBS_YEAR, SITE, ISLAND, REP, REPLICATEID, SPECIES, COUNT, SIZE_, SCIENTIFIC_NAME, TAXONNAME, COMMONFAMILYALL, LW_A:LENGTH_CONVERSION_FACTOR) %>% #subset only columns that matter for density, biomass, bioerosion calculation
     mutate(AREA_M2 = pi*(7.5^2)) %>% #calculate Area per m^2 of survey cylinder
     #calculate density below
@@ -70,4 +71,5 @@ format_fish_spc <- function(data,
    
   
   return(prepdat)
+  
 }
