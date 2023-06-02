@@ -4,7 +4,8 @@
 \alias{process_fish}
 \title{Calculate parrotfish erosion rates from belt data}
 \usage{
-process_fish(data, method = "IPRB", rates_dbase = "Kindinger", sites_associated = "OAH", full_summary = TRUE)
+process_fish(data, method = c("IPRB", "Fixed SPC", "StRS SPC"),rates_dbase = c("IPRB", "Kindinger"),
+                   sites_associated = c("OAH", "MARIAN"),full_summary = TRUE)
 }
 \arguments{
 \item{data}{Parrotfish belt data.}
