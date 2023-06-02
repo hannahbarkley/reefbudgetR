@@ -150,7 +150,7 @@ process_fish <- function(data,
                  CRUISE_ID = MISSIONID,
                  LOCATION = ISLAND,
                  CB_METHOD = METHOD) %>%
-          mutate(REGIONCODE = sites_associated,
+          mutate(REGIONCODE = rates_dbase,
                  LOCATIONCODE = str_extract(SITE, "(\\w+)")) %>%
           #add OCC_SITEID column
           left_join(., sites_associated_dbase %>% 

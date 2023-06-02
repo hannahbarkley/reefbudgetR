@@ -25,7 +25,7 @@ format_fish_spc <- function(data,
     select(SITEVISITID, OBS_YEAR, SITE, ISLAND, REP, REPLICATEID, SPECIES, COUNT, SIZE_, SCIENTIFIC_NAME, TAXONNAME, COMMONFAMILYALL, LW_A:LENGTH_CONVERSION_FACTOR) %>% #subset only columns that matter for density, biomass, bioerosion calculation
     mutate(AREA_M2 = pi*(7.5^2)) %>% #calculate Area per m^2 of survey cylinder
     #calculate density below
-    mutate(DESNITY_PER_FISH_HECTARE = COUNT/(AREA_M2/10000)) %>% # calculate density by dividing count by area and converting to per hectare with the 10000
+    mutate(DENSITY_PER_FISH_HECTARE = COUNT/(AREA_M2/10000)) %>% # calculate density by dividing count by area and converting to per hectare with the 10000
     #calculate biomass below
     mutate(BIOMASS_PER_FISH_G = LW_A * ((SIZE_ * LENGTH_CONVERSION_FACTOR) ^ LW_B)) %>% #convert size to wet weight in grams with conversion factor and constants
     mutate(BIOMASS_PER_FISH_KG = (COUNT * BIOMASS_PER_FISH_G) / 1000) %>% #calculate biomass per row with number of fish seen and converted grams to kilograms with /1000
@@ -43,7 +43,7 @@ format_fish_spc <- function(data,
     mutate_at(.vars = "EROSION_PER_FISH_KG_M2_YR", funs(ifelse(EROSION_PER_FISH_KG_M2_YR <= 0, 0, .)))  %>% # change all negative bioerosion values to zero...can use this to change multiple columns to zero based on a single column
     
     # Label COMMONFAMILYALL column as "Parrotfish" and "NotParrotfish"        
-    select(SITEVISITID:COMMONFAMILYALL, SIZE_CLASS, FXN_GRP, DESNITY_PER_FISH_HECTARE, BIOMASS_PER_FISH_KG_HECTARE, EROSION_PER_FISH_KG_M2_YR) %>% # select only relevant columns
+    select(SITEVISITID:COMMONFAMILYALL, SIZE_CLASS, FXN_GRP, DENSITY_PER_FISH_HECTARE, BIOMASS_PER_FISH_KG_HECTARE, EROSION_PER_FISH_KG_M2_YR) %>% # select only relevant columns
     mutate(COMMONFAMILYALL = case_when(COMMONFAMILYALL != "Parrotfish" ~ "NOTPARROTFISH", # assign non parrotfish species NOTPARROTFISH
                                        TRUE ~ "Parrotfish")) %>%
     
@@ -51,7 +51,7 @@ format_fish_spc <- function(data,
     mutate(FXN_GRP = replace(as.character(FXN_GRP), FXN_GRP == "Browser", "Other")) %>%
     dplyr::group_by(SITEVISITID, SITE, REP, REPLICATEID, COMMONFAMILYALL, FXN_GRP) %>% #now we want to sum each surveyors estimates by Grazing Type (note, REP is not divided by surveyor, but REPLICATEID is)
     dplyr::summarize("SUM_BIOMASS_PER_FISH_KG_HECTARE" = sum(BIOMASS_PER_FISH_KG_HECTARE),
-                     "SUM_DESNITY_PER_FISH_HECTARE" = sum(DESNITY_PER_FISH_HECTARE),
+                     "SUM_DENSITY_PER_FISH_HECTARE" = sum(DENSITY_PER_FISH_HECTARE),
                      "SUM_EROSION_PER_FISH_KG_M2_YR" = sum(EROSION_PER_FISH_KG_M2_YR)) %>%
     ungroup(.) %>% # need to do this to make next group_by work properly
     bind_rows(filter(.) %>% # create new rows where Excavator, Scraper, and Other are totaled in sum for each site and replicate ID
@@ -61,7 +61,7 @@ format_fish_spc <- function(data,
     
     #format by adding back in where replicateID and Graz_Type were zero before averaging
     complete(., REPLICATEID, COMMONFAMILYALL, FXN_GRP, fill = list(SUM_BIOMASS_PER_FISH_KG_HECTARE = 0, 
-                                                                   SUM_DESNITY_PER_FISH_HECTARE = 0, 
+                                                                   SUM_DENSITY_PER_FISH_HECTARE = 0, 
                                                                    SUM_EROSION_PER_FISH_KG_M2_YR = 0)) %>% #...I can complete (fill in missing) SPECIES codes for each REPLICATEID. So we're adding back zeros and this is important becuase of the mean calculations we're about to do.
     select(-SITEVISITID, -SITE, -REP) %>% # remove columns with NA and will join them back in next step
     mutate_at(vars(REPLICATEID), as.integer) %>% # make structure of REPLICATEID the same again for the sake of the join

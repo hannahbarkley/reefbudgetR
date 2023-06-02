@@ -89,6 +89,7 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 
 fish_belt <- process_fish(
   data = fish_data_belt, 
+  method = "IPRB",
   rates_dbase = "Kindinger", 
   full_summary = TRUE)
 
