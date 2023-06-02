@@ -98,7 +98,7 @@ process_fish <- function(data,
          
   } 
   
-  if (method == "Fixed SPC"){
+  else if (method == "Fixed SPC"){
   
   # FOR SPC DATA ----------------------------------------------------------------
   
@@ -173,7 +173,7 @@ process_fish <- function(data,
   
   
   
-    if (method == "StRS SPC") {
+    else {
         
         # FOR StRS SPC DATA ----------------------------------------------------------------
         
