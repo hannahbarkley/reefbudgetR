@@ -9,6 +9,8 @@
 #'@param rates_dbase Erosion rates database to use. Choose either Indo-Pacific
 #'ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
 #'by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").
+#'#'@param sites_associated Location data was collected. Choose either Oahu ("method = "OAH"),
+#'or Mariana Islands ("method = "MARIAN").
 #'
 #'@import Rmisc
 #'@import tidyverse
@@ -23,9 +25,9 @@
 #'full_summary = TRUE)
 
 process_fish <- function(data,
-                         method = "IPRB",
+                         method = c("IPRB", "Fixed SPC", "StRS SPC"),
                          rates_dbase = c("IPRB", "Kindinger"),
-                         sites_associated = "OAH",
+                         sites_associated = c("OAH", "MARIAN"),
                          full_summary = TRUE) {
 
   ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
