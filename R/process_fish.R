@@ -92,7 +92,7 @@ process_fish <- function(data,
   }
   
   
-  if (method == "Fixed SPC") {  
+  else {  
     
     format_spc_output <- format_fish_spc(data, rates_dbase = rates_dbase)
     
@@ -117,6 +117,8 @@ process_fish <- function(data,
       ungroup(.) %>%
       dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
                                     TRUE ~ as.numeric(L95)))
+    
+    if (method == "Fixed SPC") {
     
     format_fixed_spc_erosion <- summary_spc_erosion %>%
       filter(!COMMONFAMILYALL %in% "NOTPARROTFISH") %>% # removed non-parrotfish species group
@@ -159,35 +161,11 @@ process_fish <- function(data,
                                   mutate(CB_METHOD = "Fixed SPC")
     
     return(summary_fixed_spc_erosion)
+    
     }
     
     
-    
   if (method == "StRS SPC") {  
-    
-    format_spc_output <- format_fish_spc(data, rates_dbase = rates_dbase)
-    
-    summary_spc_erosion <- format_spc_output %>%
-      # convert REPLICATEID values to Transect '1' and '2'
-      group_by(SITEVISITID) %>% 
-      mutate(TRANSECT = match(REPLICATEID, unique(REPLICATEID))) %>%
-      gather("METRIC", "VALUE", -c(SITEVISITID:FXN_GRP, TRANSECT)) %>% #set up data frame by spreading by transects (or the former REPLICATEID)
-      select(-REPLICATEID) %>%
-      spread(TRANSECT, VALUE) %>%
-      mutate_at(vars(`1`, `2`), as.numeric) %>%
-      # Average replicates (n=2)
-      dplyr::group_by(SITEVISITID, SITE, REP, COMMONFAMILYALL, FXN_GRP, METRIC) %>% #calculate mean, sd, se, CI95 of data by averaging 2 divers (REPLICATEID)
-      rowwise() %>%
-      dplyr::mutate(MEAN = mean(c_across(`1`:`2`), na.rm = TRUE)) %>%
-      dplyr::mutate(SD = sd(c_across(`1`:`2`), na.rm = TRUE)) %>%
-      dplyr::mutate(SD = coalesce(SD, 0)) %>% # reaplce NA SD values with 0 because SD of one transect value is 0
-      dplyr::mutate(SE = SD / sqrt(2)) %>% #2 is the number of total Transects
-      dplyr::mutate(L95 = MEAN - (SE * 1.97)) %>%
-      dplyr::mutate(U95 = MEAN + (SE * 1.97)) %>%
-      select(-c(`1`:`2`)) %>% #remove unnecessary columns
-      ungroup(.) %>%
-      dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
-                                    TRUE ~ as.numeric(L95)))
     
     format_strs_spc_erosion <- summary_spc_erosion %>%
       select(-c(SD:U95)) %>%
@@ -249,6 +227,7 @@ process_fish <- function(data,
     return(calc_strs_spc_erosion)
       
     }
+  }
 }
 
 
