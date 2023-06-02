@@ -23,7 +23,10 @@ benthic_data <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Benthic_O
 
 urchin_data <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Urchins_OAHU_2021.csv", na = "", check.names = FALSE)
 
-fish_data <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Fixed_Belt_OAHU_2021.csv", na = "", check.names = FALSE)
+fish_data_belt <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Fixed_Belt_OAHU_2021.csv", na = "", check.names = FALSE)
+
+fish_data_spc <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Fixed_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
+
 
 ```
 
@@ -85,11 +88,26 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 ```{r process_parrotfish}
 
 fish_belt <- process_fish(
-  data = fish_data, 
+  data = fish_data_belt, 
   rates_dbase = "Kindinger", 
   full_summary = TRUE)
 
-fish_site<- fish_belt$fish_erosion_site
+fish_fixed_spc <- process_fish(
+  data = fish_data_spc, 
+  method = "Fixed SPC",
+  rates_dbase = "Kindinger", 
+  sites_associated = "OAH")
+
+fish_strs_spc <- process_fish(
+  data = fish_data_spc, 
+  method = "StRS SPC",
+  rates_dbase = "Kindinger", 
+  sites_associated = "OAH")
+
+
+fish_site_belt <- fish_belt$fish_erosion_site
+fish_fixed_spc
+fish_strs_spc
 
 ```
 
