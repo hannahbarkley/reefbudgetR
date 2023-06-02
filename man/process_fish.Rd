@@ -9,12 +9,19 @@ process_fish(data, method = "IPRB", rates_dbase = "Kindinger", sites_associated 
 \arguments{
 \item{data}{Parrotfish belt data.}
 
+\item{method}{survey method. Choose either Fixed Belt ("method = "IPRB"), 
+#'Fixed Stationary Point Count ("method = "Fixed SPC"), or Associated Stationary 
+#'Point Count ("method = "StRS SPC").}
+}
 \item{rates_dbase}{Erosion rates database to use. Choose either Indo-Pacific
 ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
 by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").}
 }
+\item{sites_associated}{Location data was collected. Choose either Oahu ("method = "OAH"),
+#'or Mariana Islands ("method = "MARIAN").}
+}
 \description{
-Calculate parrotfish erosion rates from belt data
+Calculate parrotfish erosion rates from belt and spc data
 }
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)

@@ -1,4 +1,4 @@
-#' Calculate parrotfish erosion rates from belt data
+#' Calculate parrotfish erosion rates from belt and spc data
 #'
 #'@author Rebecca Weible
 #'
