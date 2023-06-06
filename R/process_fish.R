@@ -165,7 +165,9 @@ process_fish <- function(data,
     
     summary_fixed_spc_erosion <- format_fixed_spc_erosion %>%
                                   filter(!is.na(OCC_SITEID)) %>% # remove all non fixed SPC site data
-                                  mutate(CB_METHOD = "Fixed SPC")
+                                  mutate(CB_METHOD = "Fixed SPC") %>%
+                                  mutate_at(vars(REGION:CB_METHOD), as.factor) %>%
+                                  mutate_at(vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
     
     return(summary_fixed_spc_erosion)
       }
@@ -267,7 +269,9 @@ process_fish <- function(data,
       mutate(CB_METHOD = "StRS SPC") %>%
       spread(., METRIC, value, fill = "0") %>%
       select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.)) %>%
-      filter(!is.na(.$REGION))
+      filter(!is.na(.$REGION)) %>%
+      mutate_at(vars(REGION:CB_METHOD), as.factor) %>%
+      mutate_at(vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
       
     return(calc_strs_spc_erosion)
       

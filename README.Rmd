@@ -90,19 +90,19 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 fish_belt <- process_fish(
   data = fish_data_belt, 
   method = "IPRB",
-  rates_dbase = "Kindinger", 
+  rates_dbase = "IPRB", 
   full_summary = TRUE)
 
 fish_fixed_spc <- process_fish(
   data = fish_data_spc, 
   method = "Fixed SPC",
-  rates_dbase = "Kindinger", 
+  rates_dbase = "IPRB", 
   sites_associated = "OAH")
 
 fish_strs_spc <- process_fish(
   data = fish_data_spc, 
   method = "StRS SPC",
-  rates_dbase = "Kindinger", 
+  rates_dbase = "IPRB", 
   sites_associated = "OAH")
 
 
