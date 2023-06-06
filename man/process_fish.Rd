@@ -4,7 +4,7 @@
 \alias{process_fish}
 \title{Calculate parrotfish erosion rates from belt and spc data}
 \usage{
-process_fish(data, method = c("IPRB", "Fixed SPC", "StRS SPC"),rates_dbase = c("IPRB", "Kindinger"),
+process_fish(data, method = c("IPRB", "Fixed SPC", "StRS SPC"),rates_dbase_ = c("IPRB", "Kindinger"),
                    sites_associated = c("OAH", "MARIAN"),full_summary = TRUE)
 }
 \arguments{
@@ -14,9 +14,9 @@ process_fish(data, method = c("IPRB", "Fixed SPC", "StRS SPC"),rates_dbase = c("
 #'Fixed Stationary Point Count ("method = "Fixed SPC"), or Associated Stationary 
 #'Point Count ("method = "StRS SPC").}
 }
-\item{rates_dbase}{Erosion rates database to use. Choose either Indo-Pacific
-ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
-by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").}
+\item{rates_dbase_}{Erosion rates database to use. Choose either Indo-Pacific
+ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
+by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").}
 }
 \item{sites_associated}{Location data was collected. Choose either Oahu ("method = "OAH"),
 #'or Mariana Islands ("method = "MARIAN").}
@@ -27,7 +27,7 @@ Calculate parrotfish erosion rates from belt and spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_belt <- process_fish(data = fish_data, rates_dbase = "Kindinger",
+fish_belt <- process_fish(data = fish_data, rates_dbase_ = "Kindinger",
 full_summary = TRUE)
 }
 \author{
