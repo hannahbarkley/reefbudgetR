@@ -18,7 +18,7 @@
 
 
 calc_eros_fish <- function(data,
-                             rates_dbase = "IPRB") {
+                             rates_dbase = c("IPRB", "Kindinger")) {
 
 
   ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
