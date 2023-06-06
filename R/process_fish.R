@@ -32,6 +32,7 @@ process_fish <- function(data,
 
   ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
+  ifelse(sites_associated == "OAH", loc <- "OAH", loc <- "MARIAN")
   
   
   if (method == "IPRB") {
@@ -152,7 +153,7 @@ process_fish <- function(data,
              CRUISE_ID = MISSIONID,
              LOCATION = ISLAND,
              CB_METHOD = METHOD) %>%
-      mutate(REGIONCODE = rates_dbase,
+      mutate(REGIONCODE = loc,
              LOCATIONCODE = str_extract(SITE, "(\\w+)")) %>%
       #add OCC_SITEID column
       left_join(., sites_associated_dbase %>% 
