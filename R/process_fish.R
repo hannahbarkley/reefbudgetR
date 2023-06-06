@@ -181,11 +181,11 @@ process_fish <- function(data,
         
     # FOR StRS SPC DATA ----------------------------------------------------------------
         
-    format_spc_output <- format_fish_spc(data,                                                 
-                                         method = "nSPC",
-                                         rates_dbase = rates_dbase)
+    format_strsspc_output <- format_fish_spc(data,                                                 
+                                             method = "nSPC",
+                                             rates_dbase = rates_dbase)
     
-    summary_spc_erosion <- format_spc_output %>%
+    summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'
       group_by(SITEVISITID) %>% 
       mutate(TRANSECT = match(REPLICATEID, unique(REPLICATEID))) %>%
@@ -207,7 +207,7 @@ process_fish <- function(data,
       dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
                                     TRUE ~ as.numeric(L95)))
       
-    format_strs_spc_erosion <- summary_spc_erosion %>%
+    format_strs_spc_erosion <- summary_strsspc_erosion %>%
       select(-c(SD:U95)) %>%
       #add ASSOC_OCCSITE before averaging by replicate
       left_join(., sites_associated_dbase %>% 
