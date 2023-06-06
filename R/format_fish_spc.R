@@ -63,7 +63,7 @@ format_fish_spc <- function(data,
     bind_rows(filter(.) %>% # create new rows where Excavator, Scraper, and Other are totaled in sum for each site and replicate ID
                 group_by(SITEVISITID, SITE, REP, REPLICATEID, COMMONFAMILYALL) %>%
                 summarise(across(SUM_BIOMASS_PER_FISH_KG_HECTARE:SUM_EROSION_PER_FISH_KG_M2_YR, ~(sum(.x, na.rm=T)))) %>% 
-                mutate(FXN_GRP = "All")) %>%
+                mutate(FXN_GRP = "ALL")) %>%
     
     #format by adding back in where replicateID and Graz_Type were zero before averaging
     complete(., REPLICATEID, COMMONFAMILYALL, FXN_GRP, fill = list(SUM_BIOMASS_PER_FISH_KG_HECTARE = 0, 
@@ -73,9 +73,14 @@ format_fish_spc <- function(data,
     mutate_at(vars(REPLICATEID), as.integer) %>% # make structure of REPLICATEID the same again for the sake of the join
     left_join(., data %>% select(SITEVISITID, SITE, REP, REPLICATEID), by = "REPLICATEID") %>% # join the three columns that produced NAs with function complete
     distinct(.) %>% # remove duplicate rows
-    select(SITEVISITID, SITE, REP, everything(.)) # re-order columns for visual effects
-   
+    select(SITEVISITID, SITE, REP, everything(.)) %>% # re-order columns for visual effects
+    mutate(FXN_GRP = case_when(FXN_GRP == "Other" ~ "OTHER",
+                               FXN_GRP == "Scraper" ~ "SCRAPER",
+                               FXN_GRP == "Excavator" ~ "EXCAVATOR",
+                               TRUE ~ FXN_GRP))
+    
   
   return(prepdat)
   
 }
+ 
