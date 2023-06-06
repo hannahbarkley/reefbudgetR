@@ -2,7 +2,9 @@
 #'
 #'@author Rebecca Weible
 #'
-#'#'@param data all stationary point count data.
+#'@param data all stationary point count data.
+#'@param method type of SPC survey conducted. Choose either Fixed site SPC 
+#'("method = "CbB") or stratified random sampling SPC ("method = "nSPC").
 #'@param rates_dbase Erosion rates database to use. Choose either Indo-Pacific
 #'ReefBudget ("rates_dbase = "IPRB") or U.S. Pacific Islands rates developed
 #'by Tye Kindinger, NOAA PIFSC ("rates_dbase = "Kindinger").
@@ -15,11 +17,15 @@
 
 
 format_fish_spc <- function(data, 
+                            method = c("CbB", "nSPC"),
                             rates_dbase = "IPRB") {
  
   ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   
+  ifelse(method == "CbB", method_type <- "CbB", method_type <- "nSPC")
+  
   prepdat <- data %>% 
+    filter(., METHOD %in% method_type) %>%
     filter(., !(TRAINING_YN %in% "-1")) %>%
     filter(., !(SITE == "GUA-2587" & METHOD == "nSPC")) %>% # must remove special case "GUA-2587" SPC because it's a fixed site and data was collected twice.
     select(SITEVISITID, OBS_YEAR, SITE, ISLAND, REP, REPLICATEID, SPECIES, COUNT, SIZE_, SCIENTIFIC_NAME, TAXONNAME, COMMONFAMILYALL, LW_A:LENGTH_CONVERSION_FACTOR) %>% #subset only columns that matter for density, biomass, bioerosion calculation
