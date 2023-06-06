@@ -156,12 +156,7 @@ process_fish <- function(data,
       mutate(REGIONCODE = loc,
              LOCATIONCODE = str_extract(SITE, "(\\w+)")) %>%
       #add OCC_SITEID column
-      left_join(., sites_associated_dbase %>% 
-                  filter(value == "1") %>% # select only fixed OCC sites (do not include associated)
-                  select(ASSOC_OCCSITE, SITE, LOCATION) %>%
-                  rename(OCC_SITENAME = LOCATION), 
-                by = "SITE") %>%
-      rename(OCC_SITEID = ASSOC_OCCSITE) %>%
+      left_join(., data %>% select(SITE, OCC_SITEID, OCC_SITENAME), by = "SITE") %>%
       distinct(.) %>%
       spread(., METRIC, value, fill = 0) %>%
       select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.), -SITEVISITID, -SITE)
@@ -256,10 +251,19 @@ process_fish <- function(data,
       unite("METRIC", METRIC, FXN_GRP) %>% 
       unite("METRIC", METRIC, calc) %>%
       # fill in missing metadata info
-      left_join(., summary_fixed_spc_erosion %>% select(c(REGION:LONGITUDE)), 
-                by = c("ASSOC_OCCSITE" = "OCC_SITEID")) %>% #join important metadata that was lost during averaging replicates
+      left_join(., data %>% select(REGION_NAME, MISSIONID, ISLAND, SITEVISITID, OCC_SITEID, LATITUDE, LONGITUDE, METHOD), by = c("ASSOC_OCCSITE" = "OCC_SITEID")) %>% #join important metadata that was lost during averaging replicates
       distinct(.) %>% #left_join creates duplicates, so remove duplicates
+      mutate(LATITUDE = round(LATITUDE, 5)) %>%
+      mutate(LONGITUDE = round(LONGITUDE, 5)) %>%
+      rename(REGION = REGION_NAME,
+             CRUISE_ID = MISSIONID,
+             LOCATION = ISLAND,
+             CB_METHOD = METHOD) %>%
+      mutate(REGIONCODE = loc,
+             LOCATIONCODE = str_extract(ASSOC_OCCSITE, "(\\w+)")) %>%
       rename(OCC_SITEID = ASSOC_OCCSITE) %>%
+      left_join(., data %>% select(OCC_SITEID, OCC_SITENAME), by = "OCC_SITEID") %>%
+      distinct(.) %>%
       mutate(CB_METHOD = "StRS SPC") %>%
       spread(., METRIC, value, fill = "0") %>%
       select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.)) %>%
