@@ -20,7 +20,9 @@ format_fish_spc <- function(data,
                             method = c("CbB", "nSPC"),
                             rates_dbase = "IPRB") {
  
-  ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
+  if (rates_dbase == "IPRB") {rates_dbase <- fish_erosion_dbase_iprb} else if (rates_dbase == "Kindinger"){rates_dbase <- fish_erosion_dbase_kindinger}
+  
+  #ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   
   ifelse(method == "CbB", method_type <- "CbB", method_type <- "nSPC")
   

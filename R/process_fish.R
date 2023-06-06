@@ -30,7 +30,9 @@ process_fish <- function(data,
                          sites_associated = c("OAH", "MARIAN"),
                          full_summary = TRUE) {
 
-  ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
+  if (rates_dbase == "IPRB") {rates_dbase <- fish_erosion_dbase_iprb} else if (rates_dbase == "Kindinger"){rates_dbase <- fish_erosion_dbase_kindinger}
+  
+  #ifelse(rates_dbase == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
   ifelse(sites_associated == "OAH", loc <- "OAH", loc <- "MARIAN")
   
