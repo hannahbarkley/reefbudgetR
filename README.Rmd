@@ -25,7 +25,7 @@ urchin_data <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Urchins_OA
 
 fish_data_belt <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Fixed_Belt_OAHU_2021.csv", na = "", check.names = FALSE)
 
-fish_data_spc <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_Fixed_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
+fish_data_spc <- read.csv("ESD_CarbBudget_OAHU_2021/Data/ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
 
 
 ```

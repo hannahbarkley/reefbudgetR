@@ -161,6 +161,7 @@ process_fish <- function(data,
                   rename(OCC_SITENAME = LOCATION), 
                 by = "SITE") %>%
       rename(OCC_SITEID = ASSOC_OCCSITE) %>%
+      distinct(.) %>%
       spread(., METRIC, value, fill = 0) %>%
       select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.), -SITEVISITID, -SITE)
     
@@ -260,7 +261,8 @@ process_fish <- function(data,
       rename(OCC_SITEID = ASSOC_OCCSITE) %>%
       mutate(CB_METHOD = "StRS SPC") %>%
       spread(., METRIC, value, fill = "0") %>%
-      select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.))
+      select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.)) %>%
+      filter(!is.na(.$REGION))
       
     return(calc_strs_spc_erosion)
       
