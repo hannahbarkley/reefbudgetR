@@ -251,7 +251,7 @@ process_fish <- function(data,
       unite("METRIC", METRIC, FXN_GRP) %>% 
       unite("METRIC", METRIC, calc) %>%
       # fill in missing metadata info
-      left_join(., data %>% select(REGION_NAME, MISSIONID, ISLAND, SITEVISITID, OCC_SITEID, LATITUDE, LONGITUDE, METHOD), by = c("ASSOC_OCCSITE" = "OCC_SITEID")) %>% #join important metadata that was lost during averaging replicates
+      left_join(., data %>% select(REGION_NAME, MISSIONID, ISLAND, OCC_SITEID, LATITUDE, LONGITUDE, METHOD), by = c("ASSOC_OCCSITE" = "OCC_SITEID")) %>% #join important metadata that was lost during averaging replicates
       distinct(.) %>% #left_join creates duplicates, so remove duplicates
       mutate(LATITUDE = round(LATITUDE, 5)) %>%
       mutate(LONGITUDE = round(LONGITUDE, 5)) %>%
