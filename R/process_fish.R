@@ -260,7 +260,7 @@ process_fish <- function(data,
              LOCATION = ISLAND,
              CB_METHOD = METHOD) %>%
       mutate(REGIONCODE = loc,
-             LOCATIONCODE = str_extract(ASSOC_OCCSITE, "(\\w+)")) %>%
+             LOCATIONCODE = str_sub(ASSOC_OCCSITE, 5,7)) %>%
       rename(OCC_SITEID = ASSOC_OCCSITE) %>%
       left_join(., data %>% select(OCC_SITEID, OCC_SITENAME), by = "OCC_SITEID") %>%
       distinct(.) %>%
