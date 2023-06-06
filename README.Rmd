@@ -106,7 +106,29 @@ fish_strs_spc <- process_fish(
   sites_associated = "OAH")
 
 
-fish_site_belt <- fish_belt$fish_erosion_site
+fish_site_belt <- fish_belt$fish_erosion_site 
+
+# If Excavator functional group is missing:
+fish_fixed_spc <- fish_fixed_spc %>%
+                    add_column(FISH_BIOMASS_KG_HA_EXCAVATOR_L95 = 0,
+                               FISH_BIOMASS_KG_HA_EXCAVATOR_MEAN = 0,
+                               FISH_BIOMASS_KG_HA_EXCAVATOR_SD = 0,
+                               FISH_BIOMASS_KG_HA_EXCAVATOR_SE = 0,
+                               FISH_BIOMASS_KG_HA_EXCAVATOR_U95 = 0,
+                               FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95 = 0,
+                               FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_MEAN = 0,
+                               FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SD = 0,
+                               FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SE = 0,
+                               FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95 = 0,
+                               FISH_EROSION_KG_M2_YR_EXCAVATOR_L95 = 0,
+                               FISH_EROSION_KG_M2_YR_EXCAVATOR_MEAN = 0,
+                               FISH_EROSION_KG_M2_YR_EXCAVATOR_SD = 0,
+                               FISH_EROSION_KG_M2_YR_EXCAVATOR_SE = 0,
+                               FISH_EROSION_KG_M2_YR_EXCAVATOR_U95 = 0) %>%
+                      select(REGION:FISH_BIOMASS_KG_HA_ALL_U95, FISH_BIOMASS_KG_HA_EXCAVATOR_L95:FISH_BIOMASS_KG_HA_EXCAVATOR_U95, FISH_BIOMASS_KG_HA_OTHER_L95:FISH_BIOMASS_KG_HA_SCRAPER_U95, 
+                             FISH_DENSITY_ABUNDANCE_HA_ALL_L95:FISH_DENSITY_ABUNDANCE_HA_ALL_U95, FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95:FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95, 
+                             FISH_DENSITY_ABUNDANCE_HA_OTHER_L95:FISH_DENSITY_ABUNDANCE_HA_SCRAPER_U95, FISH_EROSION_KG_M2_YR_ALL_L95:FISH_EROSION_KG_M2_YR_ALL_U95, FISH_EROSION_KG_M2_YR_EXCAVATOR_L95:FISH_EROSION_KG_M2_YR_EXCAVATOR_U95,
+                             FISH_EROSION_KG_M2_YR_OTHER_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95)
 
 fish_site_belt
 fish_fixed_spc

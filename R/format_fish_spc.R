@@ -64,7 +64,6 @@ format_fish_spc <- function(data,
                 group_by(SITEVISITID, SITE, REP, REPLICATEID, COMMONFAMILYALL) %>%
                 summarise(across(SUM_BIOMASS_PER_FISH_KG_HECTARE:SUM_EROSION_PER_FISH_KG_M2_YR, ~(sum(.x, na.rm=T)))) %>% 
                 mutate(FXN_GRP = "ALL")) %>%
-    
     #format by adding back in where replicateID and Graz_Type were zero before averaging
     complete(., REPLICATEID, COMMONFAMILYALL, FXN_GRP, fill = list(SUM_BIOMASS_PER_FISH_KG_HECTARE = 0, 
                                                                    SUM_DENSITY_PER_FISH_HECTARE = 0, 
