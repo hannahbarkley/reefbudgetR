@@ -134,6 +134,10 @@ fish_site_belt
 fish_fixed_spc
 fish_strs_spc
 
+oahu_kindinger <- rbind(fish_site_belt, fish_fixed_spc, fish_strs_spc)
+oahu_iprb <- rbind(fish_site_belt, fish_fixed_spc, fish_strs_spc)
+
+
 ```
 
 ```{r process_net}
