@@ -5,7 +5,7 @@
 #'@param data all stationary point count data.
 #'@param method type of SPC survey conducted. Choose either Fixed site SPC 
 #'("method = "CbB") or stratified random sampling SPC ("method = "nSPC").
-#'@param rates_dbase_ Erosion rates database to use. Choose either Indo-Pacific
+#'@param rates_dbase Erosion rates database to use. Choose either Indo-Pacific
 #'ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
 #'by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").
 #'
@@ -18,9 +18,7 @@
 
 format_fish_spc <- function(data, 
                             method = c("CbB", "nSPC"),
-                            rates_dbase_ = "IPRB") {
- 
-  ifelse(rates_dbase_ == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
+                            rates_dbase) {
   
   ifelse(method == "CbB", method_type <- "CbB", method_type <- "nSPC")
   
