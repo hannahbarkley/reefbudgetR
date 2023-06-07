@@ -27,6 +27,7 @@ format_4ncei <- function(data) {
     "DEPTH_M",
     "LOCALDATE",
     "CB_METHOD_BENTHIC",
+    "CB_METHOD_URCHIN",
     "CB_METHOD_FISH",
     "RUGOSITY_MEAN",
     "RUGOSITY_SE",
