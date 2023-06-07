@@ -4,9 +4,7 @@
 #'
 #'@param data Parrotfish belt data, including number of fish observed of each
 #'species, size class, and phase.
-#'@param rates_dbase_ Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").
+#'@param rates_dbase Erosion rates database to use.
 #'
 #'@import dplyr
 #'@importFrom rlang .data
@@ -18,9 +16,7 @@
 
 
 calc_eros_fish <- function(data,
-                           rates_dbase_ = c("IPRB", "Kindinger")) {
-
-  ifelse(rates_dbase_ == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
+                           rates_dbase) {
 
 
   # Format dataframe for biomass and bioerosion calculations below
