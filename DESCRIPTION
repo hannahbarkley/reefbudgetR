@@ -28,5 +28,7 @@ Imports:
     tidyr,
     tidyverse,
     Rmisc,
-    dplyr
+    dplyr,
+    tibble,
+    stringr
 VignetteBuilder: knitr
