@@ -4,7 +4,7 @@
 \alias{format_fish_spc}
 \title{Format Stationary Point Count data}
 \usage{
-format_fish_spc(data, method = c("CbB", "nSPC"), rates_dbase_ = "IPRB")
+format_fish_spc(data, method = c("CbB", "nSPC"), rates_dbase)
 }
 \arguments{
 \item{data}{all stationary point count data.}
@@ -12,7 +12,7 @@ format_fish_spc(data, method = c("CbB", "nSPC"), rates_dbase_ = "IPRB")
 \item{method}{type of SPC survey conducted. Choose either Fixed site SPC
 ("method = "CbB") or stratified random sampling SPC ("method = "nSPC").}
 
-\item{rates_dbase_}{Erosion rates database to use. Choose either Indo-Pacific
+\item{rates_dbase}{Erosion rates database to use. Choose either Indo-Pacific
 ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
 by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").}
 }
