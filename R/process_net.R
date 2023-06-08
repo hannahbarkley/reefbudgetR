@@ -31,11 +31,28 @@ process_net <- function(prod,
     colnames(fish)[colnames(fish) == "CB_METHOD"] <- "CB_METHOD_FISH"
     
     
-    net_site_prod_urch <- left_join(prod,
+    net_site_prod_urch <- full_join(prod,
                                     urch,
                                     by = colnames(prod)[colnames(prod) %in% colnames(urch)])
     
 
+    
+    net_site_prod_urch <- full_join(prod,
+                                    urch,
+                                    by = c("REGION",
+                                           "REGIONCODE" ,  
+                                           "YEAR",        
+                                           "CRUISE_ID",    
+                                           "LOCATION",     
+                                           "LOCATIONCODE", 
+                                           "OCC_SITEID", 
+                                           "OCC_SITENAME", 
+                                           "LATITUDE" ,    
+                                           "LONGITUDE" , 
+                                           "DEPTH_M",
+                                           "LOCALDATE")
+                                           )
+    )
     
     net_site_prod_urch <-
       net_site_prod_urch %>% mutate_at(vars(c("REGION":"LOCALDATE")), as.factor)
@@ -48,8 +65,8 @@ process_net <- function(prod,
       fish,
       by = c(
         "REGION",
-        "REGIONCODE",
-        "CRUISE_ID",
+        "REGIONCODE"
+         "CRUISE_ID",
         "LOCATION",
         "LOCATIONCODE",
         "OCC_SITEID",
