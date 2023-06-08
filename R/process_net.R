@@ -52,7 +52,6 @@ process_net <- function(prod,
                                            "DEPTH_M",
                                            "LOCALDATE")
                                            )
-    )
     
     net_site_prod_urch <-
       net_site_prod_urch %>% mutate_at(vars(c("REGION":"LOCALDATE")), as.factor)
@@ -65,7 +64,7 @@ process_net <- function(prod,
       fish,
       by = c(
         "REGION",
-        "REGIONCODE"
+        "REGIONCODE",
          "CRUISE_ID",
         "LOCATION",
         "LOCATIONCODE",
