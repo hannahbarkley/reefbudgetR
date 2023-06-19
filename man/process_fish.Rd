@@ -20,8 +20,8 @@ Fixed Stationary Point Count ("method = "Fixed SPC"), or Associated Stationary
 Point Count ("method = "StRS SPC").}
 
 \item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
-ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
-by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").
+ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
+by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
 #'@param sites_associated Location data was collected. Choose either Oahu ("method = "OAH"),
 or Mariana Islands ("method = "MARIAN").}
 }
@@ -31,7 +31,7 @@ Calculate parrotfish erosion rates from belt and spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_belt <- process_fish(data = fish_data, method = "Fixed SPC", rates_dbase = "Kindinger",
+fish_belt <- process_fish(data = fish_data, method = "Fixed SPC", dbase_type = "Kindinger",
 full_summary = TRUE)
 }
 \author{
