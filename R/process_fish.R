@@ -44,7 +44,8 @@ process_fish <- function(data,
       
         calc_eros_fish_output <- calc_eros_fish(data,
                                                 dbase_type = rates_dbase)
-      
+
+        
         # Calculate bioerosion metrics per grazing type per site ---------------------
       
         density_average <- suppressWarnings(
