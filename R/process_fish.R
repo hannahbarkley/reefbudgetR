@@ -33,7 +33,7 @@ process_fish <- function(data,
   
   ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
-  ifelse(sites_associated == "MHI", loc <- "MHI", loc <- "MARIAN")
+  ifelse(sites_associated == "OAH", loc <- "MHI", loc <- "MARIAN")
   
   
   if (method == "IPRB") {
