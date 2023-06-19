@@ -6,9 +6,9 @@
 #'@param method survey method. Choose either Fixed Belt ("method = "IPRB"), 
 #'Fixed Stationary Point Count ("method = "Fixed SPC"), or Associated Stationary 
 #'Point Count ("method = "StRS SPC").
-#'@param rates_dbase_ Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").
+#'@param dbase_type Erosion rates database to use. Choose either Indo-Pacific
+#'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
+#'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
 #'#'@param sites_associated Location data was collected. Choose either Oahu ("method = "OAH"),
 #'or Mariana Islands ("method = "MARIAN").
 #'
@@ -21,28 +21,29 @@
 #'@examples
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
-#'fish_belt <- process_fish(data = fish_data, method = "Fixed SPC", rates_dbase = "Kindinger",
+#'fish_belt <- process_fish(data = fish_data, method = "Fixed SPC", dbase_type = "Kindinger",
 #'full_summary = TRUE)
 
 process_fish <- function(data,
                          method = c("IPRB", "Fixed SPC", "StRS SPC"),
-                         rates_dbase_ = c("IPRB", "Kindinger"),
+                         dbase_type = c("IPRB", "Kindinger"),
                          sites_associated = c("OAH", "MARIAN"),
                          full_summary = TRUE) {
   
   
+  ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
+  ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
+  ifelse(sites_associated == "MHI", loc <- "MHI", loc <- "MARIAN")
+  
+  
   if (method == "IPRB") {
-    
-    ifelse(rates_dbase_ == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
-    ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
-    ifelse(sites_associated == "OAH", loc <- "OAH", loc <- "MARIAN")
     
   # FOR BELT DATA ----------------------------------------------------------------
   
         # Calculate erosion rates per fish -------------------------------------------
       
         calc_eros_fish_output <- calc_eros_fish(data,
-                                                rates_dbase_ = rates_dbase)
+                                                dbase_type = rates_dbase)
       
         # Calculate bioerosion metrics per grazing type per site ---------------------
       
@@ -101,16 +102,12 @@ process_fish <- function(data,
   
   
   else if (method == "Fixed SPC"){
-    
-    ifelse(rates_dbase_ == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
-    ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
-    ifelse(sites_associated == "OAH", loc <- "OAH", loc <- "MARIAN")
   
   # FOR FIXED SPC DATA ----------------------------------------------------------------
     
   format_spc_output <- format_fish_spc(data,                                                 
                                        method = "CbB",
-                                       rates_dbase = rates_dbase)
+                                       dbase_type = rates_dbase)
   
   summary_spc_erosion <- format_spc_output %>%
     # convert REPLICATEID values to Transect '1' and '2'
@@ -179,16 +176,12 @@ process_fish <- function(data,
   
   
   else if (method == "StRS SPC"){
-    
-    ifelse(rates_dbase_ == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
-    ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
-    ifelse(sites_associated == "OAH", loc <- "OAH", loc <- "MARIAN")
         
     # FOR StRS SPC DATA ----------------------------------------------------------------
         
     format_strsspc_output <- format_fish_spc(data,                                                 
                                              method = "nSPC",
-                                             rates_dbase = rates_dbase)
+                                             dbase_type = rates_dbase)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'
