@@ -2,6 +2,7 @@
 
 export(calc_eros_fish)
 export(calc_fish_erosion_rates)
+export(calc_kindinger_erosion_metrics)
 export(calc_prod)
 export(combine_sfm)
 export(convert_iprb)

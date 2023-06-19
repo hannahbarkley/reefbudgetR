@@ -23,50 +23,49 @@ process_net <- function(prod,
                         sum_by = c("site", "transect"),
                         format = "wide") {
 
+  
   if (sum_by == "site") {
-
-    net_site_prod_urch <- left_join(prod,
+    
+    colnames(prod)[colnames(prod) == "CB_METHOD"] <- "CB_METHOD_BENTHIC"
+    colnames(urch)[colnames(urch) == "CB_METHOD"] <- "CB_METHOD_URCHIN"
+    colnames(fish)[colnames(fish) == "CB_METHOD"] <- "CB_METHOD_FISH"
+    
+    
+    net_site_prod_urch <- full_join(prod,
                                     urch,
                                     by = colnames(prod)[colnames(prod) %in% colnames(urch)])
+    
 
-    if (c("SfM") %in% unique(urch$CB_METHOD) == FALSE) {
-      for (i in sjmisc::seq_row(net_site_prod_urch)) {
-        if (net_site_prod_urch$CB_METHOD[i] == "SfM") {
-          net_site_prod_urch$URCHIN_EROSION_KG_M2_YR_MEAN[i] <-
-            urch$URCHIN_EROSION_KG_M2_YR_MEAN[urch$OCC_SITEID ==
-                                                net_site_prod_urch$OCC_SITEID[i] &
-                                                urch$CB_METHOD == "Chords"]
-          net_site_prod_urch$URCHIN_EROSION_KG_M2_YR_SD[i] <-
-            urch$URCHIN_EROSION_KG_M2_YR_SD[urch$OCC_SITEID ==
-                                              net_site_prod_urch$OCC_SITEID[i] &
-                                              urch$CB_METHOD == "Chords"]
-          net_site_prod_urch$URCHIN_EROSION_KG_M2_YR_N[i] <-
-            urch$URCHIN_EROSION_KG_M2_YR_N[urch$OCC_SITEID ==
-                                             net_site_prod_urch$OCC_SITEID[i] &
-                                             urch$CB_METHOD == "Chords"]
-          net_site_prod_urch$URCHIN_EROSION_KG_M2_YR_SE[i] <-
-            urch$URCHIN_EROSION_KG_M2_YR_SE[urch$OCC_SITEID ==
-                                              net_site_prod_urch$OCC_SITEID[i] &
-                                              urch$CB_METHOD == "Chords"]
-          net_site_prod_urch$URCHIN_EROSION_KG_M2_YR_CI[i] <-
-            urch$URCHIN_EROSION_KG_M2_YR_CI[urch$OCC_SITEID ==
-                                              net_site_prod_urch$OCC_SITEID[i] &
-                                              urch$CB_METHOD == "Chords"]
-        }
-      }
-    }
-
+    
+    net_site_prod_urch <- full_join(prod,
+                                    urch,
+                                    by = c("REGION",
+                                           "REGIONCODE" ,  
+                                           "YEAR",        
+                                           "CRUISE_ID",    
+                                           "LOCATION",     
+                                           "LOCATIONCODE", 
+                                           "OCC_SITEID", 
+                                           "OCC_SITENAME", 
+                                           "LATITUDE" ,    
+                                           "LONGITUDE" , 
+                                           "DEPTH_M",
+                                           "LOCALDATE")
+                                           )
+    
     net_site_prod_urch <-
-      net_site_prod_urch %>% mutate_at(vars(c("REGION":"CB_METHOD")), as.factor)
+      net_site_prod_urch %>% mutate_at(vars(c("REGION":"LOCALDATE")), as.factor)
 
-
+    fish$LATITUDE <- net_site_prod_urch$LATITUDE[match(fish$OCC_SITEID, net_site_prod_urch$OCC_SITEID)]
+    fish$LONGITUDE <- net_site_prod_urch$LONGITUDE[match(fish$OCC_SITEID, net_site_prod_urch$OCC_SITEID)]
+    
     net_site <- full_join(
       net_site_prod_urch,
       fish,
       by = c(
         "REGION",
         "REGIONCODE",
-        "CRUISE_ID",
+         "CRUISE_ID",
         "LOCATION",
         "LOCATIONCODE",
         "OCC_SITEID",
@@ -76,10 +75,6 @@ process_net <- function(prod,
       )
     )
 
-    colnames(net_site)[colnames(net_site) == "CB_METHOD.x"] <-
-      "CB_METHOD_BENTHIC"
-    colnames(net_site)[colnames(net_site) == "CB_METHOD.y"] <-
-      "CB_METHOD_FISH"
 
     net_site$NET_CARB_PROD_KG_M2_YR_MEAN <-
       net_site$GROSS_CARB_PROD_KG_M2_YR_MEAN -
@@ -113,37 +108,23 @@ process_net <- function(prod,
   }
 
   if (sum_by == "transect") {
+    
+    colnames(prod)[colnames(prod) == "CB_METHOD"] <- "CB_METHOD_BENTHIC"
+    colnames(urch)[colnames(urch) == "CB_METHOD"] <- "CB_METHOD_URCHIN"
+    colnames(fish)[colnames(fish) == "CB_METHOD"] <- "CB_METHOD_FISH"
+    
+    
     net_transect_prod_urch <- left_join(prod,
                                     urch,
                                     by = colnames(prod)[colnames(prod) %in% colnames(urch)])
-
-    if (c("SfM") %in% unique(urch$CB_METHOD) == FALSE) {
-      for (i in sjmisc::seq_row(net_transect_prod_urch)) {
-        if (net_transect_prod_urch$CB_METHOD[i] == "SfM") {
-          net_transect_prod_urch$URCHIN_EROSION_KG_M2_YR[i] <-
-            urch$URCHIN_EROSION_KG_M2_YR[urch$OCC_SITEID == net_transect_prod_urch$OCC_SITEID[i] &
-                                           urch$CB_METHOD == "Chords" &
-                                           urch$CB_TRANSECTID == net_transect_prod_urch$CB_TRANSECTID[i]]
-
-
-          net_transect_prod_urch$URCHIN_ABUNDANCE_NO[i] <-
-            urch$URCHIN_ABUNDANCE_NO[urch$OCC_SITEID ==
-                                       net_transect_prod_urch$OCC_SITEID[i] &
-                                       urch$CB_METHOD == "Chords" &
-                                       urch$CB_TRANSECTID == net_transect_prod_urch$CB_TRANSECTID[i]]
-
-
-          net_transect_prod_urch$URCHIN_DENSITY_NO_M2[i] <-
-            urch$URCHIN_DENSITY_NO_M2[urch$OCC_SITEID ==
-                                        net_transect_prod_urch$OCC_SITEID[i] &
-                                        urch$CB_METHOD == "Chords" &
-                                        urch$CB_TRANSECTID == net_transect_prod_urch$CB_TRANSECTID[i]]
-        }
-      }
-    }
+    
+    fish$LATITUDE <- as.factor(net_transect_prod_urch$LATITUDE[match(fish$OCC_SITEID, net_transect_prod_urch$OCC_SITEID)])
+    fish$LONGITUDE <- as.factor(net_transect_prod_urch$LONGITUDE[match(fish$OCC_SITEID, net_transect_prod_urch$OCC_SITEID)])
+    
+    
 
     net_transect_prod_urch <-
-      net_transect_prod_urch %>% mutate_at(vars(c("REGION":"CB_METHOD")), as.factor)
+      net_transect_prod_urch %>% mutate_at(vars(c("REGION":"LOCALDATE")), as.factor)
 
     net_transect_all <- full_join(
       net_transect_prod_urch,
@@ -160,12 +141,6 @@ process_net <- function(prod,
         "LONGITUDE"
       )
     )
-
-    colnames(net_transect_all)[colnames(net_transect_all) == "CB_METHOD.x"] <-
-      "CB_METHOD_BENTHIC"
-    colnames(net_transect_all)[colnames(net_transect_all) == "CB_METHOD.y"] <-
-      "CB_METHOD_FISH"
-
 
     net_transect_all$NET_CARB_PROD_KG_M2_YR <-
       net_transect_all$GROSS_CARB_PROD_KG_M2_YR -
@@ -197,6 +172,7 @@ process_net <- function(prod,
         DEPTH_M,
         LOCALDATE,
         CB_METHOD_BENTHIC,
+        CB_METHOD_URCHIN,
         CB_METHOD_FISH
       ) %>%
       dplyr::reframe(across(
@@ -224,19 +200,13 @@ process_net <- function(prod,
         )
       ))
 
+    net_site$FISH_BIOMASS_KG_HA_ALL_MEAN <- fish$FISH_BIOMASS_KG_HA_ALL_MEAN[match(net_site$OCC_SITEID, fish$OCC_SITEID)]
+    net_site$FISH_BIOMASS_KG_HA_ALL_SE  <- fish$FISH_BIOMASS_KG_HA_ALL_SE[match(net_site$OCC_SITEID, fish$OCC_SITEID)]
+    net_site$FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN <- fish$FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN[match(net_site$OCC_SITEID, fish$OCC_SITEID)]
+    net_site$FISH_DENSITY_ABUNDANCE_HA_ALL_SE <- fish$FISH_DENSITY_ABUNDANCE_HA_ALL_SE[match(net_site$OCC_SITEID, fish$OCC_SITEID)]
+    net_site$FISH_EROSION_KG_M2_YR_ALL_MEAN <- fish$FISH_EROSION_KG_M2_YR_ALL_MEAN[match(net_site$OCC_SITEID, fish$OCC_SITEID)]
+    net_site$FISH_EROSION_KG_M2_YR_ALL_SE <- fish$FISH_EROSION_KG_M2_YR_ALL_SE[match(net_site$OCC_SITEID, fish$OCC_SITEID)]
 
-    colnames(net_site)[colnames(net_site) == "FISH_BIOMASS_KG_HA_ALL_MEAN_MEAN"] <-
-      "FISH_BIOMASS_KG_HA_ALL_MEAN"
-    colnames(net_site)[colnames(net_site) == "FISH_BIOMASS_KG_HA_ALL_MEAN_SE"] <-
-      "FISH_BIOMASS_KG_HA_ALL_SE"
-    colnames(net_site)[colnames(net_site) == "FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN_MEAN"] <-
-      "FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN"
-    colnames(net_site)[colnames(net_site) == "FISH_DENSITY_ABUNDANCE_HA_ALL_MEAN_SE"] <-
-      "FISH_DENSITY_ABUNDANCE_HA_ALL_SE"
-    colnames(net_site)[colnames(net_site) == "FISH_EROSION_KG_M2_YR_ALL_MEAN_MEAN"] <-
-      "FISH_EROSION_KG_M2_YR_ALL_MEAN"
-    colnames(net_site)[colnames(net_site) == "FISH_EROSION_KG_M2_YR_ALL_MEAN_SE"] <-
-      "FISH_EROSION_KG_M2_YR_ALL_SE"
 
   }
 
@@ -253,6 +223,8 @@ process_net <- function(prod,
       "OCC_SITENAME",
       "OCC_SITEID",
       "CB_METHOD_BENTHIC",
+      "CB_METHOD_URCHIN",
+      "CB_METHOD_FISH",
       "GROSS_CARB_PROD_KG_M2_YR_MEAN",
       "GROSS_CARB_PROD_KG_M2_YR_SE",
       "MACROBIOEROSION_KG_M2_YR_MEAN",
@@ -279,7 +251,9 @@ process_net <- function(prod,
         "LOCATIONCODE",
         "OCC_SITENAME",
         "OCC_SITEID",
-        "CB_METHOD_BENTHIC"
+        "CB_METHOD_BENTHIC",
+        "CB_METHOD_URCHIN",
+        "CB_METHOD_FISH",
       ),
       measure.vars = c(
         "GROSS_CARB_PROD_KG_M2_YR_MEAN",
@@ -337,6 +311,8 @@ process_net <- function(prod,
         "OCC_SITENAME",
         "OCC_SITEID",
         "CB_METHOD_BENTHIC",
+        "CB_METHOD_URCHIN",
+        "CB_METHOD_FISH",
         "PARAMETER"
       )
     )

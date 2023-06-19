@@ -9,7 +9,7 @@
 #'@import dplyr
 #'@importFrom sjmisc seq_row
 #'
-#'@export format_iprb_erosion_rates
+#'@export format_iprb_erosion_metrics
 #'
 
 format_iprb_erosion_metrics <- function(iprb_rates, 
