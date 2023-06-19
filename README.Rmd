@@ -90,19 +90,19 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 fish_belt <- process_fish(
   data = fish_data_belt, 
   method = "IPRB",
-  rates_dbase = "IPRB", 
+  dbase_type = "Kindinger", 
   full_summary = TRUE)
 
 fish_fixed_spc <- process_fish(
   data = fish_data_spc, 
   method = "Fixed SPC",
-  rates_dbase = "IPRB", 
+  dbase_type = "IPRB", 
   sites_associated = "OAH")
 
 fish_strs_spc <- process_fish(
   data = fish_data_spc, 
   method = "StRS SPC",
-  rates_dbase = "IPRB", 
+  dbase_type = "IPRB", 
   sites_associated = "OAH")
 
 
@@ -127,8 +127,8 @@ fish_fixed_spc <- fish_fixed_spc %>%
                                FISH_EROSION_KG_M2_YR_EXCAVATOR_U95 = 0) %>%
                       select(REGION:FISH_BIOMASS_KG_HA_ALL_U95, FISH_BIOMASS_KG_HA_EXCAVATOR_L95:FISH_BIOMASS_KG_HA_EXCAVATOR_U95, FISH_BIOMASS_KG_HA_OTHER_L95:FISH_BIOMASS_KG_HA_SCRAPER_U95, 
                              FISH_DENSITY_ABUNDANCE_HA_ALL_L95:FISH_DENSITY_ABUNDANCE_HA_ALL_U95, FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95:FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95, 
-                             FISH_DENSITY_ABUNDANCE_HA_OTHER_L95:FISH_DENSITY_ABUNDANCE_HA_SCRAPER_U95, FISH_EROSION_KG_M2_YR_ALL_L95:FISH_EROSION_KG_M2_YR_ALL_U95, FISH_EROSION_KG_M2_YR_EXCAVATOR_L95:FISH_EROSION_KG_M2_YR_EXCAVATOR_U95,
-                             FISH_EROSION_KG_M2_YR_OTHER_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95)
+                             FISH_DENSITY_ABUNDANCE_HA_OTHER_L95:FISH_DENSITY_ABUNDANCE_HA_SCRAPER_U95, FISH_EROSION_KG_M2_YR_ALL_L95:FISH_EROSION_KG_M2_YR_ALL_U95, 
+                             FISH_EROSION_KG_M2_YR_EXCAVATOR_L95:FISH_EROSION_KG_M2_YR_EXCAVATOR_U95, FISH_EROSION_KG_M2_YR_OTHER_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95)
 
 fish_site_belt
 fish_fixed_spc
