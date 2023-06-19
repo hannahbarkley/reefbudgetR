@@ -96,13 +96,13 @@ fish_belt <- process_fish(
 fish_fixed_spc <- process_fish(
   data = fish_data_spc, 
   method = "Fixed SPC",
-  dbase_type = "IPRB", 
+  dbase_type = "Kindinger", 
   sites_associated = "OAH")
 
 fish_strs_spc <- process_fish(
   data = fish_data_spc, 
   method = "StRS SPC",
-  dbase_type = "IPRB", 
+  dbase_type = "Kindinger", 
   sites_associated = "OAH")
 
 
