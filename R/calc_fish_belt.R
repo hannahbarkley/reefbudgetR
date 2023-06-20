@@ -29,7 +29,7 @@ calc_fish_belt <- function(data,
     # Calculate erosion rates per fish -------------------------------------------
     
     calc_eros_fish_output <- calc_eros_fish(data,
-                                            dbase_type = rates_dbase)
+                                            dbase_type = dbase_type)
     
     # Calculate bioerosion metrics per grazing type per site ---------------------
     
