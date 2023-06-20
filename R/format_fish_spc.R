@@ -18,7 +18,7 @@
 
 format_fish_spc <- function(data, 
                             method = c("CbB", "nSPC"),
-                            dbase_type = "IPRB") {
+                            dbase_type = c("IPRB", "Kindinger")) {
  
   ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   

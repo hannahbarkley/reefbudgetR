@@ -42,8 +42,7 @@ process_fish <- function(data,
   
         # Calculate erosion rates per fish -------------------------------------------
       
-        calc_eros_fish_output <- calc_eros_fish(data,
-                                                dbase_type = rates_dbase)
+        calc_eros_fish_output <- calc_eros_fish(data, rates_dbase)
 
         
         # Calculate bioerosion metrics per grazing type per site ---------------------
@@ -108,7 +107,7 @@ process_fish <- function(data,
     
   format_spc_output <- format_fish_spc(data,                                                 
                                        method = "CbB",
-                                       dbase_type = rates_dbase)
+                                       rates_dbase)
   
   summary_spc_erosion <- format_spc_output %>%
     # convert REPLICATEID values to Transect '1' and '2'
@@ -182,7 +181,7 @@ process_fish <- function(data,
         
     format_strsspc_output <- format_fish_spc(data,                                                 
                                              method = "nSPC",
-                                             dbase_type = rates_dbase)
+                                             rates_dbase)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'
