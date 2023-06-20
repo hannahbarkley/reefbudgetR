@@ -12,9 +12,7 @@ format_fish_spc(data, method = c("CbB", "nSPC"), rates_dbase)
 \item{method}{type of SPC survey conducted. Choose either Fixed site SPC
 ("method = "CbB") or stratified random sampling SPC ("method = "nSPC").}
 
-\item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
-ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
+\item{rates_dbase}{Erosion rates database to use.}
 }
 \description{
 Format Stationary Point Count data

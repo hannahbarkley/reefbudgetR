@@ -4,22 +4,20 @@
 \alias{calc_eros_fish}
 \title{Calculate parrotfish biomass, density, and bioerosion rates}
 \usage{
-calc_eros_fish(data, dbase_type)
+calc_eros_fish(data, rates_dbase)
 }
 \arguments{
 \item{data}{Parrotfish belt data, including number of fish observed of each
 species, size class, and phase.}
 
-\item{dbase_type}{Erosion rates database to use.  Choose either Indo-Pacific
-#'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
+\item{rates_dbase}{Erosion rates database to use.}
 }
 \description{
 Calculate parrotfish biomass, density, and bioerosion rates
 }
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
-calc_eros_fish_output <- calc_eros_fish(fish_data, dbase_type = "Kindinger")
+calc_eros_fish_output <- calc_eros_fish(fish_data, rates_dbase)
 }
 \author{
 Rebecca Weible

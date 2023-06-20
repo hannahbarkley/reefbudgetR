@@ -2,37 +2,33 @@
 % Please edit documentation in R/process_fish.R
 \name{process_fish}
 \alias{process_fish}
-\title{Calculate parrotfish erosion rates from belt and spc data}
+\title{Process parrotfish erosion rates from belt and spc data}
 \usage{
 process_fish(
-  data,
-  method = c("IPRB", "Fixed SPC", "StRS SPC"),
+  data_belt,
+  data_spc,
   dbase_type = c("IPRB", "Kindinger"),
-  sites_associated = c("OAH", "MARIAN"),
-  full_summary = TRUE
+  sites_associated = c("OAH", "MARIAN")
 )
 }
 \arguments{
-\item{data}{fish survey data.}
-
-\item{method}{survey method. Choose either Fixed Belt ("method = "IPRB"),
-Fixed Stationary Point Count ("method = "Fixed SPC"), or Associated Stationary
-Point Count ("method = "StRS SPC").}
+\item{data_belt}{fish belt survey data.
+#'@param data_spc fish spc survey data.}
 
 \item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
 ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
-#'@param sites_associated Location data was collected. Choose either Oahu ("method = "OAH"),
-or Mariana Islands ("method = "MARIAN").}
+#'@param sites_associated Location data was collected. Choose either Oahu ("sites_associated = "OAH"),
+or Mariana Islands ("sites_associated = "MARIAN").}
 }
 \description{
-Calculate parrotfish erosion rates from belt and spc data
+Process parrotfish erosion rates from belt and spc data
 }
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_belt <- process_fish(data = fish_data, method = "Fixed SPC", dbase_type = "Kindinger",
-full_summary = TRUE)
+fish_belt <- process_fish(data_belt = fish_data_belt, data_spc = fish_data_spc, 
+dbase_type = "Kindinger", sites_associated = "OAH")
 }
 \author{
 Rebecca Weible

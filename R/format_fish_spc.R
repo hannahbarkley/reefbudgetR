@@ -5,9 +5,7 @@
 #'@param data all stationary point count data.
 #'@param method type of SPC survey conducted. Choose either Fixed site SPC 
 #'("method = "CbB") or stratified random sampling SPC ("method = "nSPC").
-#'@param rates_dbase Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").
+#'@param rates_dbase Erosion rates database to use.
 #'
 #'@import tidyverse
 #'@import dplyr
