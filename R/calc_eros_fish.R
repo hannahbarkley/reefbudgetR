@@ -4,10 +4,7 @@
 #'
 #'@param data Parrotfish belt data, including number of fish observed of each
 #'species, size class, and phase.
-#'@param dbase_type Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
-
+#'@param rates_dbase Erosion rates database to use.
 #'
 #'@import dplyr
 #'@importFrom rlang .data
@@ -15,15 +12,13 @@
 #'@export calc_eros_fish
 #'
 #'@examples fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
-#'@examples calc_eros_fish_output <- calc_eros_fish(fish_data, dbase_type = "Kindinger")
+#'@examples calc_eros_fish_output <- calc_eros_fish(fish_data, rates_dbase_ = "Kindinger")
 
 
 calc_eros_fish <- function(data,
-                           dbase_type = c("IPRB", "Kindinger")) {
-
-  ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
-
-
+                           rates_dbase) {
+  
+  
   # Format dataframe for biomass and bioerosion calculations below
   data_formatted <- data %>%
     select(CRUISE_ID:PHASE) %>%
@@ -67,7 +62,7 @@ calc_eros_fish <- function(data,
     # remove all sizes above 51cm for initial phases
     filter(!(SIZE_CLASS %in% "51-60cm" &
                PHASE == "I"))
-
+  
   # calculate Biomass
   fish_biomass <- data_formatted %>%
     #join L-W relationship constants with data to do Biomass Calculations
@@ -87,12 +82,12 @@ calc_eros_fish <- function(data,
     mutate_at(vars(length), as.numeric) %>%
     # calculate Biomass per fish
     mutate(BIOMASS_PER_FISH_G = LW_A * ((length * LENGTH_CONVERSION_FACTOR) ^
-                                      LW_B)) %>%
+                                          LW_B)) %>%
     # calculate biomass for all fish per row and converted g to kg by /1000
     mutate(BIOMASS_PER_FISH_KG = (COUNT * BIOMASS_PER_FISH_G) / 1000) %>%
     select(REGION:SIZE_CLASS, BIOMASS_PER_FISH_KG)
-
-
+  
+  
   fish_bioerosion <- data_formatted %>%
     left_join(., fish_functional_groups %>%
                 #join spdata b/c need full scientific name
@@ -120,7 +115,7 @@ calc_eros_fish <- function(data,
     # multiple columns to zero based on a single column
     mutate_at(.vars = "FISH_EROSION_KG_M2_YR",
               list(~ifelse(FISH_EROSION_KG_M2_YR <= 0, 0, .)))
-
+  
   fish_all <-
     left_join(
       data_formatted,
@@ -134,9 +129,9 @@ calc_eros_fish <- function(data,
     ) %>%
     mutate(BIOMASS_PER_FISH_KG = replace_na(BIOMASS_PER_FISH_KG, 0)) %>%
     mutate(FISH_EROSION_KG_M2_YR = replace_na(FISH_EROSION_KG_M2_YR, 0))
-
+  
   return(fish_all)
-
-
+  
+  
 }
 

@@ -7,8 +7,8 @@
 #'Fixed Stationary Point Count ("method = "Fixed SPC"), or Associated Stationary 
 #'Point Count ("method = "StRS SPC").
 #'@param dbase_type Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
+#'ReefBudget ("rates_dbase_ = "IPRB") or U.S. Pacific Islands rates developed
+#'by Tye Kindinger, NOAA PIFSC ("rates_dbase_ = "Kindinger").
 #'#'@param sites_associated Location data was collected. Choose either Oahu ("method = "OAH"),
 #'or Mariana Islands ("method = "MARIAN").
 #'
@@ -21,7 +21,7 @@
 #'@examples
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
-#'fish_belt <- process_fish(data = fish_data, method = "Fixed SPC", dbase_type = "Kindinger",
+#'fish_belt <- process_fish(data = fish_data, method = "Fixed SPC", rates_dbase = "Kindinger",
 #'full_summary = TRUE)
 
 process_fish <- function(data,
@@ -33,105 +33,105 @@ process_fish <- function(data,
   
   ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   ifelse(sites_associated == "OAH", sites_associated_dbase <- fish_assoc_sites_oahu, sites_associated_dbase <- fish_assoc_sites_marian)
-  ifelse(sites_associated == "OAH", loc <- "MHI", loc <- "MARIAN")
+  ifelse(sites_associated == "OAH", loc <- "OAH", loc <- "MARIAN")
   
   
   if (method == "IPRB") {
     
-  # FOR BELT DATA ----------------------------------------------------------------
-  
-        # Calculate erosion rates per fish -------------------------------------------
-      
-        calc_eros_fish_output <- calc_eros_fish(data, rates_dbase)
-
-        
-        # Calculate bioerosion metrics per grazing type per site ---------------------
-      
-        density_average <- suppressWarnings(
-          summarize_fish_metrics(
-            data = calc_eros_fish_output,
-            metric = "density",
-            level = "transect",
-            summarize_by = "species"
-          )
-        ) %>%
-          add_column(METRIC = "FISH_DENSITY_ABUNDANCE_HA")
-      
-        biomass_average <- suppressWarnings(
-          summarize_fish_metrics(
-            data = calc_eros_fish_output,
-            metric = "biomass",
-            level = "transect",
-            summarize_by = "species"
-          )
-        ) %>%
-          add_column(METRIC = "FISH_BIOMASS_KG_HA")
-      
-        bioerosion_average <- suppressWarnings(
-          summarize_fish_metrics(
-            data = calc_eros_fish_output,
-            metric = "bioerosion",
-            level = "transect",
-            summarize_by = "species"
-          )
-        ) %>%
-          add_column(METRIC = "FISH_EROSION_KG_M2_YR")
-      
-      
-        species_table <-
-          rbind(density_average, biomass_average, bioerosion_average)
-      
-      
-        summary_belt_erosion <- summarize_fish_erosion(species_table, full_summary)
-      
-       
-        return(summary_belt_erosion)
-        
-        if (full_summary == TRUE) {
-          return(list(
-            fish_erosion_transect = summary_belt_erosion$fish_erosion_transect,
-            fish_erosion_site = summary_belt_erosion$fish_erosion_site)
-          )
-        }
-        
-        if (full_summary == FALSE) {
-          return(summary_belt_erosion$fish_erosion_site)
-        }
-         
+    # FOR BELT DATA ----------------------------------------------------------------
+    
+    # Calculate erosion rates per fish -------------------------------------------
+    
+    calc_eros_fish_output <- calc_eros_fish(data,
+                                            rates_dbase = rates_dbase)
+    
+    # Calculate bioerosion metrics per grazing type per site ---------------------
+    
+    density_average <- suppressWarnings(
+      summarize_fish_metrics(
+        data = calc_eros_fish_output,
+        metric = "density",
+        level = "transect",
+        summarize_by = "species"
+      )
+    ) %>%
+      add_column(METRIC = "FISH_DENSITY_ABUNDANCE_HA")
+    
+    biomass_average <- suppressWarnings(
+      summarize_fish_metrics(
+        data = calc_eros_fish_output,
+        metric = "biomass",
+        level = "transect",
+        summarize_by = "species"
+      )
+    ) %>%
+      add_column(METRIC = "FISH_BIOMASS_KG_HA")
+    
+    bioerosion_average <- suppressWarnings(
+      summarize_fish_metrics(
+        data = calc_eros_fish_output,
+        metric = "bioerosion",
+        level = "transect",
+        summarize_by = "species"
+      )
+    ) %>%
+      add_column(METRIC = "FISH_EROSION_KG_M2_YR")
+    
+    
+    species_table <-
+      rbind(density_average, biomass_average, bioerosion_average)
+    
+    
+    summary_belt_erosion <- summarize_fish_erosion(species_table, full_summary)
+    
+    
+    return(summary_belt_erosion)
+    
+    if (full_summary == TRUE) {
+      return(list(
+        fish_erosion_transect = summary_belt_erosion$fish_erosion_transect,
+        fish_erosion_site = summary_belt_erosion$fish_erosion_site)
+      )
+    }
+    
+    if (full_summary == FALSE) {
+      return(summary_belt_erosion$fish_erosion_site)
+    }
+    
   } 
   
   
   else if (method == "Fixed SPC"){
-  
-  # FOR FIXED SPC DATA ----------------------------------------------------------------
     
-  format_spc_output <- format_fish_spc(data,                                                 
-                                       method = "CbB",
-                                       rates_dbase)
-  
-  summary_spc_erosion <- format_spc_output %>%
-    # convert REPLICATEID values to Transect '1' and '2'
-    group_by(SITEVISITID) %>% 
-    mutate(TRANSECT = match(REPLICATEID, unique(REPLICATEID))) %>%
-    gather("METRIC", "VALUE", -c(SITEVISITID:FXN_GRP, TRANSECT)) %>% #set up data frame by spreading by transects (or the former REPLICATEID)
-    select(-REPLICATEID) %>%
-    spread(TRANSECT, VALUE) %>%
-    mutate_at(vars(`1`, `2`), as.numeric) %>%
-    # Average replicates (n=2)
-    dplyr::group_by(SITEVISITID, SITE, REP, COMMONFAMILYALL, FXN_GRP, METRIC) %>% #calculate mean, sd, se, CI95 of data by averaging 2 divers (REPLICATEID)
-    rowwise() %>%
-    dplyr::mutate(MEAN = mean(c_across(`1`:`2`), na.rm = TRUE)) %>%
-    dplyr::mutate(SD = sd(c_across(`1`:`2`), na.rm = TRUE)) %>%
-    dplyr::mutate(SD = coalesce(SD, 0)) %>% # reaplce NA SD values with 0 because SD of one transect value is 0
-    dplyr::mutate(SE = SD / sqrt(2)) %>% #2 is the number of total Transects
-    dplyr::mutate(L95 = MEAN - (SE * 1.97)) %>%
-    dplyr::mutate(U95 = MEAN + (SE * 1.97)) %>%
-    select(-c(`1`:`2`)) %>% #remove unnecessary columns
-    ungroup(.) %>%
-    dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
-                                  TRUE ~ as.numeric(L95)))
-  
-      
+    # FOR FIXED SPC DATA ----------------------------------------------------------------
+    
+    format_spc_output <- format_fish_spc(data,                                                 
+                                         method = "CbB",
+                                         rates_dbase = rates_dbase)
+    
+    summary_spc_erosion <- format_spc_output %>%
+      # convert REPLICATEID values to Transect '1' and '2'
+      group_by(SITEVISITID) %>% 
+      mutate(TRANSECT = match(REPLICATEID, unique(REPLICATEID))) %>%
+      gather("METRIC", "VALUE", -c(SITEVISITID:FXN_GRP, TRANSECT)) %>% #set up data frame by spreading by transects (or the former REPLICATEID)
+      select(-REPLICATEID) %>%
+      spread(TRANSECT, VALUE) %>%
+      mutate_at(vars(`1`, `2`), as.numeric) %>%
+      # Average replicates (n=2)
+      dplyr::group_by(SITEVISITID, SITE, REP, COMMONFAMILYALL, FXN_GRP, METRIC) %>% #calculate mean, sd, se, CI95 of data by averaging 2 divers (REPLICATEID)
+      rowwise() %>%
+      dplyr::mutate(MEAN = mean(c_across(`1`:`2`), na.rm = TRUE)) %>%
+      dplyr::mutate(SD = sd(c_across(`1`:`2`), na.rm = TRUE)) %>%
+      dplyr::mutate(SD = coalesce(SD, 0)) %>% # reaplce NA SD values with 0 because SD of one transect value is 0
+      dplyr::mutate(SE = SD / sqrt(2)) %>% #2 is the number of total Transects
+      dplyr::mutate(L95 = MEAN - (SE * 1.97)) %>%
+      dplyr::mutate(U95 = MEAN + (SE * 1.97)) %>%
+      select(-c(`1`:`2`)) %>% #remove unnecessary columns
+      ungroup(.) %>%
+      dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
+                                    TRUE ~ as.numeric(L95)))
+    
+    
     format_fixed_spc_erosion <- summary_spc_erosion %>%
       filter(!COMMONFAMILYALL %in% "NOTPARROTFISH") %>% # removed non-parrotfish species group
       filter(!SITE %in% NA) %>% # remove NA sites
@@ -165,23 +165,23 @@ process_fish <- function(data,
     
     
     summary_fixed_spc_erosion <- format_fixed_spc_erosion %>%
-                                  filter(!is.na(OCC_SITEID)) %>% # remove all non fixed SPC site data
-                                  mutate(CB_METHOD = "Fixed SPC") %>%
-                                  mutate_at(vars(REGION:CB_METHOD), as.factor) %>%
-                                  mutate_at(vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
+      filter(!is.na(OCC_SITEID)) %>% # remove all non fixed SPC site data
+      mutate(CB_METHOD = "Fixed SPC") %>%
+      mutate_at(vars(REGION:CB_METHOD), as.factor) %>%
+      mutate_at(vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
     
     return(summary_fixed_spc_erosion)
-      }
+  }
   
   
   
   else if (method == "StRS SPC"){
-        
+    
     # FOR StRS SPC DATA ----------------------------------------------------------------
-        
+    
     format_strsspc_output <- format_fish_spc(data,                                                 
                                              method = "nSPC",
-                                             rates_dbase)
+                                             rates_dbase = rates_dbase)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'
@@ -204,7 +204,7 @@ process_fish <- function(data,
       ungroup(.) %>%
       dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
                                     TRUE ~ as.numeric(L95)))
-      
+    
     format_strs_spc_erosion <- summary_strsspc_erosion %>%
       select(-c(SD:U95)) %>%
       #add ASSOC_OCCSITE before averaging by replicate
@@ -273,10 +273,10 @@ process_fish <- function(data,
       filter(!is.na(.$REGION)) %>%
       mutate_at(vars(REGION:CB_METHOD), as.factor) %>%
       mutate_at(vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
-      
+    
     return(calc_strs_spc_erosion)
-      
-    }
+    
+  }
   
 }
 
