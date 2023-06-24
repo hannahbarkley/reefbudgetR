@@ -74,7 +74,7 @@ calc_kindinger_erosion_metrics <- function(kindinger_equations_csv, kindinger_fu
                     mutate_at(vars("SST_degC"), as.numeric) %>%
                     mutate(METRIC = case_when((RESP_var == "bite rate" & SST_degC != "0") ~ (exp(a + (TL_INPUT * b) + (SST_INPUT * SST_degC))),
                                               RESP_var == "prop scars" ~ ((exp(a + (TL_INPUT * b)))/(1 + exp(a + (TL_INPUT * b)))),
-                                              TRUE ~ (a * (TL_INPUT * b)))) %>%
+                                              TRUE ~ (a * (TL_INPUT)))) %>%
                     # clean up
                     filter(RESP_var != "bite rate" | SST_degC != "0") %>% # remove combination of bite rate rows with NA bite analysis
                     select(RESP_var, FXN_grp:FISH_sciname, phase, sizeclass, METRIC) %>%
