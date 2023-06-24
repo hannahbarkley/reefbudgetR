@@ -50,7 +50,7 @@ format_iprb_erosion_metrics <- function(iprb_rates,
     setNames(., c("SizeClassErosionRates","PropBiteScars","BiteRates","VolumeRemoved", "MassRemoved")) %>%
 
     # Remove columns that are not necessary
-    lapply(., function(x) select(x, -X, -13, -c(X.20:X.25))) %>%
+    lapply(., function(x) select(x, -X, -13)) %>%
 
     # Replace blank values in equation list with zeros
     lapply(., function(x) x %>% mutate_at(vars(-GrazType, -TAXONNAME, -X.10), ~(replace(., .=="", 0)))) %>%
