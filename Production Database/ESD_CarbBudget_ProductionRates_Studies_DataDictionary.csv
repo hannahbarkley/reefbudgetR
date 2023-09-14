@@ -1,0 +1,22 @@
+Name,Type,Description
+GENUS,TEXT,Genus of the hard coral reported in the study
+SPECIES,TEXT,Species of the hard coral reported in the study.
+SUBSTRATE_CODE,TEXT,Unique code for the hard coral reported in the study. Identified to genus or species.
+MORPHOLOGY,TEXT,"Morphology for hard corals: branching, branching - fast growth (Acropora sp. only), branching - slow growth (Acropora sp. only), columnar, encrusting mounding, foliose, free-living, laminar columnar, mounding, plating, or table. No morphology is specified for non-coral observations."
+MORPHOLOGY_CODE,TEXT,Unique code for MORPHOLOGY.
+METHOD,TEXT,Methodology used in the study to measure coral linear extension or skeletal density. 
+EXTENSION_CM_YR_RANGE,NUMERIC,Range of coral linear extension in centimeters per year reported in the study.
+EXTENSION_CM_YR_MEAN,NUMERIC,Mean or median of coral linear extension in centimeters per year reported in the study.
+EXTENSION_CM_YR_SE,NUMERIC,Standard error of coral linear extension in centimeters per year reported in the study.
+EXTENSION_STUDY_N,NUMERIC,Sample size (N) of coral measured reported in the coral linear extension study.
+DENSITY_G_CM3_RANGE,NUMERIC,Range of coral skeletal density in grams per cubed centimeter reported in the study.
+DENSITY_G_CM3_MEDIAN/MEAN,NUMERIC,Mean or median of coral skeletal density in grams per cubed centimeter reported in the study.
+DENSITY_G_CM3_SE,NUMERIC,Standard error of coral skeletal density in grams per cubed centimeter reported in the study .
+DENSITY_STUDY_N,NUMERIC,Sample size (N) of coral measured reported in the coral skeletal density rate study.
+REEF_ZONE,TEXT,Reef zone the coral in the study was measured in situ or extracted for linear extension or skeletal density rate measurements. 
+DEPTH_M,NUMERIC,Depth the coral in the study was measured in situ or extracted for linear extension or skeletal density rate measurements. 
+STUDY_REGION,TEXT,Region the study was conducted. 
+STUDY_SITE,TEXT,Site the study was conducted.
+REGION_OCEAN,TEXT,"The region of ocean in which the coral linear extension or skeletal density study was conducted: Central Pacific, South Pacific, Western Pacific, Eastern Pacific, Southeast Asia, Central Indian Ocean."
+YEAR,NUMERIC,Year the study was published.
+REFERENCE,TEXT,Reference for the study.
