@@ -11,7 +11,7 @@ budget data, with functions to process field-based and SfM-derived
 benthic, urchin, and parrotfish census data and calculate carbonate
 production and erosion. See
 <https://www.fisheries.noaa.gov/inport/item/67804> for additional
-metadata associated with this R package.
+metadata and data associated with this R package.
 
 This repository is a scientific product and is not official
 communication of the National Oceanic and Atmospheric Administration, or
