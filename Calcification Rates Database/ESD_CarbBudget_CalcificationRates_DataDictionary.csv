@@ -1,0 +1,14 @@
+Name,Type,Description
+SUBSTRATE_CLASS,TEXT,"Category classification for the benthic substrate component (SUBSTRATE_NAME): hard coral (CORAL), crustose coralline algae (CCA), macroalgae (MA), turf (TURF), hard carbonate substrate (CARB), hard non-carbonate substrate (RCK), sand (SAND), or other (OTHER)."
+CORAL_GROUP_NAME,TEXT,"Group classification for the hard coral (CORAL) component. Identified as morphology and genus. Other hard corals not identified to a unique morphology and genus group include: Other encrusting corals, Other massive corals, Other branching corals, Free-living corals, Foliose corals, Other."
+CORAL_GROUP_CODE,TEXT,Unique code for CORAL_GROUP_NAME
+SUBSTRATE_NAME,TEXT,"Name for the benthic substrate component. Identified to genus or species for hard corals. Identified to functional group for macroalgae (including Halimedia sp. and Peyssonnelia sp.), crustose coralline algae (CCA), turf algae, cyanobacteria, invertibrates, soft coral, seagrass, sponges, zooathids. Identified to type of substrate for abiotic observations (hard carbonate substrate, hard non-carbonate substrate, dead coral, rubble, or sand)."
+SUBSTRATE_CODE,TEXT,Unique code for SUBSTRATE_NAME.
+MORPHOLOGY,TEXT,"Morphology for hard corals: branching, branching - fast growth (Acropora sp. only), branching - slow growth (Acropora sp. only), columnar, encrusting mounding, foliose, free-living, laminar columnar, mounding, plating, or table. No morphology is specified for non-coral observations."
+MORPHOLOGYCODE,TEXT,Unique code for MORPHOLOGY.
+TAXA_LEVEL,TEXT,Taxonomic level for hard corals: GENUS or SPECIES
+EXTENSION_RATE_CM_YR_MEAN,NUMERIC,Mean extension rate for hard coral and CCA in centimeters per year
+EXTENSION_RATE_CM_YR_CI,NUMERIC,Extension rate confidence interval (CI) for hard coral and CCA in centimeters per year
+DENSITY_G_CM3_MEAN,NUMERIC,Mean skeletal density for hard coral and CCA in grams per cubed centimeter
+DENSITY_G_CM3_CI,NUMERIC,Density confidence interval (CI) for hard coral and CCA in grams per cubed centimeter
+CONVERSION_FACTOR,NUMERIC,The proportion of growing axial braches to colony size for specific hard coral with branching morphology. Used as a conversion factor in coral carbonate production rate calculation for hard corals with the branching morphology. Acropora sp. Branching morphology is defined as branching -slow growth and branching -fast growth. All other hard corals with the branching morphology are defined as branching.
