@@ -9,9 +9,17 @@
 This R package provides tools for working with ReefBudget carbonate
 budget data, with functions to process field-based and SfM-derived
 benthic, urchin, and parrotfish census data and calculate carbonate
-production and erosion. See
-<https://www.fisheries.noaa.gov/inport/item/67804> for additional
-metadata and data associated with this R package.
+production and erosion.
+
+For additional information on data analyses and methodological
+approaches, see: Hannah C. Barkley, Rebecca M. Weible, Ariel A.
+Halperin, et al. 2023. Carbonate budget assessments in the U.S. Pacific
+Islands: report of methods comparison results and summary of standard
+operating procedures. U.S. Dept. of Commerce, NOAA Technical Memorandum
+NMFS-PIFSC-##, p. <doi:10>….
+
+For additional metadata and downloadable data, see:
+<https://www.fisheries.noaa.gov/inport/item/67804>.
 
 This repository is a scientific product and is not official
 communication of the National Oceanic and Atmospheric Administration, or
@@ -127,7 +135,7 @@ Combine data and calculate net production rates by methodology:
 
 ``` r
 # Calculate net production using IPRB methodology
-net_site_iprb = process_net(
+net_site_iprb <- process_net(
   prod = prod_site[prod_site$CB_METHOD == "IPRB" ,],
   urch = urch_site[urch_site$CB_METHOD == "IPRB" ,],
   fish = fish_site[fish_site$CB_METHOD == "IPRB" ,],
@@ -137,7 +145,7 @@ net_site_iprb = process_net(
 net_site_iprb$METHOD <- "IPRB"
 
 # Calculate net production using NCRMP-intermediate methodology
-net_site_int = process_net(
+net_site_int <- process_net(
   prod = prod_site[prod_site$CB_METHOD == "Chords" ,],
   urch = urch_site[urch_site$CB_METHOD == "Chords" ,],
   fish = fish_site[fish_site$CB_METHOD == "Fixed SPC" ,],
@@ -147,7 +155,7 @@ net_site_int = process_net(
 net_site_int$METHOD <- "NCRMP-intermediate"
 
 # Calculate net production using NCRMP-leveraged methodology
-net_site_lev = process_net(
+net_site_lev <- process_net(
   prod = prod_site[prod_site$CB_METHOD == "SfM" ,],
   urch = urch_site[urch_site$CB_METHOD == "SfM" ,],
   fish = fish_site[fish_site$CB_METHOD == "StRS SPC" ,],
@@ -157,7 +165,7 @@ net_site_lev = process_net(
 net_site_lev$METHOD <- "NCRMP-leveraged"
 
 # Calculate net production using NCRMP-proposed methodology
-net_site_prop= process_net(
+net_site_prop <- process_net(
   prod = prod_site[prod_site$CB_METHOD == "SfM" ,],
   urch = urch_site[urch_site$CB_METHOD == "Chords" ,],
   fish = fish_site[fish_site$CB_METHOD == "Fixed SPC" ,],
