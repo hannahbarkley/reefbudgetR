@@ -83,7 +83,7 @@ run_calc_prod <- function(data,
     data$TAXA_LEVEL[i] <-
       unique(prod_dbase$TAXA_LEVEL[prod_dbase$SUBSTRATE_CODE == substrate_code_i])
 
-    if (data$SUBSTRATE_CODE[i] == "PRUS") {
+    if (data$SUBSTRATE_CODE[i] %in% c("PRUS", "PMRC") == TRUE ) {
       data$MORPHOLOGYCODE[i] <- "LC"
 
       data$CORAL_GROUP[i] <- "POLC"
@@ -95,7 +95,7 @@ run_calc_prod <- function(data,
 
     if (data$SUBSTRATE_CLASS[i] == "CORAL" &
         data$TAXA_LEVEL[i] == "SPECIES" &
-        data$SUBSTRATE_CODE[i] != "PRUS") {
+        data$SUBSTRATE_CODE[i] %in% c("PRUS", "PMRC") == FALSE) {
       data$MORPHOLOGYCODE[i] <-
         as.character(paste0(unique(prod_dbase$MORPHOLOGYCODE[prod_dbase$SUBSTRATE_CODE == substrate_code_i])))
 
@@ -115,7 +115,7 @@ run_calc_prod <- function(data,
 
     if (data$SUBSTRATE_CLASS[i] == "CORAL" &
         data$TAXA_LEVEL[i] == "GENUS" &
-        data$SUBSTRATE_CODE[i] != "PRUS") {
+        data$SUBSTRATE_CODE[i] %in% c("PRUS", "PMRC") == FALSE) {
       data$CORAL_GROUP[i] <-
         unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
                                         prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
