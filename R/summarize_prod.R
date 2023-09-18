@@ -181,12 +181,21 @@ summarize_prod <- function(data,
 
   summary_transect_substratecode$MORPHOLOGY <- prod_dbase$MORPHOLOGY[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
 
+  summary_transect_substratecode$MORPHOLOGY[summary_transect_substratecode$SUBSTRATE_CODE == "PRUS"] <- "Laminar Columnar"
+  summary_transect_substratecode$MORPHOLOGY[summary_transect_substratecode$SUBSTRATE_CODE == "PMRC"] <- "Laminar Columnar"
+  
   summary_transect_substratecode$SUBSTRATE_CLASS <- prod_dbase$SUBSTRATE_CLASS[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
 
   summary_transect_substratecode$SUBSTRATE_CLASS[summary_transect_substratecode$SUBSTRATE_CODE == "PRUS"] <- "CORAL"
+  summary_transect_substratecode$SUBSTRATE_CLASS[summary_transect_substratecode$SUBSTRATE_CODE == "PMRC"] <- "CORAL"
 
   summary_transect_substratecode$SUBSTRATE_NAME <- prod_dbase$SUBSTRATE_NAME[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
 
+  summary_transect_substratecode$SUBSTRATE_NAME[summary_transect_substratecode$SUBSTRATE_CODE == "PRUS"] <- "Porites rus"
+  summary_transect_substratecode$SUBSTRATE_NAME[summary_transect_substratecode$SUBSTRATE_CODE == "PMRC"] <- "Porites monticulosa/rus complex"
+  
+
+  
   summary_transect_substratecode <- summary_transect_substratecode[c(
     "REGION",
     "REGIONCODE",
