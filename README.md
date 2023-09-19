@@ -27,6 +27,8 @@ published\].
 For additional metadata and downloadable data, see:
 <https://www.fisheries.noaa.gov/inport/item/67804>.
 
+For additional information on ReefBudget, see: https://www.exeter.ac.uk/research/projects/geography/reefbudget/
+
 This repository is a scientific product and is not official
 communication of the National Oceanic and Atmospheric Administration, or
 the United States Department of Commerce. All NOAA GitHub project code
