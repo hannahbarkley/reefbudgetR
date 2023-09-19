@@ -13,10 +13,16 @@ production and erosion.
 
 For additional information on data analyses and methodological
 approaches, see: Hannah C. Barkley, Rebecca M. Weible, Ariel A.
-Halperin, et al. 2023. Carbonate budget assessments in the U.S. Pacific
-Islands: report of methods comparison results and summary of standard
-operating procedures. U.S. Dept. of Commerce, NOAA Technical Memorandum
-NMFS-PIFSC-##, p. <doi:10>….
+Halperin, Candace E. Alagata, Tye L. Kindinger, Damaris Torres-Pulliza,
+Mia S. Lamirand, Brittany E. Huntington, Courtney S. Couch, Corinne G.
+Amir, Nicole I. Besemer, Jonathan A. Charendoff, Jon Ehrenberg, Joao D.
+Garriques, Andrew E. Gray, Nathan Hayes, Kurt E. Ingeman, Lori H. Luers,
+Kaylyn S. McCoy, Noah V. Pomeroy, Joy N. Smith, Bernardo Vargas-Ángel,
+Erica K. Towle, Jennifer C. Samson. 2023. Carbonate budget assessments
+in the U.S. Pacific Islands: report of methods comparison results and
+summary of standard operating procedures. U.S. Dept. of Commerce, NOAA
+Technical Memorandum NMFS-PIFSC-##, p. <doi:10>… \[UPDATE when
+published\].
 
 For additional metadata and downloadable data, see:
 <https://www.fisheries.noaa.gov/inport/item/67804>.
