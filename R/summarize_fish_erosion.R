@@ -53,7 +53,7 @@ summarize_fish_erosion <- function(species_table,
     gather(
       .,
       "TRANSECT",
-      "value",-c(FXN_GRP:SPECIES),
+      "value",-c(FXN_GRP:TAXON_CODE),
       -METRIC
     ) %>%
     dplyr::group_by(

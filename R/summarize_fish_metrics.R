@@ -65,7 +65,7 @@ summarize_fish_metrics <- function(data,
   if (metric == "FISH_EROSION_KG_M2_YR") {
     
     summary_transect_sizeclass <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
+      select(REGION:SIZE_CLASS, all_of(metric)) %>%
       ungroup() %>%
       dplyr::group_by(
         REGION,
@@ -92,7 +92,7 @@ summarize_fish_metrics <- function(data,
   } else {
     
     summary_transect_sizeclass <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, all_of(metric)) %>%
+      select(REGION:SIZE_CLASS, all_of(metric)) %>%
       ungroup() %>%
       dplyr::group_by(
         REGION,
@@ -143,7 +143,7 @@ summarize_fish_metrics <- function(data,
   if (metric == "FISH_EROSION_KG_M2_YR") {
     
     summary_transect_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
+      select(REGION:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       ungroup() %>%
       dplyr::group_by(
         REGION,
@@ -158,7 +158,7 @@ summarize_fish_metrics <- function(data,
         CB_METHOD,
         TRANSECT,
         FXN_GRP,
-        SPECIES) %>%
+        TAXON_CODE) %>%
       # calculate metric by species
       dplyr::reframe('SPECIES_SUM' = sum(!!sym(metric)) / AREA_M2) %>%
       distinct() %>%
@@ -169,7 +169,7 @@ summarize_fish_metrics <- function(data,
   } else {
     
     summary_transect_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
+      select(REGION:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       ungroup() %>%
       dplyr::group_by(
         REGION,
@@ -184,7 +184,7 @@ summarize_fish_metrics <- function(data,
         CB_METHOD,
         TRANSECT,
         FXN_GRP,
-        SPECIES) %>%
+        TAXON_CODE) %>%
       # calculate metric by species
       dplyr::reframe('SPECIES_SUM' = sum(!!sym(metric)) / (AREA_M2 / 10000)) %>%
       distinct() %>%
@@ -199,7 +199,7 @@ summarize_fish_metrics <- function(data,
   if (metric == "FISH_EROSION_KG_M2_YR") {
     
     summary_site_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
+      select(REGION:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       dplyr::group_by(
         REGION,
         REGIONCODE,
@@ -227,7 +227,7 @@ summarize_fish_metrics <- function(data,
         LONGITUDE,
         CB_METHOD,
         FXN_GRP,
-        SPECIES,
+        TAXON_CODE,
         AREA_AVG, 
         PHASE, 
         SIZE_CLASS) %>%
@@ -249,7 +249,7 @@ summarize_fish_metrics <- function(data,
         LONGITUDE,
         CB_METHOD,
         FXN_GRP,
-        SPECIES) %>%
+        TAXON_CODE) %>%
       dplyr::reframe(
         'value' = (sum(MEAN) / AREA_AVG),
         #calculate average value per sp
@@ -260,16 +260,17 @@ summarize_fish_metrics <- function(data,
       ) %>%
       distinct() %>% # eliminate duplicate rows
       # Attach Grazing Types Classifications for Excavator, Scraper, etc.
-      left_join(., fish_grazing_types, by = "SPECIES") %>%
+      left_join(., fish_grazing_types %>% dplyr::rename(TAXON_CODE = SPECIES) %>% select(TAXON_CODE, GENUS), by = "TAXON_CODE") %>%
       # Order rows by Chlorurus, Scarus, then Other
       arrange(match(GENUS, c(
         "Chlorurus", "Scarus", "Calotomus", "Parrotfish"
-      )))
+      ))) %>%
+      select(REGION:FXN_GRP, GENUS, TAXON_CODE:se)
     
   } else {
     
     summary_site_species <- data %>%
-      select(CRUISE_ID:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
+      select(REGION:SIZE_CLASS, FXN_GRP, all_of(metric)) %>%
       dplyr::group_by(
         REGION,
         REGIONCODE,
@@ -297,7 +298,7 @@ summarize_fish_metrics <- function(data,
         LONGITUDE,
         CB_METHOD,
         FXN_GRP,
-        SPECIES, 
+        TAXON_CODE, 
         AREA_AVG, 
         PHASE, 
         SIZE_CLASS) %>%
@@ -319,7 +320,7 @@ summarize_fish_metrics <- function(data,
         LONGITUDE,
         CB_METHOD,
         FXN_GRP,
-        SPECIES) %>%
+        TAXON_CODE) %>%
       dplyr::reframe(
         'value' = (sum(MEAN) / (AREA_AVG / 10000)),
         #calculate average value per sp
@@ -330,11 +331,12 @@ summarize_fish_metrics <- function(data,
       ) %>%
       distinct() %>% # eliminate duplicate rows
       # Attach Grazing Types Classifications for Excavator, Scraper, etc.
-      left_join(., fish_grazing_types, by = "SPECIES") %>%
+      left_join(., fish_grazing_types %>% dplyr::rename(TAXON_CODE = SPECIES) %>% select(TAXON_CODE, GENUS), by = "TAXON_CODE") %>%
       # Order rows by Chlorurus, Scarus, then Other
       arrange(match(GENUS, c(
         "Chlorurus", "Scarus", "Calotomus", "Parrotfish"
-      )))
+      ))) %>%
+      select(REGION:FXN_GRP, GENUS, TAXON_CODE:se)
     
   }
   
@@ -355,7 +357,8 @@ summarize_fish_metrics <- function(data,
       CB_METHOD,
       TRANSECT) %>%
     dplyr::reframe('TRANSECT_SUM' = sum(value)) %>%
-    spread(., TRANSECT, "TRANSECT_SUM")
+    spread(., TRANSECT, "TRANSECT_SUM") %>%
+    relocate(TRANSECT_10, .after = TRANSECT_9)
   
   # Summarize OVERALL at SITE LEVEL -------------------------------------
   

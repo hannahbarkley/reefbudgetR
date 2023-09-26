@@ -23,62 +23,74 @@ calc_eros_fish <- function(data,
   ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   
   # Format dataframe for biomass and bioerosion calculations below
-  data_formatted <- fish_data_belt %>%
-    select(CRUISE_ID:PHASE) %>%
+  data_formatted <- data %>%
     #change characters to factors
     dplyr::mutate_at(vars(
-      c(
-        REGION:VISIBILITY_M,
+      c(REGION:LONGITUDE,
+        CB_METHOD:VISIBILITY_M,
         TRANSECT,
-        HABITAT_TYPE:SPECIES,
+        HABITAT_CODE:TAXON_NAME,
         PHASE
       )
     ), as.factor) %>%
     # convert integers to numbers
     mutate_at(vars(c(
       TRANSECT_LENGTH_M:AREA_M2,
-      "0-10cm":"51-60cm"
+      "SIZE_BIN_0_10_CM":"SIZE_BIN_51_60_CM"
     )), as.numeric) %>%
     # select only the important columns
-    select(CRUISE_ID:TRANSECT,
-           AREA_M2,
-           SPECIES:PHASE) %>%
+    select(REGION:TRANSECT,
+           TAXON_CODE:PHASE) %>%
     #column names to row values
     gather(.,
            "SIZE_CLASS",
-           "COUNT", -c(CRUISE_ID:SPECIES),
+           "COUNT", -c(REGION:TAXON_NAME),
            -PHASE, na.rm = TRUE) %>%
     # make size bins into factors
     mutate_at(vars(SIZE_CLASS), as.factor) %>%
     #remove all size classes above 10cm for J classification
     filter(!(
-      SIZE_CLASS %in% c("11-20cm",
-                        "21-30cm",
-                        "31-40cm",
-                        "41-50cm",
-                        "51-60cm") &
+      SIZE_CLASS %in% c("SIZE_BIN_11_20_CM",
+                        "SIZE_BIN_21_30_CM",
+                        "SIZE_BIN_31_40_CM",
+                        "SIZE_BIN_41_50_CM",
+                        "SIZE_BIN_51_60_CM") &
         PHASE == "J"
     )) %>%
     # remove all I and T for 0-10cm classification
-    filter(!(SIZE_CLASS %in% "0-10cm" &
+    filter(!(SIZE_CLASS %in% "SIZE_BIN_0_10_CM" &
                PHASE %in% c("I", "T"))) %>%
     # remove all sizes above 51cm for initial phases
-    filter(!(SIZE_CLASS %in% "51-60cm" &
+    filter(!(SIZE_CLASS %in% "SIZE_BIN_51_60_CM" &
                PHASE == "I"))
+  
+  # rates_dbase have different size class name, so need to match them with our input data
+  rates_dbase_formatted <- rates_dbase %>%
+    mutate(
+      SIZE_CLASS = case_when(
+        SIZE_CLASS == "0-10cm" ~ "SIZE_BIN_0_10_CM",
+        SIZE_CLASS == "11-20cm" ~ "SIZE_BIN_11_20_CM",
+        SIZE_CLASS == "21-30cm" ~ "SIZE_BIN_21_30_CM",
+        SIZE_CLASS == "31-40cm" ~ "SIZE_BIN_31_40_CM",
+        SIZE_CLASS == "41-50cm" ~ "SIZE_BIN_41_50_CM",
+        SIZE_CLASS == "51-60cm" ~ "SIZE_BIN_51_60_CM"
+      ))
+  
   
   # calculate Biomass
   fish_biomass <- data_formatted %>%
+    dplyr::rename(SPECIES = TAXON_CODE) %>%
     #join L-W relationship constants with data to do Biomass Calculations
     left_join(., fish_species_dbase, by = "SPECIES") %>%
     # add column with average size of bin to be length of SIZE_CLASS
     mutate(
       length = case_when(
-        SIZE_CLASS == "0-10cm" ~ "7",
-        SIZE_CLASS == "11-20cm" ~ "15",
-        SIZE_CLASS == "21-30cm" ~ "25",
-        SIZE_CLASS == "31-40cm" ~ "35",
-        SIZE_CLASS == "41-50cm" ~ "45",
-        SIZE_CLASS == "51-60cm" ~ "55",
+        SIZE_CLASS == "SIZE_BIN_0_10_CM" ~ "7",
+        SIZE_CLASS == "SIZE_BIN_11_20_CM" ~ "15",
+        SIZE_CLASS == "SIZE_BIN_21_30_CM" ~ "25",
+        SIZE_CLASS == "SIZE_BIN_31_40_CM" ~ "35",
+        SIZE_CLASS == "SIZE_BIN_41_50_CM" ~ "45",
+        SIZE_CLASS == "SIZE_BIN_51_60_CM" ~ "55",
         TRUE ~ "Other"
       )
     ) %>%
@@ -91,29 +103,24 @@ calc_eros_fish <- function(data,
     select(REGION:SIZE_CLASS, BIOMASS_PER_FISH_KG)
   
   
+  
   fish_bioerosion <- data_formatted %>%
-    left_join(., fish_functional_groups %>%
-                #join spdata b/c need full scientific name
-                select(SPECIES, TAXONNAME), by = "SPECIES") %>% # remove unwanted columns from the join
-    dplyr::rename(TAXON_NAME = TAXONNAME) %>%
     #combine COUNT data and equations to determine bioerosion rates
-    left_join(., rates_dbase, by = c("TAXON_NAME", "SIZE_CLASS", "PHASE")) %>%
+    left_join(., rates_dbase_formatted, by = c("TAXON_NAME", "SIZE_CLASS", "PHASE")) %>%
     # clean up
-    mutate(FXN_GRP = case_when((SPECIES == "PARR" & SIZE_CLASS != "0-10cm") ~ "Scraper",
-                               SIZE_CLASS == "0-10cm" ~ "Browser",
+    mutate(FXN_GRP = case_when((TAXON_CODE == "PARR" & SIZE_CLASS != "SIZE_BIN_0_10_CM") ~ "Scraper",
+                               SIZE_CLASS == "SIZE_BIN_0_10_CM" ~ "Browser",
                                is.na(FXN_GRP) ~ "Scraper",
                                TRUE ~ FXN_GRP)) %>% # Label PARR as "Scraper"
     mutate(FXN_GRP = case_when((FXN_GRP != "Excavator" & FXN_GRP != "Scraper") ~ "Other",
                                TRUE ~ FXN_GRP)) %>%
-    mutate(TAXON_NAME = case_when(SPECIES == "PARR" ~ "Parrotfish",
-                                  TRUE ~ TAXON_NAME)) %>% # Label Taxonname of PARR with Parrotfish
     # erosion rates do not include 0-10cm, so need to replace NA with 0
     replace(is.na(.), 0) %>%
     mutate_at(vars(EROSION_RATE), as.numeric) %>%
     # calculate bioerosion value by multiplying COUNT value with bioerosion value
     # happens in summarize_fish_metrics.R script
     mutate(FISH_EROSION_KG_M2_YR = COUNT * EROSION_RATE) %>% 
-    select(REGION:SPECIES, FXN_GRP, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
+    select(REGION:TAXON_CODE, FXN_GRP, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
     #change all negative bioerosion values to zero...can use this to change
     # multiple columns to zero based on a single column
     mutate_at(.vars = "FISH_EROSION_KG_M2_YR",
