@@ -47,36 +47,71 @@ process_fish <- function(data_belt,
                     sites_associated = sites_associated)
   
   
-  
-  if (sites_associated == "OAH") {
-    return(rbind(fish_belt$fish_erosion_site, 
-                 fish_fixed_spc %>%
-                   # If Excavator functional group is missing:
-                   add_column(FISH_BIOMASS_KG_HA_EXCAVATOR_L95 = 0,
-                              FISH_BIOMASS_KG_HA_EXCAVATOR_MEAN = 0,
-                              FISH_BIOMASS_KG_HA_EXCAVATOR_SD = 0,
-                              FISH_BIOMASS_KG_HA_EXCAVATOR_SE = 0,
-                              FISH_BIOMASS_KG_HA_EXCAVATOR_U95 = 0,
-                              FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95 = 0,
-                              FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_MEAN = 0,
-                              FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SD = 0,
-                              FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SE = 0,
-                              FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95 = 0,
-                              FISH_EROSION_KG_M2_YR_EXCAVATOR_L95 = 0,
-                              FISH_EROSION_KG_M2_YR_EXCAVATOR_MEAN = 0,
-                              FISH_EROSION_KG_M2_YR_EXCAVATOR_SD = 0,
-                              FISH_EROSION_KG_M2_YR_EXCAVATOR_SE = 0,
-                              FISH_EROSION_KG_M2_YR_EXCAVATOR_U95 = 0) %>%
-                   select(REGION:FISH_BIOMASS_KG_HA_ALL_U95, FISH_BIOMASS_KG_HA_EXCAVATOR_L95:FISH_BIOMASS_KG_HA_EXCAVATOR_U95, FISH_BIOMASS_KG_HA_OTHER_L95:FISH_BIOMASS_KG_HA_SCRAPER_U95, 
-                          FISH_DENSITY_ABUNDANCE_HA_ALL_L95:FISH_DENSITY_ABUNDANCE_HA_ALL_U95, FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95:FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95, 
-                          FISH_DENSITY_ABUNDANCE_HA_OTHER_L95:FISH_DENSITY_ABUNDANCE_HA_SCRAPER_U95, FISH_EROSION_KG_M2_YR_ALL_L95:FISH_EROSION_KG_M2_YR_ALL_U95, 
-                          FISH_EROSION_KG_M2_YR_EXCAVATOR_L95:FISH_EROSION_KG_M2_YR_EXCAVATOR_U95, FISH_EROSION_KG_M2_YR_OTHER_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95),
-                 fish_strs_spc))
+  if (data_belt = TRUE) {
+    if (sites_associated == "OAH") {
+      return(rbind(fish_belt$fish_erosion_site, 
+                   fish_fixed_spc %>%
+                     # If Excavator functional group is missing:
+                     add_column(FISH_BIOMASS_KG_HA_EXCAVATOR_L95 = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_MEAN = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_SD = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_SE = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_U95 = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95 = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_MEAN = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SD = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SE = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95 = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_L95 = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_MEAN = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_SD = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_SE = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_U95 = 0) %>%
+                     select(REGION:FISH_BIOMASS_KG_HA_ALL_U95, FISH_BIOMASS_KG_HA_EXCAVATOR_L95:FISH_BIOMASS_KG_HA_EXCAVATOR_U95, FISH_BIOMASS_KG_HA_OTHER_L95:FISH_BIOMASS_KG_HA_SCRAPER_U95, 
+                            FISH_DENSITY_ABUNDANCE_HA_ALL_L95:FISH_DENSITY_ABUNDANCE_HA_ALL_U95, FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95:FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95, 
+                            FISH_DENSITY_ABUNDANCE_HA_OTHER_L95:FISH_DENSITY_ABUNDANCE_HA_SCRAPER_U95, FISH_EROSION_KG_M2_YR_ALL_L95:FISH_EROSION_KG_M2_YR_ALL_U95, 
+                            FISH_EROSION_KG_M2_YR_EXCAVATOR_L95:FISH_EROSION_KG_M2_YR_EXCAVATOR_U95, FISH_EROSION_KG_M2_YR_OTHER_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95),
+                   fish_strs_spc))
+    }
+    
+    if (sites_associated == "MARIAN") {
+      return(rbind(fish_belt$fish_erosion_site, fish_fixed_spc, fish_strs_spc)
+      )
+    }
   }
   
-  if (sites_associated == "MARIAN") {
-    return(rbind(fish_belt$fish_erosion_site, fish_fixed_spc, fish_strs_spc)
-    )
+  
+  
+  if (data_belt = FALSE) {
+    if (sites_associated == "OAH") {
+      return(rbind(fish_fixed_spc %>%
+                     # If Excavator functional group is missing:
+                     add_column(FISH_BIOMASS_KG_HA_EXCAVATOR_L95 = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_MEAN = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_SD = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_SE = 0,
+                                FISH_BIOMASS_KG_HA_EXCAVATOR_U95 = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95 = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_MEAN = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SD = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_SE = 0,
+                                FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95 = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_L95 = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_MEAN = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_SD = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_SE = 0,
+                                FISH_EROSION_KG_M2_YR_EXCAVATOR_U95 = 0) %>%
+                     select(REGION:FISH_BIOMASS_KG_HA_ALL_U95, FISH_BIOMASS_KG_HA_EXCAVATOR_L95:FISH_BIOMASS_KG_HA_EXCAVATOR_U95, FISH_BIOMASS_KG_HA_OTHER_L95:FISH_BIOMASS_KG_HA_SCRAPER_U95, 
+                            FISH_DENSITY_ABUNDANCE_HA_ALL_L95:FISH_DENSITY_ABUNDANCE_HA_ALL_U95, FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_L95:FISH_DENSITY_ABUNDANCE_HA_EXCAVATOR_U95, 
+                            FISH_DENSITY_ABUNDANCE_HA_OTHER_L95:FISH_DENSITY_ABUNDANCE_HA_SCRAPER_U95, FISH_EROSION_KG_M2_YR_ALL_L95:FISH_EROSION_KG_M2_YR_ALL_U95, 
+                            FISH_EROSION_KG_M2_YR_EXCAVATOR_L95:FISH_EROSION_KG_M2_YR_EXCAVATOR_U95, FISH_EROSION_KG_M2_YR_OTHER_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95),
+                   fish_strs_spc))
+    }
+    
+    if (sites_associated == "MARIAN") {
+      return(rbind(fish_fixed_spc, fish_strs_spc)
+      )
+    }
   }
 
   
