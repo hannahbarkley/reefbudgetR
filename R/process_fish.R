@@ -42,7 +42,7 @@ process_fish <- function(data_spc,
                     dbase_type = dbase_type)
   
   
-  if (data_belt = TRUE) {
+  if (data_belt == TRUE) {
       return(rbind(fish_belt$fish_erosion_site, 
                    fish_fixed_spc,
                    fish_strs_spc))
@@ -50,7 +50,7 @@ process_fish <- function(data_spc,
   
   
   
-  if (data_belt = FALSE) {
+  if (data_belt == FALSE) {
       return(rbind(fish_fixed_spc,
                    fish_strs_spc))
   }
