@@ -16,7 +16,7 @@
 #'@examples
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
-#'fish_belt <- process_fish(data = fish_data, dbase_type = "Kindinger",
+#'fish_belt <- calc_fish_belt(data = fish_data, dbase_type = "Kindinger",
 #'full_summary = TRUE)
 
 calc_fish_belt <- function(data,

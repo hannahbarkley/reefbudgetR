@@ -133,10 +133,9 @@ Process fish data by method type:
 
 ``` r
 # Process fish belt and stationary point count (SPC) data
-fish_site <- process_fish(fish_data_belt,
-                               fish_data_spc,
+fish_site <- process_fish(fish_data_spc,
                                dbase_type = "Kindinger",
-                               sites_associated = "OAH")
+                               fish_data_belt)
 ```
 
 Combine data and calculate net production rates by methodology:

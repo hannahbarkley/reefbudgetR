@@ -25,8 +25,7 @@ Calculate parrotfish erosion rates from associated spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_belt <- process_fish(data = fish_data, dbase_type = "Kindinger",
-sites_associated = "OAH")
+fish_strs_spc <- calc_fish_strs_spc(data = fish_data, dbase_type = "Kindinger")
 }
 \author{
 Rebecca Weible

@@ -15,16 +15,16 @@
 
 
 format_fish_spc <- function(data, 
-                            method = c("CbB", "nSPC"),
+                            method = c("IPRB", "nSPC"),
                             rates_dbase) {
   
-  ifelse(method == "CbB", method_type <- "CbB", method_type <- "nSPC")
+  ifelse(method == "IPRB", method_type <- "IPRB", method_type <- "nSPC")
   
   prepdat <- data %>% 
-    filter(., METHOD %in% method_type) %>%
+    filter(., CB_METHOD %in% method_type) %>%
     filter(., !(TRAINING_YN %in% "-1")) %>%
-    filter(., !(SITE == "GUA-2587" & METHOD == "nSPC")) %>% # must remove special case "GUA-2587" SPC because it's a fixed site and data was collected twice.
-    select(SITEVISITID, OBS_YEAR, SITE, ISLAND, REP, REPLICATEID, SPECIES, COUNT, SIZE_, SCIENTIFIC_NAME, TAXONNAME, COMMONFAMILYALL, LW_A:LENGTH_CONVERSION_FACTOR) %>% #subset only columns that matter for density, biomass, bioerosion calculation
+    filter(., !(REA_SITEID == "GUA-2587" & CB_METHOD == "nSPC")) %>% # must remove special case "GUA-2587" SPC because it's a fixed site and data was collected twice.
+    select(SITEVISITID, YEAR, REA_SITEID, LOCATION, REP, REPLICATEID, TAXON_CODE, COUNT, SIZE_, TAXON_NAME, COMMONFAMILYALL, LW_A:LENGTH_CONVERSION_FACTOR) %>% #subset only columns that matter for density, biomass, bioerosion calculation
     mutate(AREA_M2 = pi*(7.5^2)) %>% #calculate Area per m^2 of survey cylinder
     #calculate density below
     mutate(DENSITY_PER_FISH_HECTARE = COUNT/(AREA_M2/10000)) %>% # calculate density by dividing count by area and converting to per hectare with the 10000
@@ -39,7 +39,7 @@ format_fish_spc <- function(data,
                                   SIZE_ >= 31 & SIZE_ <= 40 ~ "31-40cm",
                                   SIZE_ >= 41 & SIZE_ <= 50 ~ "41-50cm",
                                   SIZE_ >= 51 & SIZE_ <= 60 ~ "51-60cm")) %>% 
-    left_join(., rates_dbase %>% select(-PHASE), by = c("TAXONNAME" = "TAXON_NAME", "SIZE_CLASS")) %>% # join Tye's bioerosion metrics or bioerosion calculation to follow
+    left_join(., rates_dbase %>% select(-PHASE), by = c("TAXON_NAME", "SIZE_CLASS")) %>% # join Tye's bioerosion metrics or bioerosion calculation to follow
     distinct(.) %>%
     mutate(EROSION_PER_FISH_KG_M2_YR = (COUNT * EROSION_RATE)/AREA_M2) %>% # calculate bioerosion in kg/m^2/yr
     mutate_at(.vars = "EROSION_PER_FISH_KG_M2_YR", funs(ifelse(EROSION_PER_FISH_KG_M2_YR <= 0, 0, .)))  %>% # change all negative bioerosion values to zero...can use this to change multiple columns to zero based on a single column
@@ -51,24 +51,24 @@ format_fish_spc <- function(data,
     
     # Sum FXN_GRP to the REPLICATEID level
     mutate(FXN_GRP = replace(as.character(FXN_GRP), FXN_GRP == "Browser", "Other")) %>%
-    dplyr::group_by(SITEVISITID, SITE, REP, REPLICATEID, COMMONFAMILYALL, FXN_GRP) %>% #now we want to sum each surveyors estimates by Grazing Type (note, REP is not divided by surveyor, but REPLICATEID is)
+    dplyr::group_by(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL, FXN_GRP) %>% #now we want to sum each surveyors estimates by Grazing Type (note, REP is not divided by surveyor, but REPLICATEID is)
     dplyr::summarize("SUM_BIOMASS_PER_FISH_KG_HECTARE" = sum(BIOMASS_PER_FISH_KG_HECTARE),
                      "SUM_DENSITY_PER_FISH_HECTARE" = sum(DENSITY_PER_FISH_HECTARE),
                      "SUM_EROSION_PER_FISH_KG_M2_YR" = sum(EROSION_PER_FISH_KG_M2_YR)) %>%
     ungroup(.) %>% # need to do this to make next group_by work properly
     bind_rows(filter(.) %>% # create new rows where Excavator, Scraper, and Other are totaled in sum for each site and replicate ID
-                group_by(SITEVISITID, SITE, REP, REPLICATEID, COMMONFAMILYALL) %>%
+                group_by(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL) %>%
                 summarise(across(SUM_BIOMASS_PER_FISH_KG_HECTARE:SUM_EROSION_PER_FISH_KG_M2_YR, ~(sum(.x, na.rm=T)))) %>% 
                 mutate(FXN_GRP = "ALL")) %>%
     #format by adding back in where replicateID and Graz_Type were zero before averaging
     complete(., REPLICATEID, COMMONFAMILYALL, FXN_GRP, fill = list(SUM_BIOMASS_PER_FISH_KG_HECTARE = 0, 
                                                                    SUM_DENSITY_PER_FISH_HECTARE = 0, 
                                                                    SUM_EROSION_PER_FISH_KG_M2_YR = 0)) %>% #...I can complete (fill in missing) SPECIES codes for each REPLICATEID. So we're adding back zeros and this is important becuase of the mean calculations we're about to do.
-    select(-SITEVISITID, -SITE, -REP) %>% # remove columns with NA and will join them back in next step
+    select(-SITEVISITID, -REA_SITEID, -REP) %>% # remove columns with NA and will join them back in next step
     mutate_at(vars(REPLICATEID), as.integer) %>% # make structure of REPLICATEID the same again for the sake of the join
-    left_join(., data %>% select(SITEVISITID, SITE, REP, REPLICATEID), by = "REPLICATEID") %>% # join the three columns that produced NAs with function complete
+    left_join(., data %>% select(SITEVISITID, REA_SITEID, REP, REPLICATEID), by = "REPLICATEID") %>% # join the three columns that produced NAs with function complete
     distinct(.) %>% # remove duplicate rows
-    select(SITEVISITID, SITE, REP, everything(.)) %>% # re-order columns for visual effects
+    select(SITEVISITID, REA_SITEID, REP, everything(.)) %>% # re-order columns for visual effects
     mutate(FXN_GRP = case_when(FXN_GRP == "Other" ~ "OTHER",
                                FXN_GRP == "Scraper" ~ "SCRAPER",
                                FXN_GRP == "Excavator" ~ "EXCAVATOR",
