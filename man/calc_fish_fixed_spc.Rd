@@ -4,20 +4,14 @@
 \alias{calc_fish_fixed_spc}
 \title{Calculate parrotfish erosion rates from fixed spc data}
 \usage{
-calc_fish_fixed_spc(
-  data,
-  dbase_type = c("IPRB", "Kindinger"),
-  sites_associated = c("OAH", "MARIAN")
-)
+calc_fish_fixed_spc(data, dbase_type = c("IPRB", "Kindinger"))
 }
 \arguments{
 \item{data}{fish survey data.}
 
 \item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
 ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
-#'@param sites_associated Location data was collected. Choose either Oahu ("sites_associated = "OAH"),
-or Mariana Islands ("sites_associated = "MARIAN").}
+by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
 }
 \description{
 Calculate parrotfish erosion rates from fixed spc data

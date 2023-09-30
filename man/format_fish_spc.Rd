@@ -4,7 +4,7 @@
 \alias{format_fish_spc}
 \title{Format Stationary Point Count data}
 \usage{
-format_fish_spc(data, method = c("CbB", "nSPC"), rates_dbase)
+format_fish_spc(data, method = c("IPRB", "nSPC"), rates_dbase)
 }
 \arguments{
 \item{data}{all stationary point count data.}

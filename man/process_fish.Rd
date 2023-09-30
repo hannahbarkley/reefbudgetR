@@ -4,22 +4,14 @@
 \alias{process_fish}
 \title{Process parrotfish erosion rates from belt and spc data}
 \usage{
-process_fish(
-  data_belt,
-  data_spc,
-  dbase_type = c("IPRB", "Kindinger"),
-  sites_associated = c("OAH", "MARIAN")
-)
+process_fish(data_spc, dbase_type = c("IPRB", "Kindinger"), data_belt = TRUE)
 }
 \arguments{
-\item{data_belt}{fish belt survey data.
-#'@param data_spc fish spc survey data.}
-
 \item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
 ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
-#'@param sites_associated Location data was collected. Choose either Oahu ("sites_associated = "OAH"),
-or Mariana Islands ("sites_associated = "MARIAN").}
+by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
+
+\item{data_belt}{fish belt survey data.}
 }
 \description{
 Process parrotfish erosion rates from belt and spc data
@@ -27,9 +19,11 @@ Process parrotfish erosion rates from belt and spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_belt <- process_fish(data_belt = fish_data_belt, data_spc = fish_data_spc, 
-dbase_type = "Kindinger", sites_associated = "OAH")
+fish_belt <- process_fish(data_spc = fish_data_spc, 
+dbase_type = "Kindinger", data_belt = fish_data_belt)
 }
 \author{
 Rebecca Weible
+
+#'@param data_spc fish spc survey data.
 }
