@@ -34,7 +34,7 @@ calc_fish_fixed_spc <- function(data,
                                          rates_dbase = rates_dbase)
   
     # created associated SPC sites to each OCC fixed site SPC
-    sites_associated_dbase <- create_fish_assoc_sites(data)
+    # sites_associated_dbase <- create_fish_assoc_sites(data, fish_pacific_islands_shapefile, 5000)
     
     summary_spc_erosion <- format_spc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'

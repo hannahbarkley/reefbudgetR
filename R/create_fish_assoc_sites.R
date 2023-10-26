@@ -18,7 +18,7 @@
 #'
 #'@examples
 #'fish_data <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
-#'island_shapefile <- read_sf("fish_pacific_islands_shapefile.rds")
+#'island_shapefile <- readRDS("~/reefbudgetR/data/fish_pacific_islands_shapefile.rds")
 #'
 #'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, shape_file = island_shapefile, subset_distance_m = 1500)
 
@@ -54,7 +54,7 @@ create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
   
   # Create distance matrix from each fixed target OCC point to every fish SPC survey -------------------
   
-  uLC=unique(ptsALL$LOCATIONCODE) # create vector of unique islands where data was collected from
+  uLC=unique(data$LOCATIONCODE) # create vector of unique islands where data was collected from
   Fish_OCC_pts=NULL #create empty vector/df
   
   #Loop Through each island's survey sites and create shortest distances "as a fish swims"
@@ -82,7 +82,7 @@ create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
     
     Fish_OCC_pts <- rbind(Fish_OCC_pts,OUT) 
     
-    output <- Fish_OCC_pts %>% 
+    out <- Fish_OCC_pts %>% 
                       rename(OCCSITE = Var1,
                              REASITE = Var2,
                              DISTANCE_m = Freq)
@@ -93,12 +93,12 @@ create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
   # Create Associated fish SPC site labels based on distance from each fixed SPC/OCC site ----------------
   
   # subset distance matrix/dataframe for fish SPC sites within 1500m of each fixed SPC/OCC site
-  subset_by_dist <- output %>%
+  subset_by_dist <- out %>%
                       mutate(value = case_when(DISTANCE_m <= subset_distance_m ~ "-1",
                                                DISTANCE_m > subset_distance_m ~ "0",))
   
   # number of associated sites with each fixed SPC/OCC site
-  subset_by_dist %>% group_by(OCCSITE, value) %>% count() %>% spread(value, n)
+  #subset_by_dist %>% group_by(OCCSITE, value) %>% count() %>% spread(value, n)
   
   
   
@@ -123,22 +123,25 @@ create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
   finaldf$ASSOC_OCCSITEID <- gsub(" ", "", finaldf$ASSOC_OCCSITEID)
   
   # Assign "value" column to 1
-  final <- finaldf %>%
-            mutate(value = case_when(OCC_SITEID != "" ~ 1,
-                                     TRUE ~ value)) %>% #copy OCC_SITEID into ASSOC_OCCSITE for fixed sites only
-            mutate(ASSOC_OCCSITEID = case_when(value == "1" ~ OCC_SITEID,
-                                               TRUE ~ ASSOC_OCCSITEID)) #copy OCC_SITEID into ASSOC_OCCSITE for fixed sites only
+  finaldf <- finaldf %>%
+              mutate(value = case_when(OCC_SITEID != "" ~ 1,
+                                       TRUE ~ value)) %>% #copy OCC_SITEID into ASSOC_OCCSITE for fixed sites only
+              mutate(ASSOC_OCCSITEID = case_when(value == "1" ~ OCC_SITEID,
+                                                 TRUE ~ ASSOC_OCCSITEID)) #copy OCC_SITEID into ASSOC_OCCSITE for fixed sites only
 
-  #final %>% select(REA_SITEID, HABITAT_CODE, value) %>% group_by(HABITAT_CODE, value) %>% count() %>% spread(value, n)
+  #finaldf %>% select(REA_SITEID, HABITAT_CODE, value) %>% group_by(HABITAT_CODE, value) %>% count() %>% spread(value, n)
   
   # subset associated OCCSITEID to include only fish REA SPC sites that match the habitat types of their respective fixed SPC/OCC site
-  fixedhab <- final %>% select(OCC_SITEID, HABITAT_CODE) %>% distinct() %>% filter(OCC_SITEID != "")
+  fixedhab <- finaldf %>% select(OCC_SITEID, HABITAT_CODE) %>% distinct() %>% filter(OCC_SITEID != "")
   
-  output <- left_join(final, fixedhab, by = c("ASSOC_OCCSITEID" = "OCC_SITEID")) %>%
+  output <- left_join(finaldf, fixedhab, by = c("ASSOC_OCCSITEID" = "OCC_SITEID")) %>%
               mutate(value = case_when(HABITAT_CODE.x != HABITAT_CODE.y ~ 0, #assign all associated fish SPC sites that do not match the habitat type of their respective fixed SPC/OCC site to 0
                                        TRUE ~ value)) %>%
               select(-HABITAT_CODE.y) %>%
               rename(HABITAT_CODE = HABITAT_CODE.x)
+  
+  # number of associated sites with each fixed SPC/OCC site
+  output %>% group_by(ASSOC_OCCSITEID, value) %>% count() %>% spread(value, n)
   
   
   return(output)
