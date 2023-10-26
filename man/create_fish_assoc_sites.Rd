@@ -18,7 +18,7 @@ Create fish associated SPC sites in relation to fixed sites
 }
 \examples{
 fish_data <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
-island_shapefile <- read_sf("fish_pacific_islands_shapefile.rds")
+island_shapefile <- readRDS("~/reefbudgetR/data/fish_pacific_islands_shapefile.rds")
 
 sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, shape_file = island_shapefile, subset_distance_m = 1500)
 }
