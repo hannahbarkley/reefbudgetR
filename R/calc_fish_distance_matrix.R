@@ -42,8 +42,8 @@ calc_fish_distance_matrix <- function(pointsOCC, pointsFISH, island_poly, resolu
   
   # Placeholder matrix for distances
   dist_matrix <- matrix(0, nrow=nrow(pointsOCC), ncol=nrow(pointsFISH))
-  rownames(dist_matrix) <- pointsOCC$SITEID
-  colnames(dist_matrix) <- pointsFISH$SITEID
+  rownames(dist_matrix) <- pointsOCC$OCC_SITEID
+  colnames(dist_matrix) <- pointsFISH$REA_SITEID
   
   # For each OCC point (fewer of them), calculate the grid distance avoiding the island
   for (i in 1:nrow(pointsOCC)) {
