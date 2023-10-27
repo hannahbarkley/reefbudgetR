@@ -20,11 +20,11 @@
 #'fish_data <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
 #'island_shapefile <- readRDS("~/reefbudgetR/data/fish_pacific_islands_shapefile.rds")
 #'
-#'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, shape_file = island_shapefile, subset_distance_m = 1500)
+#'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, shape_file = fish_world_islands_shapefile, subset_distance_m = 1500)
 
 
 
-create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
+create_fish_assoc_sites <- function(data, shape_file = fish_world_islands_shapefile, subset_distance_m){
   
   # Format data and shapefiles--------------------------------------------------------------------------
   # Format Shapefiles 

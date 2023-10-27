@@ -7,7 +7,7 @@
 calc_fish_strs_spc(
   data,
   rates_dbase = rates_dbase,
-  shape_file = fish_pacific_islands_shapefile
+  shape_file = fish_world_islands_shapefile
 )
 }
 \arguments{
@@ -23,7 +23,7 @@ Calculate parrotfish erosion rates from associated spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase, shape_file = fish_pacific_islands_shapefile)
+fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase, shape_file = fish_world_islands_shapefile)
 }
 \author{
 Rebecca Weible
