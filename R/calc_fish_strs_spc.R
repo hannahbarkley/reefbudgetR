@@ -8,7 +8,6 @@
 #'
 #'@import Rmisc
 #'@import sf
-#'@import rgeos
 #'@import tidyverse
 #'@import dplyr
 #'

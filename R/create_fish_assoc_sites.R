@@ -10,7 +10,6 @@
 #'@import Rmisc
 #'@import terra
 #'@import sf
-#'@import rgeos
 #'@import tidyverse
 #'@import dplyr
 #'
