@@ -4,12 +4,16 @@
 \alias{calc_fish_strs_spc}
 \title{Calculate parrotfish erosion rates from associated spc data}
 \usage{
-calc_fish_strs_spc(data, dbase_type = c("IPRB", "Kindinger"))
+calc_fish_strs_spc(
+  data,
+  dbasetype = c("IPRB", "Kindinger"),
+  shape_file = fish_pacific_islands_shapefile
+)
 }
 \arguments{
 \item{data}{fish survey data.}
 
-\item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
+\item{dbasetype}{Erosion rates database to use. Choose either Indo-Pacific
 ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
 }
@@ -19,7 +23,7 @@ Calculate parrotfish erosion rates from associated spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_strs_spc <- calc_fish_strs_spc(data = fish_data, dbase_type = "Kindinger")
+fish_strs_spc <- calc_fish_strs_spc(data = fish_data, dbasetype = "Kindinger", shape_file = fish_pacific_islands_shapefile)
 }
 \author{
 Rebecca Weible

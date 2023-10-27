@@ -3,7 +3,7 @@
 #'@author Rebecca Weible
 #'
 #'@param data fish survey data.
-#'@param dbase_type Erosion rates database to use. Choose either Indo-Pacific
+#'@param dbasetype Erosion rates database to use. Choose either Indo-Pacific
 #'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 #'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
 #'

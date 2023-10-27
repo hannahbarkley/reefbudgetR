@@ -4,7 +4,7 @@
 #'
 #'@param data Parrotfish belt data, including number of fish observed of each
 #'species, size class, and phase.
-#'@param dbase_type Erosion rates database to use. Choose either Indo-Pacific
+#'@param dbase_types Erosion rates database to use. Choose either Indo-Pacific
 #'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 #'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
 #'
