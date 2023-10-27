@@ -25,7 +25,7 @@ calc_fish_strs_spc <- function(data,
   
   
   ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
-
+  shape_file <- fish_pacific_islands_shapefile
     
     # FOR StRS SPC DATA ----------------------------------------------------------------
     
@@ -34,7 +34,7 @@ calc_fish_strs_spc <- function(data,
                                              rates_dbase = rates_dbase)
   
     # created associated SPC sites to each OCC fixed site SPC
-    sites_associated_dbase <- create_fish_assoc_sites(data, fish_pacific_islands_shapefile, 5000)
+    sites_associated_dbase <- create_fish_assoc_sites(data, shape_file, 6000)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'
