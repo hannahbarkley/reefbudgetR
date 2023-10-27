@@ -3,9 +3,7 @@
 #'@author Rebecca Weible
 #'
 #'@param data fish survey data.
-#'@param dbasetype Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
+#'@param rates_dbase Erosion rates database to use.
 #'
 #'@import Rmisc
 #'@import tidyverse
@@ -21,15 +19,14 @@
 #'full_summary = TRUE)
 
 calc_fish_belt <- function(data,
-                           dbasetype = c("IPRB", "Kindinger"),
+                           dbasetype = rates_dbase,
                            full_summary = TRUE) {
   
     # FOR BELT DATA ----------------------------------------------------------------
     
     # Calculate erosion rates per fish -------------------------------------------
     
-    calc_eros_fish_output <- calc_eros_fish(data,
-                                            dbase_types = dbasetype)
+    calc_eros_fish_output <- calc_eros_fish(data, rates_dbase)
     
     # Calculate bioerosion metrics per grazing type per site ---------------------
     

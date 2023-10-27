@@ -16,7 +16,7 @@
 
 format_fish_spc <- function(data, 
                             method = c("IPRB", "nSPC"),
-                            rates_dbase) {
+                            rates_dbase = rates_dbase) {
   
   ifelse(method == "IPRB", method_type <- "IPRB", method_type <- "nSPC")
   

@@ -4,14 +4,12 @@
 \alias{calc_fish_belt}
 \title{Calculate parrotfish erosion rates from belt data}
 \usage{
-calc_fish_belt(data, dbasetype = c("IPRB", "Kindinger"), full_summary = TRUE)
+calc_fish_belt(data, dbasetype = rates_dbase, full_summary = TRUE)
 }
 \arguments{
 \item{data}{fish survey data.}
 
-\item{dbasetype}{Erosion rates database to use. Choose either Indo-Pacific
-ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
+\item{rates_dbase}{Erosion rates database to use.}
 }
 \description{
 Calculate parrotfish erosion rates from belt data
