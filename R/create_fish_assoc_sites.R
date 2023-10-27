@@ -34,13 +34,13 @@ create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
   
   # Filter spc fixed site, aka occ fixed site, data only
   ptsOCC = data %>%
-    select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
+    dplyr::select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
     filter(CB_METHOD %in% "IPRB") %>% #IPRB indicates fixed OCC sites
     distinct(.)
   
   # Filter spc field data (without fixed site SPC)
   ptsFISH = data %>%
-    select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
+    dplyr::select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
     filter(CB_METHOD %in% "nSPC") %>% #nSPC indicates SPC field data (excluding fixed sites)
     distinct(.)
   
@@ -105,7 +105,7 @@ create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
   
   # create final dataframe with associated sites-----------------------------------------------------------
   finaldf <- data %>%
-              select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
+              dplyr::select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
               distinct()
     
   # filter all fixed SPC/OCC sites within distance chosen (i.e. 1500m) of each fish SPC site
@@ -132,12 +132,12 @@ create_fish_assoc_sites <- function(data, shape_file, subset_distance_m){
   #finaldf %>% select(REA_SITEID, HABITAT_CODE, value) %>% group_by(HABITAT_CODE, value) %>% count() %>% spread(value, n)
   
   # subset associated OCCSITEID to include only fish REA SPC sites that match the habitat types of their respective fixed SPC/OCC site
-  fixedhab <- finaldf %>% select(OCC_SITEID, HABITAT_CODE) %>% distinct() %>% filter(OCC_SITEID != "")
+  fixedhab <- finaldf %>% dplyr::select(OCC_SITEID, HABITAT_CODE) %>% distinct() %>% filter(OCC_SITEID != "")
   
   output <- left_join(finaldf, fixedhab, by = c("ASSOC_OCCSITEID" = "OCC_SITEID")) %>%
               mutate(value = case_when(HABITAT_CODE.x != HABITAT_CODE.y ~ 0, #assign all associated fish SPC sites that do not match the habitat type of their respective fixed SPC/OCC site to 0
                                        TRUE ~ value)) %>%
-              select(-HABITAT_CODE.y) %>%
+              dplyr::select(-HABITAT_CODE.y) %>%
               rename(HABITAT_CODE = HABITAT_CODE.x)
   
   # number of associated sites with each fixed SPC/OCC site
