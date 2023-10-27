@@ -23,5 +23,7 @@ island_shapefile <- readRDS("~/reefbudgetR/data/fish_pacific_islands_shapefile.r
 sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, shape_file = island_shapefile, subset_distance_m = 1500)
 }
 \author{
+Thomas Oliver
+
 Rebecca Weible
 }

@@ -1,5 +1,6 @@
 #' Create fish associated SPC sites in relation to fixed sites
 #'
+#'@author Thomas Oliver 
 #'@author Rebecca Weible
 #'
 #'@param data fish survey data.
