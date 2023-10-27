@@ -25,7 +25,7 @@ calc_fish_strs_spc <- function(data,
                                shape_file = fish_pacific_islands_shapefile) {
   
   
-  ifelse(dbase_types == "Kindinger", rates_dbase <- fish_erosion_dbase_kindinger, rates_dbase <- fish_erosion_dbase_iprb)
+  ifelse(dbasetype == "Kindinger", rates_dbase <- fish_erosion_dbase_kindinger, rates_dbase <- fish_erosion_dbase_iprb)
   
     # FOR StRS SPC DATA ----------------------------------------------------------------
     
