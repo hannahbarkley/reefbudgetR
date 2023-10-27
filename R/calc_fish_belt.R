@@ -21,17 +21,15 @@
 #'full_summary = TRUE)
 
 calc_fish_belt <- function(data,
-                           dbase_type = c("IPRB", "Kindinger"),
+                           dbasetype = c("IPRB", "Kindinger"),
                            full_summary = TRUE) {
-  
-  ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
   
     # FOR BELT DATA ----------------------------------------------------------------
     
     # Calculate erosion rates per fish -------------------------------------------
     
     calc_eros_fish_output <- calc_eros_fish(data,
-                                            dbase_type = dbase_type)
+                                            dbase_types = dbasetype)
     
     # Calculate bioerosion metrics per grazing type per site ---------------------
     

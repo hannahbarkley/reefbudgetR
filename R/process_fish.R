@@ -24,24 +24,22 @@ process_fish <- function(data_spc,
                          dbase_type = c("IPRB", "Kindinger"),
                          data_belt = TRUE) {
   
-  ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
-  
 
   fish_belt <- calc_fish_belt(
                 data = data_belt, 
-                dbase_type = dbase_type, 
+                dbasetype = dbase_type, 
                 full_summary = TRUE)
   
   
   fish_fixed_spc <- calc_fish_fixed_spc(
                       data = data_spc, 
-                      dbase_type = dbase_type,
+                      dbasetype = dbase_type,
                       shape_file = fish_pacific_islands_shapefile)
   
   
   fish_strs_spc <- calc_fish_strs_spc(
                     data = data_spc, 
-                    dbase_type = dbase_type,
+                    dbasetype = dbase_type,
                     shape_file = fish_pacific_islands_shapefile)
   
   
