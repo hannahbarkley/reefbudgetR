@@ -1,13 +1,13 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# reefbudgetR
+# Pacific NCRMP reefbudgetR
 
 <!-- badges: start -->
 <!-- badges: end -->
 
 This R package provides tools for working with ReefBudget carbonate
-budget data, with functions to process field-based and SfM-derived
+budget data collected for the Pacific National Coral Reef Monitoring Program (NCRMP), with functions to process field-based and SfM-derived
 benthic, urchin, and parrotfish census data and calculate carbonate
 production and erosion.
 
@@ -45,7 +45,7 @@ commercial product or activity by DOC or the United States Government.
 
 ## Installation
 
-You can install the development version of reefbudgetR from
+You can install the development version of Pacific NCRMP reefbudgetR from
 [GitHub](https://github.com/) with:
 
 ``` r
