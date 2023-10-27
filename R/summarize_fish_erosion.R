@@ -6,6 +6,7 @@
 #' outputs of `summarize_fish_metrics`.
 #' @param full_summary Return full summary of results (default is TRUE)
 #'
+#' @import stringr
 #' @import dplyr
 #'
 #' @export summarize_fish_erosion
