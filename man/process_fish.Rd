@@ -4,7 +4,7 @@
 \alias{process_fish}
 \title{Process parrotfish erosion rates from belt and spc data}
 \usage{
-process_fish(data_spc, dbase_type = c("IPRB", "Kindinger"), data_belt = TRUE)
+process_fish(data_spc, dbase_type = c("Kindinger", "IPRB"), data_belt = TRUE)
 }
 \arguments{
 \item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
