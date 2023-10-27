@@ -17,7 +17,7 @@ Calculate parrotfish erosion rates from belt data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_belt <- calc_fish_belt(data = fish_data, dbase_type = "Kindinger",
+fish_belt <- calc_fish_belt(data = fish_data, rates_dbase = rates_dbase,
 full_summary = TRUE)
 }
 \author{

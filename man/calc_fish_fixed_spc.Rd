@@ -23,7 +23,7 @@ Calculate parrotfish erosion rates from fixed spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_fixed_spc <- calc_fish_fixed_spc(data = fish_data, dbasetype = rates_dbase, shape_file = fish_pacific_islands_shapefile)
+fish_fixed_spc <- calc_fish_fixed_spc(data = fish_data, rates_dbase = rates_dbase, shape_file = fish_pacific_islands_shapefile)
 }
 \author{
 Rebecca Weible
