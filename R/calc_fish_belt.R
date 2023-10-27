@@ -51,7 +51,7 @@ calc_fish_belt <- function(data,
         summarize_by = "species"
       )
     ) %>%
-      add_column(METRIC = "FISH_BIOMASS_KG_HA")
+      tibble::add_column(METRIC = "FISH_BIOMASS_KG_HA")
     
     bioerosion_average <- suppressWarnings(
       summarize_fish_metrics(
@@ -61,7 +61,7 @@ calc_fish_belt <- function(data,
         summarize_by = "species"
       )
     ) %>%
-      add_column(METRIC = "FISH_EROSION_KG_M2_YR")
+      tibble::add_column(METRIC = "FISH_EROSION_KG_M2_YR")
     
     
     species_table <-
