@@ -24,7 +24,7 @@ process_fish <- function(data_spc,
                          dbase_type = c("Kindinger", "IPRB"),
                          data_belt = TRUE) {
   
-  ifelse(dbase_type == "Kindinger", rates_dbase <- fish_erosion_dbase_kindinger, rates_dbase <- fish_erosion_dbase_iprb)
+  ifelse(dbase_type %in% "Kindinger", rates_dbase <- fish_erosion_dbase_kindinger, rates_dbase <- fish_erosion_dbase_iprb)
 
   fish_belt <- calc_fish_belt(
                 data = data_belt, 
