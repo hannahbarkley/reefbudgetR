@@ -19,7 +19,7 @@
 #'full_summary = TRUE)
 
 calc_fish_belt <- function(data,
-                           dbasetype = rates_dbase,
+                           rates_dbase = rates_dbase,
                            full_summary = TRUE) {
   
     # FOR BELT DATA ----------------------------------------------------------------

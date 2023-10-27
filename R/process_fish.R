@@ -28,7 +28,7 @@ process_fish <- function(data_spc,
 
   fish_belt <- calc_fish_belt(
                 data = data_belt, 
-                dbasetype = rates_dbase, 
+                rates_dbase, 
                 full_summary = TRUE)
   
   
