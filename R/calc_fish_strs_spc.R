@@ -21,12 +21,12 @@
 #'fish_strs_spc <- calc_fish_strs_spc(data = fish_data, dbase_type = "Kindinger")
 
 calc_fish_strs_spc <- function(data,
-                               dbase_type = c("IPRB", "Kindinger")) {
+                               dbase_type = c("IPRB", "Kindinger"),
+                               shape_file = fish_pacific_islands_shapefile) {
   
   
   ifelse(dbase_type == "IPRB", rates_dbase <- fish_erosion_dbase_iprb, rates_dbase <- fish_erosion_dbase_kindinger)
-  shape_file <- fish_pacific_islands_shapefile
-    
+
     # FOR StRS SPC DATA ----------------------------------------------------------------
     
     format_strsspc_output <- format_fish_spc(data,                                                 
