@@ -9,6 +9,7 @@
 #'
 #'@import Rmisc
 #'@import tidyverse
+#'@import tibble
 #'@import dplyr
 #'
 #'@export process_fish
