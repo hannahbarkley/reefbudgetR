@@ -28,19 +28,19 @@ process_fish <- function(data_spc,
 
   fish_belt <- calc_fish_belt(
                 data = data_belt, 
-                rates_dbase, 
+                rates_dbase = rates_dbase, 
                 full_summary = TRUE)
   
   
   fish_fixed_spc <- calc_fish_fixed_spc(
                       data = data_spc, 
-                      dbasetype = rates_dbase,
+                      rates_dbase = rates_dbase,
                       shape_file = fish_pacific_islands_shapefile)
   
   
   fish_strs_spc <- calc_fish_strs_spc(
                     data = data_spc, 
-                    dbasetype = rates_dbase,
+                    rates_dbase = rates_dbase,
                     shape_file = fish_pacific_islands_shapefile)
   
   

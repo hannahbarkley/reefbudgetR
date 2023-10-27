@@ -6,16 +6,14 @@
 \usage{
 calc_fish_strs_spc(
   data,
-  dbasetype = rates_dbase,
+  rates_dbase = rates_dbase,
   shape_file = fish_pacific_islands_shapefile
 )
 }
 \arguments{
 \item{data}{fish survey data.}
 
-\item{dbasetype}{Erosion rates database to use. Choose either Indo-Pacific
-ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
+\item{rates_dbase}{Erosion rates database to use.}
 
 \item{shape_file}{shapefiles of pacific islands.}
 }

@@ -4,7 +4,7 @@
 \alias{calc_fish_belt}
 \title{Calculate parrotfish erosion rates from belt data}
 \usage{
-calc_fish_belt(data, dbasetype = rates_dbase, full_summary = TRUE)
+calc_fish_belt(data, rates_dbase = rates_dbase, full_summary = TRUE)
 }
 \arguments{
 \item{data}{fish survey data.}

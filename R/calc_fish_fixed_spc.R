@@ -3,9 +3,7 @@
 #'@author Rebecca Weible
 #'
 #'@param data fish survey data.
-#'@param dbasetype Erosion rates database to use. Choose either Indo-Pacific
-#'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
-#'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
+#'@param rates_dbase Erosion rates database to use.
 #'@param shape_file shapefiles of pacific islands. 
 #'
 #'@import Rmisc
@@ -22,7 +20,7 @@
 #'fish_fixed_spc <- calc_fish_fixed_spc(data = fish_data, dbasetype = rates_dbase, shape_file = fish_pacific_islands_shapefile)
 
 calc_fish_fixed_spc <- function(data,
-                                dbasetype = rates_dbase,
+                                rates_dbase = rates_dbase,
                                 shape_file = fish_pacific_islands_shapefile) {
 
   
