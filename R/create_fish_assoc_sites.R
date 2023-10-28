@@ -97,7 +97,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
     poly_ISL=st_crop(x = ALLisl_poly,y = st_bbox(pts_ext))
     options(warn = 2)
     
-    par(mfrow = c(1, length(ptsOCC_ISL$OCC_SITEID)))
+    par(mfrow = c(2, length(ptsOCC_ISL$OCC_SITEID)))
     
     D=calc_fish_distance_matrix(pointsOCC = ptsOCC_ISL,
                                 pointsFISH = ptsFISH_ISL,

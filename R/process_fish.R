@@ -22,7 +22,7 @@
 
 process_fish <- function(data_spc,
                          dbase_type = c("Kindinger", "IPRB"),
-                         data_belt = TRUE) {
+                         data_belt) {
   
   if(dbase_type == "Kindinger") {
     rates_dbase <- fish_erosion_dbase_kindinger
@@ -41,7 +41,7 @@ process_fish <- function(data_spc,
                     rates_dbase = rates_dbase)
   
   
-  if (data_belt == TRUE) {
+  if (!missing(data_belt)) {
     
     fish_belt <- calc_fish_belt(
                   data = data_belt, 
@@ -55,7 +55,7 @@ process_fish <- function(data_spc,
   
   
   
-  if (data_belt == FALSE) {
+  if (missing(data_belt)) {
       return(rbind(fish_fixed_spc,
                    fish_strs_spc))
   }
