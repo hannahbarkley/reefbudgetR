@@ -4,7 +4,6 @@
 #'
 #'@param data fish survey data.
 #'@param rates_dbase Erosion rates database to use.
-#'@param shape_file shapefiles of pacific islands. 
 #'
 #'@import Rmisc
 #'@import sf
@@ -16,11 +15,10 @@
 #'@examples
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
-#'fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase, shape_file = fish_world_islands_shapefile)
+#'fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase)
 
 calc_fish_strs_spc <- function(data,
-                               rates_dbase = rates_dbase,
-                               shape_file = fish_world_islands_shapefile) {
+                               rates_dbase = rates_dbase) {
   
   
     # FOR StRS SPC DATA ----------------------------------------------------------------
@@ -30,7 +28,7 @@ calc_fish_strs_spc <- function(data,
                                              rates_dbase = rates_dbase)
   
     # created associated SPC sites to each OCC fixed site SPC
-    sites_associated_dbase <- create_fish_assoc_sites(data, shape_file, 6000)
+    sites_associated_dbase <- create_fish_assoc_sites(data, 6000)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'

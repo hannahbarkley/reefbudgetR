@@ -1,10 +1,10 @@
 #' Create fish associated SPC sites in relation to fixed sites
 #'
 #'@author Thomas Oliver 
+#'@author Kisei Tanaka
 #'@author Rebecca Weible
 #'
 #'@param data fish survey data.
-#'@param shape_file shapefiles of pacific islands. 
 #'@param subset_distance_m chosen distance from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries. 
 
 #'
@@ -18,13 +18,39 @@
 #'
 #'@examples
 #'fish_data <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
-#'island_shapefile <- readRDS("~/reefbudgetR/data/fish_pacific_islands_shapefile.rds")
 #'
-#'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, shape_file = fish_world_islands_shapefile, subset_distance_m = 1500)
+#'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, subset_distance_m = 1500)
 
 
 
-create_fish_assoc_sites <- function(data, shape_file = fish_world_islands_shapefile, subset_distance_m){
+create_fish_assoc_sites <- function(data, subset_distance_m){
+  
+  # Download shapefile from GSHHG to users Downloads folder---------------------------------------------------
+  data_path <- paste0("/Users/", Sys.info()[7], "/Downloads/")
+  
+  if (!file.exists(paste(data_path, "gshhg-bin-2.3.7", sep = "/"))) {
+    
+    op <- getOption("timeout")
+    options(timeout = max(600, getOption("timeout")))
+    
+    tmp <- tempfile(fileext = ".zip")
+    
+    download.file(
+      "https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhg/latest/gshhg-shp-2.3.7.zip",
+      tmp
+    )
+    
+    unzip(tmp, 
+          exdir = paste(data_path, 
+                        "gshhg-bin-2.3.7", 
+                        sep = "/"))
+    unlink(tmp)
+    
+    options(timeout = op)
+    
+  }
+  
+  shape_file <- paste(data_path, "gshhg-bin-2.3.7/GSHHS_shp/f/GSHHS_f_L1.shp", sep = "/")
   
   # Format data and shapefiles--------------------------------------------------------------------------
   # Format Shapefiles 

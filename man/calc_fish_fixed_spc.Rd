@@ -4,18 +4,12 @@
 \alias{calc_fish_fixed_spc}
 \title{Calculate parrotfish erosion rates from fixed spc data}
 \usage{
-calc_fish_fixed_spc(
-  data,
-  rates_dbase = rates_dbase,
-  shape_file = fish_world_islands_shapefile
-)
+calc_fish_fixed_spc(data, rates_dbase = rates_dbase)
 }
 \arguments{
 \item{data}{fish survey data.}
 
 \item{rates_dbase}{Erosion rates database to use.}
-
-\item{shape_file}{shapefiles of pacific islands.}
 }
 \description{
 Calculate parrotfish erosion rates from fixed spc data
@@ -23,7 +17,7 @@ Calculate parrotfish erosion rates from fixed spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_fixed_spc <- calc_fish_fixed_spc(data = fish_data, rates_dbase = rates_dbase, shape_file = fish_world_islands_shapefile)
+fish_fixed_spc <- calc_fish_fixed_spc(data = fish_data, rates_dbase = rates_dbase)
 }
 \author{
 Rebecca Weible

@@ -4,16 +4,10 @@
 \alias{create_fish_assoc_sites}
 \title{Create fish associated SPC sites in relation to fixed sites}
 \usage{
-create_fish_assoc_sites(
-  data,
-  shape_file = fish_world_islands_shapefile,
-  subset_distance_m
-)
+create_fish_assoc_sites(data, subset_distance_m)
 }
 \arguments{
 \item{data}{fish survey data.}
-
-\item{shape_file}{shapefiles of pacific islands.}
 
 \item{subset_distance_m}{chosen distance from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.}
 }
@@ -22,12 +16,13 @@ Create fish associated SPC sites in relation to fixed sites
 }
 \examples{
 fish_data <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
-island_shapefile <- readRDS("~/reefbudgetR/data/fish_pacific_islands_shapefile.rds")
 
-sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, shape_file = fish_world_islands_shapefile, subset_distance_m = 1500)
+sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, subset_distance_m = 1500)
 }
 \author{
 Thomas Oliver
+
+Kisei Tanaka
 
 Rebecca Weible
 }

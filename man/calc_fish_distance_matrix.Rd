@@ -16,7 +16,7 @@ calc_fish_distance_matrix(
 
 \item{pointsFISH}{Lat/Long of fish REA sites, or stratified random sampled SPC surveys, aka all other survey sites.}
 
-\item{island_poly}{Simple Feature polygon Shapefile of Pacific Islands where surveys were conducted.}
+\item{island_poly}{Simple Feature polygon Shapefile where surveys were conducted.}
 
 \item{resolution_m}{Resolution of the output raster plot displaying distance from target point to survey point of interest.}
 }

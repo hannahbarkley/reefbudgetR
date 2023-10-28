@@ -34,14 +34,12 @@ process_fish <- function(data_spc,
   
   fish_fixed_spc <- calc_fish_fixed_spc(
                       data = data_spc, 
-                      rates_dbase = rates_dbase,
-                      shape_file = fish_pacific_islands_shapefile)
+                      rates_dbase = rates_dbase)
   
   
   fish_strs_spc <- calc_fish_strs_spc(
                     data = data_spc, 
-                    rates_dbase = rates_dbase,
-                    shape_file = fish_pacific_islands_shapefile)
+                    rates_dbase = rates_dbase)
   
   
   if (data_belt == TRUE) {
