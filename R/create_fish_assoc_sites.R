@@ -26,7 +26,7 @@
 create_fish_assoc_sites <- function(data, subset_distance_m){
   
   # Download shapefile from GSHHG to users Downloads folder---------------------------------------------------
-  data_path <- paste0(stringr::str_extract(getwd(), "^.{3}"), "Users/", Sys.info()[7], "/Downloads")
+  data_path <- paste0("C:/Users/", Sys.info()[7], "/Downloads") # can use stringr::str_extract(getwd(), "^.{3}") before "/Users/" if you need to paste working directory letter.
   
   if (!file.exists(paste(data_path, "gshhg-bin-2.3.7", sep = "/"))) {
     
