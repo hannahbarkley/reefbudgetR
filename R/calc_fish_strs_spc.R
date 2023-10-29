@@ -175,7 +175,7 @@ calc_fish_strs_spc <- function(data,
       dplyr::mutate_at(dplyr::vars(REGION:CB_METHOD), as.factor) %>%
       dplyr::mutate_at(dplyr::vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
     
-    return(list(calc_strs_ero <- calc_strs_spc_erosion4, assoc_survey_count <- survey_sample_size))
+    return(list(calc_strs_ero = calc_strs_spc_erosion4, assoc_survey_count = survey_sample_size))
     
   
 }

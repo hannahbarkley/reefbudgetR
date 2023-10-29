@@ -52,18 +52,18 @@ process_fish <- function(data_spc,
                   rates_dbase = rates_dbase, 
                   full_summary = TRUE)
     
-      return(list(dat <- rbind(fish_belt$fish_erosion_site, 
+      return(list(dat = rbind(fish_belt$fish_erosion_site, 
                                 fish_fixed_spc,
                                 fish_strs_spc),
-                  assoc_site_count <- fish_strs_spc_$assoc_survey_count))
+                  assoc_site_count = fish_strs_spc_$assoc_survey_count))
   }
   
   
   
   if (missing(data_belt)) {
-      return(list(dat <- rbind(fish_fixed_spc,
+      return(list(dat = rbind(fish_fixed_spc,
                                 fish_strs_spc),
-                  assoc_site_count <- fish_strs_spc_$assoc_survey_count))
+                  assoc_site_count = fish_strs_spc_$assoc_survey_count))
   }
 
   
