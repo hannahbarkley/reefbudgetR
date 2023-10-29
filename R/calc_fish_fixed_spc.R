@@ -63,7 +63,9 @@ calc_fish_fixed_spc <- function(data,
       select(-COMMONFAMILYALL, -REP) %>% #remove n and REP
       mutate(METRIC = case_when(METRIC == "SUM_BIOMASS_PER_FISH_KG_HECTARE" ~ "FISH_BIOMASS_KG_HA",
                                 METRIC == "SUM_DENSITY_PER_FISH_HECTARE" ~ "FISH_DENSITY_ABUNDANCE_HA",
-                                METRIC == "SUM_EROSION_PER_FISH_KG_M2_YR" ~ "FISH_EROSION_KG_M2_YR")) 
+                                METRIC == "SUM_EROSION_PER_FISH_KG_M2_YR" ~ "FISH_EROSION_KG_M2_YR")) %>%
+      select(-SITEVISITID)
+      
     
     # pause here to complete FXN_GRP column if values are missing
     options_fxn_grp <- c("ALL", "OTHER", "SCRAPER", "EXCAVATOR") # all four functional groups should be present
@@ -78,7 +80,6 @@ calc_fish_fixed_spc <- function(data,
       }
       
       format_fixed_spc_erosion2 <- format_fixed_spc_erosion %>%
-                                      select(-SITEVISITID) %>%
                                       complete(REA_SITEID, METRIC, calc, FXN_GRP,
                                         fill = list(value = 0)
                                       ) %>%
