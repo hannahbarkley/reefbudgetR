@@ -30,8 +30,9 @@ calc_fish_strs_spc <- function(data,
                                              rates_dbase = rates_dbase)
   
     # created associated SPC sites to each OCC fixed site SPC
-    sites_associated_dbase <- create_fish_assoc_sites(data, subset_distance_m)$output
-    survey_sample_size <- create_fish_assoc_sites(data, subset_distance_m)$surveysamplesize # n of surveys that were assigned as associated or not (subset_distance_m from fixed site)
+    sites_associated_dbase_ <- create_fish_assoc_sites(data, subset_distance_m)
+    sites_associated_dbase <- sites_associated_dbase_$output
+    survey_sample_size <- sites_associated_dbase_$surveysamplesize # n of surveys that were assigned as associated or not (subset_distance_m from fixed site)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'
