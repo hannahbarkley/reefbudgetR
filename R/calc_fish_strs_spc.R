@@ -31,6 +31,7 @@ calc_fish_strs_spc <- function(data,
   
     # created associated SPC sites to each OCC fixed site SPC
     sites_associated_dbase <- create_fish_assoc_sites(data, subset_distance_m)$output
+    survey_sample_size <- create_fish_assoc_sites(data, subset_distance_m)$surveysamplesize # n of surveys that were assigned as associated or not (subset_distance_m from fixed site)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'
@@ -173,7 +174,7 @@ calc_fish_strs_spc <- function(data,
       dplyr::mutate_at(dplyr::vars(REGION:CB_METHOD), as.factor) %>%
       dplyr::mutate_at(dplyr::vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
     
-    return(calc_strs_spc_erosion4)
+    return(list(calc_strs_ero <- calc_strs_spc_erosion4, assoc_survey_count <- survey_sample_size))
     
   
 }
