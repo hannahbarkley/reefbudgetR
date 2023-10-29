@@ -172,7 +172,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   strs_samplesize <- output %>% group_by(ASSOC_OCCSITEID, value) %>% count() %>% spread(value, n) %>% rename(Associated = `-1`) %>% rename(Not_Associated = `0`) %>% rename(Fixed = `1`)
 
   
-  return(output, strs_samplesize, D)
+  return(list(output = output, surveysamplesize = strs_samplesize, plots = D))
 
   }
   
