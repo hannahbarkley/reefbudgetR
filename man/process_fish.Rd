@@ -4,7 +4,12 @@
 \alias{process_fish}
 \title{Process parrotfish erosion rates from belt and spc data}
 \usage{
-process_fish(data_spc, dbase_type = c("Kindinger", "IPRB"), data_belt = TRUE)
+process_fish(
+  data_spc,
+  dbase_type = c("Kindinger", "IPRB"),
+  data_belt,
+  subset_distance_m
+)
 }
 \arguments{
 \item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
@@ -12,6 +17,8 @@ ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
 
 \item{data_belt}{fish belt survey data.}
+
+\item{subset_distance_m}{Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.}
 }
 \description{
 Process parrotfish erosion rates from belt and spc data
@@ -20,7 +27,7 @@ Process parrotfish erosion rates from belt and spc data
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
 fish_belt <- process_fish(data_spc = fish_data_spc, 
-dbase_type = "Kindinger", data_belt = fish_data_belt)
+dbase_type = "Kindinger", data_belt = fish_data_belt, subset_distance_m = 2000)
 }
 \author{
 Rebecca Weible

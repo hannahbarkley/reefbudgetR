@@ -4,6 +4,7 @@
 #'
 #'@param data fish survey data.
 #'@param rates_dbase Erosion rates database to use.
+#'@param subset_distance_m Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries. 
 #'
 #'@import Rmisc
 #'@import sf
@@ -15,10 +16,11 @@
 #'@examples
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
-#'fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase)
+#'fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase, subset_distance_m = 2000)
 
 calc_fish_strs_spc <- function(data,
-                               rates_dbase = rates_dbase) {
+                               rates_dbase = rates_dbase,
+                               subset_distance_m) {
   
   
     # FOR StRS SPC DATA ----------------------------------------------------------------
@@ -28,7 +30,7 @@ calc_fish_strs_spc <- function(data,
                                              rates_dbase = rates_dbase)
   
     # created associated SPC sites to each OCC fixed site SPC
-    sites_associated_dbase <- create_fish_assoc_sites(data, 6000)
+    sites_associated_dbase <- create_fish_assoc_sites(data, subset_distance_m)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
       # convert REPLICATEID values to Transect '1' and '2'

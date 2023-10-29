@@ -9,7 +9,7 @@ create_fish_assoc_sites(data, subset_distance_m)
 \arguments{
 \item{data}{fish survey data.}
 
-\item{subset_distance_m}{chosen distance from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.}
+\item{subset_distance_m}{Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.}
 }
 \description{
 Create fish associated SPC sites in relation to fixed sites
@@ -17,7 +17,7 @@ Create fish associated SPC sites in relation to fixed sites
 \examples{
 fish_data <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
 
-sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, subset_distance_m = 1500)
+sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, subset_distance_m = 2000)
 }
 \author{
 Thomas Oliver

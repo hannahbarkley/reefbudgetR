@@ -7,6 +7,7 @@
 #'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 #'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
 #'@param data_belt fish belt survey data.
+#'@param subset_distance_m Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries. 
 #'
 #'@import Rmisc
 #'@import tidyverse
@@ -18,11 +19,12 @@
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
 #'fish_belt <- process_fish(data_spc = fish_data_spc, 
-#'dbase_type = "Kindinger", data_belt = fish_data_belt)
+#'dbase_type = "Kindinger", data_belt = fish_data_belt, subset_distance_m = 2000)
 
 process_fish <- function(data_spc,
                          dbase_type = c("Kindinger", "IPRB"),
-                         data_belt) {
+                         data_belt,
+                         subset_distance_m) {
   
   if(dbase_type == "Kindinger") {
     rates_dbase <- fish_erosion_dbase_kindinger
@@ -38,7 +40,8 @@ process_fish <- function(data_spc,
   
   fish_strs_spc <- calc_fish_strs_spc(
                     data = data_spc, 
-                    rates_dbase = rates_dbase)
+                    rates_dbase = rates_dbase,
+                    subset_distance_m)
   
   
   if (!missing(data_belt)) {

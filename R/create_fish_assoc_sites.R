@@ -5,7 +5,7 @@
 #'@author Rebecca Weible
 #'
 #'@param data fish survey data.
-#'@param subset_distance_m chosen distance from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries. 
+#'@param subset_distance_m Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries. 
 
 #'
 #'@import Rmisc

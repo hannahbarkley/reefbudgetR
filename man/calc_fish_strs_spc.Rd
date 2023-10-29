@@ -4,12 +4,14 @@
 \alias{calc_fish_strs_spc}
 \title{Calculate parrotfish erosion rates from associated spc data}
 \usage{
-calc_fish_strs_spc(data, rates_dbase = rates_dbase)
+calc_fish_strs_spc(data, rates_dbase = rates_dbase, subset_distance_m)
 }
 \arguments{
 \item{data}{fish survey data.}
 
 \item{rates_dbase}{Erosion rates database to use.}
+
+\item{subset_distance_m}{Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.}
 }
 \description{
 Calculate parrotfish erosion rates from associated spc data
@@ -17,7 +19,7 @@ Calculate parrotfish erosion rates from associated spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase)
+fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase, subset_distance_m = 2000)
 }
 \author{
 Rebecca Weible
