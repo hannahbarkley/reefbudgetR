@@ -19,7 +19,7 @@
 #'@examples
 #'fish_data <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
 #'
-#'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, subset_distance_m = 1500)
+#'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, subset_distance_m = 2000)
 
 
 
@@ -153,24 +153,26 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
               mutate(value = case_when(OCC_SITEID != "" ~ 1,
                                        TRUE ~ value)) %>% #copy OCC_SITEID into ASSOC_OCCSITE for fixed sites only
               mutate(ASSOC_OCCSITEID = case_when(value == "1" ~ OCC_SITEID,
-                                                 TRUE ~ ASSOC_OCCSITEID)) #copy OCC_SITEID into ASSOC_OCCSITE for fixed sites only
-
+                                                 TRUE ~ ASSOC_OCCSITEID)) %>% #copy OCC_SITEID into ASSOC_OCCSITE for fixed sites only
+              mutate(value = case_when(value == -1 & !HABITAT_CODE %in% c("AGR", "APR", "APS", "PPR", "ROB", "SAG", "WAL") ~ 0,
+                                       TRUE ~ value)) #change all associated sites (-1) that have pavement or rubble structure to 0 b/c parrotfish do nor forage in these habitat types
+  
   #finaldf %>% select(REA_SITEID, HABITAT_CODE, value) %>% group_by(HABITAT_CODE, value) %>% count() %>% spread(value, n)
   
   # subset associated OCCSITEID to include only fish REA SPC sites that match the habitat types of their respective fixed SPC/OCC site
   fixedhab <- finaldf %>% dplyr::select(OCC_SITEID, HABITAT_CODE) %>% distinct() %>% filter(OCC_SITEID != "")
-  
+
   output <- left_join(finaldf, fixedhab, by = c("ASSOC_OCCSITEID" = "OCC_SITEID")) %>%
-              mutate(value = case_when(HABITAT_CODE.x != HABITAT_CODE.y ~ 0, #assign all associated fish SPC sites that do not match the habitat type of their respective fixed SPC/OCC site to 0
+              mutate(value = case_when(value == 0 & HABITAT_CODE.x == HABITAT_CODE.y ~ -1, #assign all associated fish SPC sites that do not match the habitat type of their respective fixed SPC/OCC site to 0
                                        TRUE ~ value)) %>%
               dplyr::select(-HABITAT_CODE.y) %>%
               rename(HABITAT_CODE = HABITAT_CODE.x)
-  
+
   # number of associated sites with each fixed SPC/OCC site
-  output %>% group_by(ASSOC_OCCSITEID, value) %>% count() %>% spread(value, n)
+  strs_samplesize <- output %>% group_by(ASSOC_OCCSITEID, value) %>% count() %>% spread(value, n) %>% rename(Associated = `-1`) %>% rename(Not_Associated = `0`) %>% rename(Fixed = `1`)
+
   
-  
-  return(output)
+  return(output, strs_samplesize, D)
 
   }
   
