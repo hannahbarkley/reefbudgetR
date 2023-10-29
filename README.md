@@ -61,16 +61,16 @@ Load benthic, urchin, and fish data sets:
 library(reefbudgetR)
 
 # Benthic observation data
-benthic_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/Field data/2021 Oahu/ESD_CarbBudget_Benthic_OAHU_2021.csv", na = "", check.names = FALSE)
+benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv", na = "", check.names = FALSE)
 
 #Urchin observation data
-urchin_data <- read.csv("T:/Oceanography/Carbonate Budgets/Data/Field data/2021 Oahu/ESD_CarbBudget_Urchins_OAHU_2021.csv", na = "", check.names = FALSE)
+urchin_data <- read.csv("ESD_CarbBudget_Urchins_OAHU_2021.csv", na = "", check.names = FALSE)
 
 # Fish belt transect data
-fish_data_belt <- read.csv("T:/Oceanography/Carbonate Budgets/Data/Field data/2021 Oahu/ESD_CarbBudget_Fixed_Belt_OAHU_2021.csv", na = "", check.names = FALSE)
+fish_data_belt <- read.csv("ESD_CarbBudget_Fixed_Belt_OAHU_2021.csv", na = "", check.names = FALSE)
 
 # Fish fixed-site and stratified random stationary point count (SPC) data
-fish_data_spc <- read.csv("T:/Oceanography/Carbonate Budgets/Data/Field data/2021 Oahu/ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
+fish_data_spc <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
 ```
 
 Process benthic data by method type:
@@ -132,11 +132,11 @@ urch_site <- bind_rows(urch_iprb$site_erosion,
 Process fish data by method type:
 
 ``` r
-# Process fish belt and stationary point count (SPC) data
+# Process fish belt and stationary point count (SPC) data, open plot window to see strs shapefile plots
 fish_site_ <- process_fish(fish_data_spc,
                                dbase_type = "Kindinger",
                                fish_data_belt,
-                               6000)
+                               subset_distance_m = 6000)
 fish_site <- fish_site_$dat
 fish_site_$assoc_site_count
 ```
