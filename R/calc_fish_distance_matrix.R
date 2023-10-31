@@ -62,6 +62,8 @@ calc_fish_distance_matrix <- function(pointsOCC, pointsFISH, island_poly, resolu
      plot(island_poly$geometry, add = TRUE, col = "white")
      plot(pointsFISH[1], add=TRUE, col="blue",pch=19)
      plot(target_point[1], add=TRUE, col="red",pch=19)
+     title(main= paste(pointsOCC$SITEID[i]))
+     
 
     # For each point in set B, extract the distance from the current distance grid
     for (j in 1:nrow(pointsFISH)) {
