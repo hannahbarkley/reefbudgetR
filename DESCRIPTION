@@ -28,7 +28,6 @@ Imports:
     tidyverse,
     Rmisc,
     sf,
-    rgeos,
     dplyr,
     tibble,
     stringr
