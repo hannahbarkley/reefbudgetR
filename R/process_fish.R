@@ -26,7 +26,7 @@ process_fish <- function(spc_data= data_spc,
                          belt_data = data_belt,
                          subset_distance_m) {
   
-  if(dbase_type == "Kindinger") {
+  if(dbase_type %in% "Kindinger") {
     rates_dbase <- fish_erosion_dbase_kindinger
   } else{
     rates_dbase <- fish_erosion_dbase_iprb
