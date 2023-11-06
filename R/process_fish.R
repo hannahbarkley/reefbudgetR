@@ -33,7 +33,7 @@ process_fish <- function(spc_data= data_spc,
   }
   
   # if you have SPC data then....
-  if(!missing(data_spc)){
+  if(!missing(spc_data)){
   
     fish_fixed_spc <- calc_fish_fixed_spc(
                         data = data_spc, 
@@ -47,14 +47,14 @@ process_fish <- function(spc_data= data_spc,
     fish_strs_spc <- fish_strs_spc_$calc_strs_ero
     
     
-    if (!missing(data_belt)) {
+    if (!missing(belt_data)) {
       
-      fish_belt <- calc_fish_belt(
+      fish_belt_ <- calc_fish_belt(
                     data = data_belt, 
                     rates_dbase = rates_dbase, 
                     full_summary = TRUE)
       
-        return(list(dat = rbind(fish_belt$fish_erosion_site, 
+        return(list(dat = rbind(fish_belt_$fish_erosion_site, 
                                   fish_fixed_spc,
                                   fish_strs_spc),
                     assoc_site_count = fish_strs_spc_$assoc_survey_count))
@@ -62,7 +62,7 @@ process_fish <- function(spc_data= data_spc,
     
     
     
-    if (missing(data_belt)) {
+    if (missing(belt_data)) {
         return(list(dat = rbind(fish_fixed_spc,
                                   fish_strs_spc),
                     assoc_site_count = fish_strs_spc_$assoc_survey_count))
@@ -70,14 +70,14 @@ process_fish <- function(spc_data= data_spc,
   }
   
   # If missing SPC data then...
-  if(missing(data_spc)) {
+  if(missing(spc_data)) {
     
-    fish_belt <- calc_fish_belt(
+    fish_belt_ <- calc_fish_belt(
       data = data_belt, 
       rates_dbase = rates_dbase, 
       full_summary = TRUE)
     
-    return(fish_belt)
+    return(fish_belt_)
     
   }
 
