@@ -32,38 +32,53 @@ process_fish <- function(data_spc,
     rates_dbase <- fish_erosion_dbase_iprb
   }
   
+  # if you have SPC data then....
+  if(!missing(data_spc)){
   
-  fish_fixed_spc <- calc_fish_fixed_spc(
+    fish_fixed_spc <- calc_fish_fixed_spc(
+                        data = data_spc, 
+                        rates_dbase = rates_dbase)
+    
+    
+    fish_strs_spc_ <- calc_fish_strs_spc(
                       data = data_spc, 
-                      rates_dbase = rates_dbase)
-  
-  
-  fish_strs_spc_ <- calc_fish_strs_spc(
-                    data = data_spc, 
-                    rates_dbase = rates_dbase,
-                    subset_distance_m)
-  fish_strs_spc <- fish_strs_spc_$calc_strs_ero
-  
-  
-  if (!missing(data_belt)) {
+                      rates_dbase = rates_dbase,
+                      subset_distance_m)
+    fish_strs_spc <- fish_strs_spc_$calc_strs_ero
     
-    fish_belt <- calc_fish_belt(
-                  data = data_belt, 
-                  rates_dbase = rates_dbase, 
-                  full_summary = TRUE)
     
-      return(list(dat = rbind(fish_belt$fish_erosion_site, 
-                                fish_fixed_spc,
-                                fish_strs_spc),
-                  assoc_site_count = fish_strs_spc_$assoc_survey_count))
+    if (!missing(data_belt)) {
+      
+      fish_belt <- calc_fish_belt(
+                    data = data_belt, 
+                    rates_dbase = rates_dbase, 
+                    full_summary = TRUE)
+      
+        return(list(dat = rbind(fish_belt$fish_erosion_site, 
+                                  fish_fixed_spc,
+                                  fish_strs_spc),
+                    assoc_site_count = fish_strs_spc_$assoc_survey_count))
+    }
+    
+    
+    
+    if (missing(data_belt)) {
+        return(list(dat = rbind(fish_fixed_spc,
+                                  fish_strs_spc),
+                    assoc_site_count = fish_strs_spc_$assoc_survey_count))
+    }
   }
   
-  
-  
-  if (missing(data_belt)) {
-      return(list(dat = rbind(fish_fixed_spc,
-                                fish_strs_spc),
-                  assoc_site_count = fish_strs_spc_$assoc_survey_count))
+  # If missing SPC data then...
+  if(missing(data_spc)) {
+    
+    fish_belt <- calc_fish_belt(
+      data = data_belt, 
+      rates_dbase = rates_dbase, 
+      full_summary = TRUE)
+    
+    return(fish_belt)
+    
   }
 
   
