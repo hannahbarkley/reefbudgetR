@@ -133,9 +133,9 @@ Process fish data by method type:
 
 ``` r
 # Process fish belt and stationary point count (SPC) data, open plot window to see strs shapefile plots
-fish_site_ <- process_fish(fish_data_spc,
+fish_site_ <- process_fish(spc_data = fish_data_spc,
                                dbase_type = "Kindinger",
-                               fish_data_belt,
+                               belt_data = fish_data_belt,
                                subset_distance_m = 6000)
 fish_site <- fish_site_$dat
 fish_site_$assoc_site_count
