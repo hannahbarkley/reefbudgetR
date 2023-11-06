@@ -21,9 +21,9 @@ format_fish_spc <- function(data,
   if(method == "IPRB") {method_type = "IPRB"} else {method_type = "nSPC"}
   
   prepdat <- data %>% 
-    filter(., CB_METHOD %in% method_type) %>%
-    filter(., !(TRAINING_YN %in% "-1")) %>%
-    filter(., !(REA_SITEID == "GUA-2587" & CB_METHOD == "nSPC")) %>% # must remove special case "GUA-2587" SPC because it's a fixed site and data was collected twice.
+    dplyr::filter(., CB_METHOD %in% method_type) %>%
+    dplyr::filter(., !(TRAINING_YN %in% "-1")) %>%
+    dplyr::filter(., !(REA_SITEID == "GUA-2587" & CB_METHOD == "nSPC")) %>% # must remove special case "GUA-2587" SPC because it's a fixed site and data was collected twice.
     select(SITEVISITID, YEAR, REA_SITEID, LOCATION, REP, REPLICATEID, TAXON_CODE, COUNT, SIZE_, TAXON_NAME, COMMONFAMILYALL, LW_A:LENGTH_CONVERSION_FACTOR) %>% #subset only columns that matter for density, biomass, bioerosion calculation
     mutate(AREA_M2 = pi*(7.5^2)) %>% #calculate Area per m^2 of survey cylinder
     #calculate density below
@@ -56,7 +56,7 @@ format_fish_spc <- function(data,
                      "SUM_DENSITY_PER_FISH_HECTARE" = sum(DENSITY_PER_FISH_HECTARE),
                      "SUM_EROSION_PER_FISH_KG_M2_YR" = sum(EROSION_PER_FISH_KG_M2_YR)) %>%
     ungroup(.) %>% # need to do this to make next group_by work properly
-    bind_rows(filter(.) %>% # create new rows where Excavator, Scraper, and Other are totaled in sum for each site and replicate ID
+    bind_rows(dplyr::filter(.) %>% # create new rows where Excavator, Scraper, and Other are totaled in sum for each site and replicate ID
                 group_by(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL) %>%
                 summarise(across(SUM_BIOMASS_PER_FISH_KG_HECTARE:SUM_EROSION_PER_FISH_KG_M2_YR, ~(sum(.x, na.rm=T)))) %>% 
                 mutate(FXN_GRP = "ALL")) %>%
