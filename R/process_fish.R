@@ -26,10 +26,10 @@ process_fish <- function(spc_data= data_spc,
                          belt_data = data_belt,
                          subset_distance_m) {
   
-  if(dbase_type == Kindinger) {
-    rates_dbase <- fish_erosion_dbase_kindinger
+  if(dbase_type == "Kindinger") {
+    rates_dbase_ <- fish_erosion_dbase_kindinger
   } else{
-    rates_dbase <- fish_erosion_dbase_iprb
+    rates_dbase_ <- fish_erosion_dbase_iprb
   }
   
   # if you have SPC data then....
@@ -37,12 +37,12 @@ process_fish <- function(spc_data= data_spc,
   
     fish_fixed_spc <- calc_fish_fixed_spc(
                         data = data_spc, 
-                        rates_dbase = rates_dbase)
+                        rates_dbase = rates_dbase_)
     
     
     fish_strs_spc_ <- calc_fish_strs_spc(
                       data = data_spc, 
-                      rates_dbase = rates_dbase,
+                      rates_dbase = rates_dbase_,
                       subset_distance_m)
     fish_strs_spc <- fish_strs_spc_$calc_strs_ero
     
@@ -51,7 +51,7 @@ process_fish <- function(spc_data= data_spc,
       
       fish_belt_ <- calc_fish_belt(
                     data = data_belt, 
-                    rates_dbase = rates_dbase, 
+                    rates_dbase = rates_dbase_, 
                     full_summary = TRUE)
       
         return(list(dat = rbind(fish_belt_$fish_erosion_site, 
@@ -74,7 +74,7 @@ process_fish <- function(spc_data= data_spc,
     
     fish_belt_ <- calc_fish_belt(
       data = data_belt, 
-      rates_dbase = rates_dbase, 
+      rates_dbase = rates_dbase_, 
       full_summary = TRUE)
     
     return(fish_belt_)
