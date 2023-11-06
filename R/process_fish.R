@@ -21,9 +21,9 @@
 #'fish_belt <- process_fish(data_spc = fish_data_spc, 
 #'dbase_type = "Kindinger", data_belt = fish_data_belt, subset_distance_m = 2000)
 
-process_fish <- function(data_spc,
+process_fish <- function(data_spc_ = data_spc,
                          dbase_type = c("Kindinger", "IPRB"),
-                         data_belt,
+                         data_belt_ = data_belt,
                          subset_distance_m) {
   
   if(dbase_type == "Kindinger") {
