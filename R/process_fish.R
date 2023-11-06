@@ -70,7 +70,7 @@ process_fish <- function(spc_data= data_spc,
   }
   
   # If missing SPC data then...
-  if(missing(spc_data)) {
+  else {
     
     fish_belt_ <- calc_fish_belt(
       data = data_belt, 
