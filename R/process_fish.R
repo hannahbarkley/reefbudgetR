@@ -36,12 +36,12 @@ process_fish <- function(spc_data= data_spc,
   if(!missing(spc_data)){
   
     fish_fixed_spc <- calc_fish_fixed_spc(
-                        data = data_spc, 
+                        data = spc_data, 
                         rates_dbase = rates_dbase)
     
     
     fish_strs_spc_ <- calc_fish_strs_spc(
-                      data = data_spc, 
+                      data = spc_data, 
                       rates_dbase = rates_dbase,
                       subset_distance_m)
     fish_strs_spc <- fish_strs_spc_$calc_strs_ero
@@ -50,7 +50,7 @@ process_fish <- function(spc_data= data_spc,
     if (!missing(belt_data)) {
       
       fish_belt_ <- calc_fish_belt(
-                    data = data_belt, 
+                    data = belt_data, 
                     rates_dbase = rates_dbase, 
                     full_summary = TRUE)
       
@@ -73,7 +73,7 @@ process_fish <- function(spc_data= data_spc,
   else {
     
     fish_belt_ <- calc_fish_belt(
-      data = data_belt, 
+      data = belt_data, 
       rates_dbase = rates_dbase, 
       full_summary = TRUE)
     
