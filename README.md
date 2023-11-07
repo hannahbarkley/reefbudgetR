@@ -95,7 +95,7 @@ prod_sfm <- process_prod(
 )
 
 # Combine site-level production data
-prod_site <- bind_rows(
+prod_site <- dplyr::bind_rows(
   prod_iprb$summary_site,
   prod_chords$summary_site,
   prod_sfm$summary_site
@@ -124,9 +124,9 @@ urch_sfm <- process_urchins(
 )
 
 # Combine site-level urchin erosion data
-urch_site <- bind_rows(urch_iprb$site_erosion,
-                       urch_chords$site_erosion,
-                       urch_sfm$site_erosion)
+urch_site <- dplyr::bind_rows(urch_iprb$site_erosion,
+                              urch_chords$site_erosion,
+                              urch_sfm$site_erosion)
 ```
 
 Process fish data by method type:
@@ -185,5 +185,5 @@ net_site_prop <- process_net(
 net_site_prop$METHOD <- "NCRMP-proposed"
 
 # Combine net production data
-net_site <- bind_rows(net_site_iprb, net_site_int, net_site_lev, net_site_prop)
+net_site <- dplyr::bind_rows(net_site_iprb, net_site_int, net_site_lev, net_site_prop)
 ```
