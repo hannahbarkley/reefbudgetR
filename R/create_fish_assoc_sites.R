@@ -109,9 +109,9 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
     Fish_OCC_pts <- rbind(Fish_OCC_pts,OUT) 
     
     out <- Fish_OCC_pts %>% 
-                      rename(OCCSITE = Var1,
-                             REASITE = Var2,
-                             DISTANCE_m = Freq)
+                      dplyr::rename(OCCSITE = Var1,
+                                    REASITE = Var2,
+                                    DISTANCE_m = Freq)
   }
   
   
@@ -166,10 +166,17 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
               mutate(value = case_when(value == 0 & HABITAT_CODE.x == HABITAT_CODE.y ~ -1, #assign all associated fish SPC sites that do not match the habitat type of their respective fixed SPC/OCC site to 0
                                        TRUE ~ value)) %>%
               dplyr::select(-HABITAT_CODE.y) %>%
-              rename(HABITAT_CODE = HABITAT_CODE.x)
+              dplyr::rename(HABITAT_CODE = HABITAT_CODE.x)
 
   # number of associated sites with each fixed SPC/OCC site
-  strs_samplesize <- finaldf %>% group_by(ASSOC_OCCSITEID, value) %>% count() %>% spread(value, n) %>% rename(Associated = `-1`) %>% rename(Not_Associated = `0`) %>% rename(Fixed = `1`)
+  strs_samplesize <- finaldf %>% 
+                      dplyr::select(ASSOC_OCCSITEID, HABITAT_CODE, value) %>%
+                      group_by(ASSOC_OCCSITEID, value) %>% 
+                      count() %>% 
+                      spread(value, freq) %>% 
+                      dplyr::rename(Associated = `-1`) %>% 
+                      dplyr::rename(Not_Associated = `0`) %>% 
+                      dplyr::rename(Fixed = `1`)
 
   
   return(list(output = finaldf, surveysamplesize = strs_samplesize))
