@@ -117,7 +117,7 @@ calc_fish_strs_spc <- function(data,
       }
       
       calc_strs_spc_erosion2 <- calc_strs_spc_erosion %>%
-        select(-SITEVISITID) %>%
+        dplyr::select(-SITEVISITID) %>%
         complete(REA_SITEID, METRIC, calc, FXN_GRP,
                  fill = list(value = 0)
         ) %>%

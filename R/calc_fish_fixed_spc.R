@@ -35,7 +35,7 @@ calc_fish_fixed_spc <- function(data,
       group_by(SITEVISITID) %>% 
       mutate(TRANSECT = match(REPLICATEID, unique(REPLICATEID))) %>%
       gather("METRIC", "VALUE", -c(SITEVISITID:FXN_GRP, TRANSECT)) %>% #set up data frame by spreading by transects (or the former REPLICATEID)
-      select(-REPLICATEID) %>%
+      dplyr::select(-REPLICATEID) %>%
       spread(TRANSECT, VALUE) %>%
       mutate_at(vars(`1`, `2`), as.numeric) %>%
       # Average replicates (n=2)
@@ -47,7 +47,7 @@ calc_fish_fixed_spc <- function(data,
       dplyr::mutate(SE = SD / sqrt(2)) %>% #2 is the number of total Transects
       dplyr::mutate(L95 = MEAN - (SE * 1.97)) %>%
       dplyr::mutate(U95 = MEAN + (SE * 1.97)) %>%
-      select(-c(`1`:`2`)) %>% #remove unnecessary columns
+      dplyr::select(-c(`1`:`2`)) %>% #remove unnecessary columns
       ungroup(.) %>%
       dplyr::mutate(L95 = case_when(L95 < 0 ~ 0,
                                     TRUE ~ as.numeric(L95)))
@@ -60,11 +60,11 @@ calc_fish_fixed_spc <- function(data,
       
       # Format dataframe to match BELT FINAL BIOEROSION OUTPUT
       gather(., "calc", "value", -c(SITEVISITID:METRIC)) %>%
-      select(-COMMONFAMILYALL, -REP) %>% #remove n and REP
+      dplyr::select(-COMMONFAMILYALL, -REP) %>% #remove n and REP
       mutate(METRIC = case_when(METRIC == "SUM_BIOMASS_PER_FISH_KG_HECTARE" ~ "FISH_BIOMASS_KG_HA",
                                 METRIC == "SUM_DENSITY_PER_FISH_HECTARE" ~ "FISH_DENSITY_ABUNDANCE_HA",
                                 METRIC == "SUM_EROSION_PER_FISH_KG_M2_YR" ~ "FISH_EROSION_KG_M2_YR")) %>%
-      select(-SITEVISITID)
+      dplyr::select(-SITEVISITID)
       
     
     # pause here to complete FXN_GRP column if values are missing
@@ -96,17 +96,17 @@ calc_fish_fixed_spc <- function(data,
       unite("METRIC", METRIC,FXN_GRP) %>% 
       unite("METRIC", METRIC:calc) %>%
       # fill in missing metadata info
-      left_join(., data %>% select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE, CB_METHOD), by = "REA_SITEID") %>% #join important metadata that was lost during averaging replicates
+      left_join(., data %>% dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE, CB_METHOD), by = "REA_SITEID") %>% #join important metadata that was lost during averaging replicates
       distinct(.) %>% #left_join creates duplicates, so remove duplicates
       mutate(LATITUDE = round(LATITUDE, 5)) %>%
       mutate(LONGITUDE = round(LONGITUDE, 5)) %>%
       #mutate(REGIONCODE = sites_associated_dbase$REGIONCODE[1],
       #       LOCATIONCODE = str_extract(REA_SITEID, "(\\w+)")) %>%
       #add OCC_SITEID column
-      left_join(., data %>% select(REA_SITEID, OCC_SITEID, OCC_SITENAME), by = "REA_SITEID") %>%
+      left_join(., data %>% dplyr::select(REA_SITEID, OCC_SITEID, OCC_SITENAME), by = "REA_SITEID") %>%
       distinct(.) %>%
       spread(., METRIC, value, fill = 0) %>%
-      select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.), -REA_SITEID)
+      dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.), -REA_SITEID)
     
     
     summary_fixed_spc_erosion <- format_fixed_spc_erosion3 %>%
