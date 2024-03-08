@@ -26,36 +26,43 @@
 create_fish_assoc_sites <- function(data, subset_distance_m){
   
   # Download shapefile from GSHHG to users Downloads folder---------------------------------------------------
-  data_path <- paste0("C:/Users/", Sys.info()[7], "/Downloads") # can use stringr::str_extract(getwd(), "^.{3}") before "/Users/" if you need to paste working directory letter.
-  
-  if (!file.exists(paste(data_path, "gshhg-bin-2.3.7", sep = "/"))) {
+  if(unique(data$REGION) == "American Samoa") {
+    load("islands_shp.Rdata") #loaded as shape_file
+    } else{
+      
+    data_path <- paste0("C:/Users/", Sys.info()[7], "/Downloads") # can use stringr::str_extract(getwd(), "^.{3}") before "/Users/" if you need to paste working directory letter.
     
-    op <- getOption("timeout")
-    options(timeout = max(600, getOption("timeout")))
+    if (!file.exists(paste(data_path, "gshhg-bin-2.3.7", sep = "/"))) {
+      
+      op <- getOption("timeout")
+      options(timeout = max(600, getOption("timeout")))
+      
+      tmp <- tempfile(fileext = ".zip")
+      
+      download.file(
+        "https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhg/latest/gshhg-shp-2.3.7.zip",
+        tmp
+      )
+      
+      unzip(tmp, 
+            exdir = paste(data_path, 
+                          "gshhg-bin-2.3.7", 
+                          sep = "/"))
+      unlink(tmp)
+      
+      options(timeout = op)
+      
+    }
     
-    tmp <- tempfile(fileext = ".zip")
-    
-    download.file(
-      "https://www.ngdc.noaa.gov/mgg/shorelines/data/gshhg/latest/gshhg-shp-2.3.7.zip",
-      tmp
-    )
-    
-    unzip(tmp, 
-          exdir = paste(data_path, 
-                        "gshhg-bin-2.3.7", 
-                        sep = "/"))
-    unlink(tmp)
-    
-    options(timeout = op)
-    
+    shape_file <- paste(data_path, "gshhg-bin-2.3.7/GSHHS_shp/f/GSHHS_f_L1.shp", sep = "/")
+    shape_file <- st_read(shape_file)
   }
   
-  shape_file <- paste(data_path, "gshhg-bin-2.3.7/GSHHS_shp/f/GSHHS_f_L1.shp", sep = "/")
-  
+
   # Format data and shapefiles--------------------------------------------------------------------------
   # Format Shapefiles 
   sf_use_s2(FALSE)
-  ALLisl_poly=st_read(shape_file) %>% st_make_valid() # could take a couple minutes
+  ALLisl_poly=shape_file %>% st_make_valid() # could take a couple minutes; st_make_valid() is necessary to catch any errors in points
   
   
   # Filter spc fixed site, aka occ fixed site, data only
@@ -72,30 +79,34 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   
   
   # Reformat spc and field and fixed site dataframes into simple features point format
-  ptsOCC=st_as_sf(ptsOCC,coords=c("LONGITUDE","LATITUDE"),crs=crs(ALLisl_poly))
-  ptsFISH=st_as_sf(ptsFISH,coords=c("LONGITUDE","LATITUDE"),crs=crs(ALLisl_poly))
+  ptsOCC=st_as_sf(ptsOCC,coords=c("LONGITUDE","LATITUDE"),crs=st_crs(ALLisl_poly))
+  ptsFISH=st_as_sf(ptsFISH,coords=c("LONGITUDE","LATITUDE"),crs=st_crs(ALLisl_poly))
   
-  
+
   
   
   # Create distance matrix from each fixed target OCC point to every fish SPC survey -------------------
   
-  uLC=unique(data$LOCATIONCODE) # create vector of unique islands where data was collected from
+  uLC=unique(ptsOCC$LOCATIONCODE) # create vector of unique islands where data was collected from
   Fish_OCC_pts=NULL #create empty vector/df
   
   #Loop Through each island's survey sites and create shortest distances "as a fish swims"
   for(i_isl in 1:length(uLC)){
-    #i_isl=1 
+    #i_isl=1
     thisisl=uLC[i_isl] # for each island...
     ptsFISH_ISL=ptsFISH %>% filter(LOCATIONCODE==uLC[i_isl]) # ...filter data by island
     ptsOCC_ISL=ptsOCC %>% filter(LOCATIONCODE==uLC[i_isl]) # ...filter data by island
-    
-    
+  
     #clip shape file to rasterize
-    pts_ext=ext(rbind(ptsFISH_ISL,ptsOCC_ISL))*1.5 
+    pts_ext=terra::ext(rbind(ptsFISH_ISL,ptsOCC_ISL))*1.5 # 1.5 is to zoom out of the spatial extent...can adjust to zoom out more or less
     options(warn = 1)
     poly_ISL=st_crop(x = ALLisl_poly,y = st_bbox(pts_ext))
-    options(warn = 2)
+    options(warn = 0) # more conservative
+    
+    # if need to change projection of coordinates...AMSM is UTM2
+    # ptsOCC_ISL_utm <- st_transform(ptsOCC_ISL, crs = 32702) # 32702 UTMZone2 code OR sprintf("+proj=utm +zone=2 +south +datum=WGS84 units=km")
+    # ptsFISH_ISL_utm <- st_transform(ptsFISH_ISL, crs = 32702)
+    # poly_ISL_utm <- st_transform(poly_ISL, crs = 32702)
     
     par(mfrow = c(1,1)) #par(mfrow = c(2, length(ptsOCC_ISL$OCC_SITEID)/2))
     
@@ -103,7 +114,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
                                 pointsFISH = ptsFISH_ISL,
                                 island_poly = poly_ISL,
                                 resolution_m = 50)
-    
+  
     OUT <- as.data.frame(as.table(D))
     
     Fish_OCC_pts <- rbind(Fish_OCC_pts,OUT) 
@@ -173,7 +184,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
                       dplyr::select(ASSOC_OCCSITEID, HABITAT_CODE, value) %>%
                       group_by(ASSOC_OCCSITEID, value) %>% 
                       count() %>% 
-                      spread(value, freq) %>% 
+                      spread(value, n) %>% 
                       dplyr::rename(Associated = `-1`) %>% 
                       dplyr::rename(Not_Associated = `0`) %>% 
                       dplyr::rename(Fixed = `1`)
