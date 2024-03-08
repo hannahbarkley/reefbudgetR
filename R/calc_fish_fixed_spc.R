@@ -96,7 +96,7 @@ calc_fish_fixed_spc <- function(data,
       unite("METRIC", METRIC,FXN_GRP) %>% 
       unite("METRIC", METRIC:calc) %>%
       # fill in missing metadata info
-      left_join(., data %>% dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE, CB_METHOD), by = "REA_SITEID") %>% #join important metadata that was lost during averaging replicates
+      left_join(., data %>% dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE, CB_METHOD), by = "REA_SITEID", relationship = "many-to-many") %>% #join important metadata that was lost during averaging replicates
       distinct(.) %>% #left_join creates duplicates, so remove duplicates
       mutate(LATITUDE = round(LATITUDE, 5)) %>%
       mutate(LONGITUDE = round(LONGITUDE, 5)) %>%

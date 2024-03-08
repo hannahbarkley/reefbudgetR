@@ -49,7 +49,7 @@ summarize_fish_erosion <- function(species_table,
   # Final bioerosion calculations per transect
   fish_erosion_transect_wide <- species_table %>%
     # Re-order so Grazing Type comes first in column orders
-    select(FXN_GRP, everything()) %>%
+    dplyr::select(FXN_GRP, everything()) %>%
     # Collapse dataframe to be workable with group_by()
     gather(
       .,
@@ -77,7 +77,7 @@ summarize_fish_erosion <- function(species_table,
     # Spread back out by Transect to look like CP Excel outputs
     spread(., TRANSECT, .sum, fill = NA) %>%
     # reorder Transect 10 to the end
-        select(-c("TRANSECT_10"), everything()) %>%
+        dplyr::select(-c("TRANSECT_10"), everything()) %>%
     #exclude "other" if only want to look at excavators and scrapers
     # that contribute to bioerosion
     #filter(!GRAZ_TYPE %in% "Other") %>%
@@ -111,7 +111,7 @@ summarize_fish_erosion <- function(species_table,
                  cols = 13:22,
                  names_to = "TRANSECT",
                  values_to = "Values") %>%
-    select(
+    dplyr::select(
       REGION,
       REGIONCODE,
       CRUISE_ID,
@@ -137,7 +137,7 @@ summarize_fish_erosion <- function(species_table,
 
   # final bioerosion calculations per site and metric
   fish_erosion_site_long <- fish_erosion_transect_wide %>%
-    select(
+    dplyr::select(
       REGION,
       REGIONCODE,
       CRUISE_ID,
@@ -157,14 +157,14 @@ summarize_fish_erosion <- function(species_table,
     dplyr::mutate(SE = SD / sqrt(10)) %>% #10 is the number of total Transects
     dplyr::mutate(L95 = MEAN - (SE * 1.97)) %>%
     dplyr::mutate(U95 = MEAN + (SE * 1.97)) %>%
-    select(-c(TRANSECT_1:TRANSECT_10)) #remove unnecessary columns
+    dplyr::select(-c(TRANSECT_1:TRANSECT_10)) #remove unnecessary columns
 
   fish_erosion_site_long$L95[fish_erosion_site_long$L95 < 0] <-
     0
 
   # format output dataframe for NCEI
   fish_erosion_site <- fish_erosion_site_long %>%
-    select(
+    dplyr::select(
       REGION,
       REGIONCODE,
       CRUISE_ID,

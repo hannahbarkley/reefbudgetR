@@ -39,7 +39,7 @@ format_fish_spc <- function(data,
                                   SIZE_ >= 31 & SIZE_ <= 40 ~ "31-40cm",
                                   SIZE_ >= 41 & SIZE_ <= 50 ~ "41-50cm",
                                   SIZE_ >= 51 & SIZE_ <= 60 ~ "51-60cm")) %>% 
-    left_join(., rates_dbase %>% dplyr::select(-PHASE), by = c("TAXON_NAME", "SIZE_CLASS")) %>% # join Tye's bioerosion metrics or bioerosion calculation to follow
+    left_join(., rates_dbase %>% dplyr::select(-PHASE), by = c("TAXON_NAME", "SIZE_CLASS"), relationship = "many-to-many") %>% # join Tye's bioerosion metrics or bioerosion calculation to follow
     distinct(.) %>%
     mutate(EROSION_PER_FISH_KG_M2_YR = (COUNT * EROSION_RATE)/AREA_M2) %>% # calculate bioerosion in kg/m^2/yr
     mutate_at(.vars = "EROSION_PER_FISH_KG_M2_YR", funs(ifelse(EROSION_PER_FISH_KG_M2_YR <= 0, 0, .)))  %>% # change all negative bioerosion values to zero...can use this to change multiple columns to zero based on a single column
@@ -66,7 +66,7 @@ format_fish_spc <- function(data,
                                                                    SUM_EROSION_PER_FISH_KG_M2_YR = 0)) %>% #...I can complete (fill in missing) SPECIES codes for each REPLICATEID. So we're adding back zeros and this is important becuase of the mean calculations we're about to do.
     dplyr::select(-SITEVISITID, -REA_SITEID, -REP) %>% # remove columns with NA and will join them back in next step
     mutate_at(vars(REPLICATEID), as.integer) %>% # make structure of REPLICATEID the same again for the sake of the join
-    left_join(., data %>% dplyr::select(SITEVISITID, REA_SITEID, REP, REPLICATEID), by = "REPLICATEID") %>% # join the three columns that produced NAs with function complete
+    left_join(., data %>% dplyr::select(SITEVISITID, REA_SITEID, REP, REPLICATEID), by = "REPLICATEID", relationship = "many-to-many") %>% # join the three columns that produced NAs with function complete
     distinct(.) %>% # remove duplicate rows
     dplyr::select(SITEVISITID, REA_SITEID, REP, everything(.)) %>% # re-order columns for visual effects
     mutate(FXN_GRP = case_when(FXN_GRP == "Other" ~ "OTHER",

@@ -77,7 +77,7 @@ calc_fish_strs_spc <- function(data,
       dplyr::left_join(., format_strs_spc_erosion %>% 
                   dplyr::group_by(ASSOC_OCCSITEID) %>%
                   dplyr::summarise(n = dplyr::n_distinct(TRANSECT)), 
-                by = "ASSOC_OCCSITEID") %>%      
+                by = "ASSOC_OCCSITEID", relationship = "many-to-many") %>%      
       tidyr::spread(TRANSECT, MEAN) %>%
       dplyr::mutate_at(dplyr::vars(n:length(.)), as.numeric) %>%
       dplyr::ungroup(.) %>%
@@ -156,7 +156,7 @@ calc_fish_strs_spc <- function(data,
       tidyr::unite("METRIC", METRIC, calc) %>%
       # fill in missing metadata info
       dplyr::left_join(., data %>% dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, LATITUDE, LONGITUDE, CB_METHOD), 
-                       by = c("ASSOC_OCCSITEID" = "OCC_SITEID")) %>% #join important metadata that was lost during averaging replicates
+                       by = c("ASSOC_OCCSITEID" = "OCC_SITEID"), relationship = "many-to-many") %>% #join important metadata that was lost during averaging replicates
       dplyr::distinct(.) %>% #left_join creates duplicates, so remove duplicates
       dplyr::mutate(LATITUDE = round(LATITUDE, 5)) %>%
       dplyr::mutate(LONGITUDE = round(LONGITUDE, 5)) %>%
@@ -167,7 +167,7 @@ calc_fish_strs_spc <- function(data,
       # mutate(REGIONCODE = loc,
       #        LOCATIONCODE = str_sub(ASSOC_OCCSITE, 5,7)) %>%
       dplyr::rename(OCC_SITEID = ASSOC_OCCSITEID) %>%
-      dplyr::left_join(., data %>% dplyr::select(OCC_SITEID, OCC_SITENAME), by = "OCC_SITEID") %>%
+      dplyr::left_join(., data %>% dplyr::select(OCC_SITEID, OCC_SITENAME), by = "OCC_SITEID", relationship = "many-to-many") %>%
       dplyr::distinct(.) %>%
       dplyr::mutate(CB_METHOD = "StRS SPC") %>%
       tidyr::spread(., METRIC, value, fill = "0") %>%

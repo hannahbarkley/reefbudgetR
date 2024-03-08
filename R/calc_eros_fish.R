@@ -35,7 +35,7 @@ calc_eros_fish <- function(data, rates_dbase) {
       "SIZE_BIN_0_10_CM":"SIZE_BIN_51_60_CM"
     )), as.numeric) %>%
     # select only the important columns
-    select(REGION:TRANSECT,
+    dplyr::select(REGION:TRANSECT,
            TAXON_CODE:PHASE) %>%
     #column names to row values
     gather(.,
@@ -77,7 +77,7 @@ calc_eros_fish <- function(data, rates_dbase) {
   fish_biomass <- data_formatted %>%
     dplyr::rename(SPECIES = TAXON_CODE) %>%
     #join L-W relationship constants with data to do Biomass Calculations
-    left_join(., fish_species_dbase, by = "SPECIES") %>%
+    left_join(., fish_species_dbase, by = "SPECIES", relationship = "many-to-many") %>%
     # add column with average size of bin to be length of SIZE_CLASS
     mutate(
       length = case_when(
@@ -96,13 +96,13 @@ calc_eros_fish <- function(data, rates_dbase) {
                                           LW_B)) %>%
     # calculate biomass for all fish per row and converted g to kg by /1000
     mutate(BIOMASS_PER_FISH_KG = (COUNT * BIOMASS_PER_FISH_G) / 1000) %>%
-    select(REGION:SIZE_CLASS, BIOMASS_PER_FISH_KG)
+    dplyr::select(REGION:SIZE_CLASS, BIOMASS_PER_FISH_KG)
   
   
   
   fish_bioerosion <- data_formatted %>%
     #combine COUNT data and equations to determine bioerosion rates
-    left_join(., rates_dbase_formatted, by = c("TAXON_NAME", "SIZE_CLASS", "PHASE")) %>%
+    left_join(., rates_dbase_formatted, by = c("TAXON_NAME", "SIZE_CLASS", "PHASE"), relationship = "many-to-many") %>%
     # clean up
     mutate(FXN_GRP = case_when((TAXON_CODE == "PARR" & SIZE_CLASS != "SIZE_BIN_0_10_CM") ~ "Scraper",
                                SIZE_CLASS == "SIZE_BIN_0_10_CM" ~ "Browser",
@@ -116,7 +116,7 @@ calc_eros_fish <- function(data, rates_dbase) {
     # calculate bioerosion value by multiplying COUNT value with bioerosion value
     # happens in summarize_fish_metrics.R script
     mutate(FISH_EROSION_KG_M2_YR = COUNT * EROSION_RATE) %>% 
-    select(REGION:TAXON_CODE, FXN_GRP, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
+    dplyr::select(REGION:TAXON_CODE, FXN_GRP, PHASE, SIZE_CLASS, FISH_EROSION_KG_M2_YR) %>%
     #change all negative bioerosion values to zero...can use this to change
     # multiple columns to zero based on a single column
     mutate_at(.vars = "FISH_EROSION_KG_M2_YR",
@@ -126,12 +126,12 @@ calc_eros_fish <- function(data, rates_dbase) {
     left_join(
       data_formatted,
       fish_biomass,
-      by = colnames(data_formatted)[colnames(data_formatted) %in% colnames(fish_biomass)]
+      by = colnames(data_formatted)[colnames(data_formatted) %in% colnames(fish_biomass)], relationship = "many-to-many"
     ) %>%
     left_join(
       .,
       fish_bioerosion,
-      by = colnames(data_formatted)[colnames(data_formatted) %in% colnames(fish_bioerosion)]
+      by = colnames(data_formatted)[colnames(data_formatted) %in% colnames(fish_bioerosion)], relationship = "many-to-many"
     ) %>%
     mutate(BIOMASS_PER_FISH_KG = replace_na(BIOMASS_PER_FISH_KG, 0)) %>%
     mutate(FISH_EROSION_KG_M2_YR = replace_na(FISH_EROSION_KG_M2_YR, 0))

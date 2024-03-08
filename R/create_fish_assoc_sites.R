@@ -147,7 +147,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
     
   # filter all fixed SPC/OCC sites within distance chosen (i.e. 1500m) of each fish SPC site
   for (i in 1:nrow(finaldf)) {
-    sub.i <- left_join(finaldf[i,], subset_by_dist %>% filter(value != 0), by = c("REA_SITEID" = "REASITE"))
+    sub.i <- left_join(finaldf[i,], subset_by_dist %>% filter(value != 0), by = c("REA_SITEID" = "REASITE"), relationship = "many-to-many")
     
     finaldf$ASSOC_OCCSITEID[i] =  ifelse(nrow(sub.i) == 0, NA, paste0(sub.i$OCCSITE, collapse=", ")) # paste multiple OCC_SITEID buffers for each point into one cell value separated by ","
   
@@ -173,7 +173,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   # subset associated OCCSITEID to include only fish REA SPC sites that match the habitat types of their respective fixed SPC/OCC site
   fixedhab <- finaldf %>% dplyr::select(OCC_SITEID, HABITAT_CODE) %>% distinct() %>% filter(OCC_SITEID != "")
 
-  output <- left_join(finaldf, fixedhab, by = c("ASSOC_OCCSITEID" = "OCC_SITEID")) %>%
+  output <- left_join(finaldf, fixedhab, by = c("ASSOC_OCCSITEID" = "OCC_SITEID"), relationship = "many-to-many") %>%
               mutate(value = case_when(value == 0 & HABITAT_CODE.x == HABITAT_CODE.y ~ -1, #assign all associated fish SPC sites that do not match the habitat type of their respective fixed SPC/OCC site to 0
                                        TRUE ~ value)) %>%
               dplyr::select(-HABITAT_CODE.y) %>%
