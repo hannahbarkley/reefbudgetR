@@ -33,6 +33,9 @@ The Department of Commerce seal and logo, or the seal and logo of a DOC
 bureau, shall not be used in any manner to imply endorsement of any
 commercial product or activity by DOC or the United States Government.
 
+References:
+Perry CT, Lange I, Januchowski-Hartley FA (2018) ReefBudget Indo Pacific: online resource and methodology. Retrieved from http://geography.exeter.ac.uk/reefbudget/
+
 ## Installation
 
 You can install the development version of Pacific NCRMP reefbudgetR from
