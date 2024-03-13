@@ -14,7 +14,7 @@ production and erosion rates. Package tools and processes are translated to R ba
 For additional information on data analyses and methodological
 approaches, see [Barkley et al. (2023)](https://repository.library.noaa.gov/view/noaa/56372).
 
-For additional information on ReefBudget, see [Perry et al. (2018)][http://geography.exeter.ac.uk/reefbudget/].
+For additional information on ReefBudget, see [Perry et al. (2018)](http://geography.exeter.ac.uk/reefbudget/).
 
 For additional metadata and downloadable data, see [NOAA InPort] (https://www.fisheries.noaa.gov/inport/item/67804). 
 .
