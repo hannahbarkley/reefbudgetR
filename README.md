@@ -12,12 +12,12 @@ benthic, urchin, and parrotfish census data and calculate carbonate
 production and erosion rates. Package tools and processes are translated to R based on Indo-Pacific ReefBudget methdology and materials (Perry et al. 2018) and modified for use with Pacific NCRMP data.
 
 For additional information on data analyses and methodological
-approaches. see Barkley et al. (2023): https://repository.library.noaa.gov/view/noaa/56372.
+approaches, see Barkley et al. (2023).
+
+For additional information on ReefBudget, see Perry et al. (2018).
 
 For additional metadata and downloadable data, see:
 <https://www.fisheries.noaa.gov/inport/item/67804>.
-
-For additional information on ReefBudget, see: https://www.exeter.ac.uk/research/projects/geography/reefbudget/
 
 This repository is a scientific product and is not official
 communication of the National Oceanic and Atmospheric Administration, or
