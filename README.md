@@ -16,7 +16,7 @@ approaches, see [Barkley et al. (2023)](https://repository.library.noaa.gov/view
 
 For additional information on ReefBudget, see [Perry et al. (2018)](http://geography.exeter.ac.uk/reefbudget/).
 
-For additional metadata and downloadable data, see [NOAA InPort] (https://www.fisheries.noaa.gov/inport/item/67804). 
+For additional metadata and downloadable data, see [NOAA InPort](https://www.fisheries.noaa.gov/inport/item/67804). 
 .
 
 This repository is a scientific product and is not official
