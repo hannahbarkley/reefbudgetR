@@ -7,7 +7,7 @@
 process_urchins(
   data,
   transect_length = NULL,
-  method_name = c("IPRB", "Chords", "SfM"),
+  method_name = NULL,
   full_summary = TRUE
 )
 }
