@@ -27,7 +27,7 @@
 
 process_urchins <- function(data,
                             transect_length = NULL,
-                            method_name = c("IPRB", "Chords", "SfM"),
+                            method_name = NULL,
                             full_summary = TRUE) {
   options(dplyr.summarise.inform = FALSE)
 
@@ -44,6 +44,9 @@ process_urchins <- function(data,
     filter(is.na(TAXON_CODE) == FALSE) %>%
     pivot_longer(
       cols = !c(
+        "SITEVISITID",
+        "TRANSECTID",
+        "CBURCHINID",
         "REGION",
         "REGIONCODE",
         "YEAR",
@@ -51,12 +54,10 @@ process_urchins <- function(data,
         "LOCATION",
         "LOCATIONCODE",
         "OCC_SITEID",
-        "OCC_SITENAME",
         "LATITUDE",
         "LONGITUDE",
         "DEPTH_M",
         "LOCALDATE",
-        "CB_METHOD",
         "CB_TRANSECTID",
         "OCC_SITEID_TRANSECT",
         "TRANSECT_LENGTH_M",
@@ -87,7 +88,9 @@ process_urchins <- function(data,
     "TEST_SIZE_BIN_81_100_MM",
     "TEST_SIZE_BIN_101_120_MM",
     "TEST_SIZE_BIN_121_140_MM",
-    "TEST_SIZE_BIN_141_160_MM"
+    "TEST_SIZE_BIN_141_160_MM",
+    "TEST_SIZE_BIN_161_180_MM",
+    "TEST_SIZE_BIN_181_200_MM"
   )
 
   full_table <- expand.grid(
@@ -121,31 +124,27 @@ process_urchins <- function(data,
         "LOCATION",
         "LOCATIONCODE",
         "OCC_SITEID",
-        "OCC_SITENAME",
         "LATITUDE",
         "LONGITUDE",
         "DEPTH_M",
-        "CB_METHOD",
         "TRANSECT_LENGTH_M"
       ),
       .direction = "downup"
-    ) %>% group_by(OCC_SITEID, CB_METHOD) %>%
+    ) %>% group_by(OCC_SITEID) %>%
     fill(c("LOCALDATE"),
          .direction = "downup")
 
   for (i in 1:nrow(data_full)){
-    if (is.na(data_full$OCC_SITENAME[i]) == TRUE){
+    if (is.na(data_full$LOCATIONCODE[i]) == TRUE){
       data_full$REGION[i] <- data$REGION[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$REGIONCODE[i] <- data$REGIONCODE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$YEAR[i] <- data$YEAR[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$CRUISE_ID[i] <- data$CRUISE_ID[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LOCATION[i] <- data$LOCATION[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LOCATIONCODE[i] <- data$LOCATIONCODE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
-      data_full$OCC_SITENAME[i] <- data$OCC_SITENAME[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LATITUDE[i] <- data$LATITUDE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LONGITUDE[i] <- data$LONGITUDE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$DEPTH_M[i] <- data$DEPTH_M[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
-      data_full$CB_METHOD[i] <- data$CB_METHOD[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$TRANSECT_LENGTH_M[i] <- data$TRANSECT_LENGTH_M[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LOCALDATE[i] <- data$LOCALDATE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
 
@@ -196,7 +195,9 @@ process_urchins <- function(data,
       "TEST_SIZE_BIN_81_100_MM",
       "TEST_SIZE_BIN_101_120_MM",
       "TEST_SIZE_BIN_121_140_MM",
-      "TEST_SIZE_BIN_141_160_MM"
+      "TEST_SIZE_BIN_141_160_MM",
+      "TEST_SIZE_BIN_161_180_MM",
+      "TEST_SIZE_BIN_181_200_MM"
     )
   )
 
@@ -210,12 +211,10 @@ process_urchins <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
       DEPTH_M,
       LOCALDATE,
-      CB_METHOD,
       CB_TRANSECTID,
       TAXON_CODE,
       TAXON_NAME,
@@ -237,12 +236,10 @@ process_urchins <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
       DEPTH_M,
       LOCALDATE,
-      CB_METHOD,
       TAXON_CODE,
       TAXON_NAME,
       TEST_SIZE_BIN_MM,
@@ -278,6 +275,10 @@ process_urchins <- function(data,
     110
   transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_141_160_MM"] <-
     110
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_161_180_MM"] <-
+    110
+  transect_density_taxon$TEST_SIZE_MEDIAN_MM[transect_density_taxon$TEST_SIZE_BIN_MM == "TEST_SIZE_BIN_181_200_MM"] <-
+    110
 
   # Calculate group-specific erosion rate
   for (i in sjmisc::seq_row(transect_density_taxon)) {
@@ -311,12 +312,10 @@ process_urchins <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
       DEPTH_M,
       LOCALDATE,
-      CB_METHOD,
       CB_TRANSECTID,
       TRANSECT_LENGTH_M
     ) %>%
@@ -339,12 +338,10 @@ process_urchins <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
       DEPTH_M,
       LOCALDATE,
-      CB_METHOD,
       CB_TRANSECTID,
       TAXON_CODE,
       TAXON_NAME,
@@ -364,12 +361,10 @@ process_urchins <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
       DEPTH_M,
-      LOCALDATE,
-      CB_METHOD
+      LOCALDATE
     ) %>%
     summarize(
       URCHIN_EROSION_KG_M2_YR_MEAN = mean(URCHIN_EROSION_KG_M2_YR, na.rm = TRUE),
@@ -402,12 +397,10 @@ process_urchins <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
       DEPTH_M,
       LOCALDATE,
-      CB_METHOD,
       TAXON_CODE,
       TAXON_NAME
     ) %>%
@@ -432,7 +425,7 @@ process_urchins <- function(data,
         length(URCHIN_DENSITY_NO_M2),
       URCHIN_ABUNDANCE_NO = sum(URCHIN_ABUNDANCE_NO)
     )
-
+  
   data <- data[c(
     "REGION",
     "REGIONCODE",
@@ -441,12 +434,10 @@ process_urchins <- function(data,
     "LOCATION",
     "LOCATIONCODE",
     "OCC_SITEID",
-    "OCC_SITENAME",
     "LATITUDE",
     "LONGITUDE",
     "DEPTH_M",
     "LOCALDATE",
-    "CB_METHOD",
     "CB_TRANSECTID",
     "TRANSECT_LENGTH_M",
     "URCH_OBS_TF",
@@ -459,7 +450,9 @@ process_urchins <- function(data,
     "TEST_SIZE_BIN_81_100_MM",
     "TEST_SIZE_BIN_101_120_MM",
     "TEST_SIZE_BIN_121_140_MM",
-    "TEST_SIZE_BIN_141_160_MM"
+    "TEST_SIZE_BIN_141_160_MM",
+    "TEST_SIZE_BIN_161_180_MM",
+    "TEST_SIZE_BIN_181_200_MM"
   )]
 
 
