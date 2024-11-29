@@ -7,7 +7,7 @@
 <!-- badges: end -->
 
 This R package provides tools for working with ReefBudget carbonate
-budget data collected by NOAA's National Coral Reef Monitoring Program (NCRMP) in the U.S. Pacific Islands, with functions to process field-based and SfM-derived
+budget data collected by NOAA's National Coral Reef Monitoring Program (NCRMP) in the U.S. Pacific Islands, with functions to process
 benthic, urchin, and parrotfish census data and calculate carbonate
 production and erosion rates. Package tools and processes are translated to R based on Indo-Pacific ReefBudget methdology and materials (Perry et al. 2018) and modified for use with Pacific NCRMP data.
 
