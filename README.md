@@ -12,12 +12,12 @@ benthic, urchin, and parrotfish census data and calculate carbonate
 production and erosion rates. Package tools and processes are translated to R based on Indo-Pacific ReefBudget methdology and materials (Perry et al. 2018) and modified for use with Pacific NCRMP data.
 
 For additional information on data analyses and methodological
-approaches, see [Barkley et al. (2023)](https://repository.library.noaa.gov/view/noaa/56372).
+approaches, see [Barkley et al. (2023)](https://repository.library.noaa.gov/view/noaa/56372) and [Barkley et al. (2025)](https://link.springer.com/article/10.1007/s00338-025-02660-7).
 
 For additional information on ReefBudget, see [Perry et al. (2018)](http://geography.exeter.ac.uk/reefbudget/).
 
 For additional metadata and downloadable data, see [NOAA InPort](https://www.fisheries.noaa.gov/inport/item/67804). 
-.
+
 
 This repository is a scientific product and is not official
 communication of the National Oceanic and Atmospheric Administration, or
@@ -35,6 +35,7 @@ commercial product or activity by DOC or the United States Government.
 
 
 References:
+Barkley, HC, Halperin, AA, Torres-Pulliza, D et al. Estimating coral reef carbonate budgets using Structure-from-Motion photogrammetry. Coral Reefs (2025). https://doi.org/10.1007/s00338-025-02660-7
 
 Barkley HC, Weible RM, Halperin AA, Alagata CE, Kindinger TL, Torres-Pulliza D, Lamirand MS, Huntington BE, Couch CS, Amir CG, et al. 2023. Carbonate budget assessments in the U.S. Pacific Islands: report of methods comparison results and summary of standard operating procedures. U.S. Dept. of Commerce, NOAA Technical Memorandum NMFS-PIFSC-154, 7979 p. doi: 10.25923/g4hg-7686: https://repository.library.noaa.gov/view/noaa/56372.
 
