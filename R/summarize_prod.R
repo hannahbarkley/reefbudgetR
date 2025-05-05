@@ -95,10 +95,9 @@ summarize_prod <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_METHOD,
       CB_TRANSECTID,
@@ -148,7 +147,7 @@ summarize_prod <- function(data,
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
     SUBSTRATE_CODE_MORPHOLOGYCODE = substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE
   )
-
+  
   substrate_code_full_table$SUBSTRATE_CODE <- substrate_code_morphology_all$SUBSTRATE_CODE[
     match(substrate_code_full_table$SUBSTRATE_CODE_MORPHOLOGYCODE,
           substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE)]
@@ -161,6 +160,8 @@ summarize_prod <- function(data,
     paste(substrate_code_full_table$OCC_SITEID,
           substrate_code_full_table$CB_TRANSECTID,
           sep = "-")
+  
+   substrate_code_full_table <- substrate_code_full_table[substrate_code_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT ,]
 
   # Populate full table with transect-level data
   summary_transect_substratecode <-  merge(
@@ -204,10 +205,9 @@ summarize_prod <- function(data,
     "LOCATION",
     "LOCATIONCODE",
     "OCC_SITEID",
-    "OCC_SITENAME",
     "LATITUDE",
     "LONGITUDE",
-    "DEPTH_M",
+    "SITE_DEPTH_M",
     "LOCALDATE",
     "CB_METHOD",
     "CB_TRANSECTID",
@@ -242,10 +242,9 @@ summarize_prod <- function(data,
         "LOCATION",
         "LOCATIONCODE",
         "OCC_SITEID",
-        "OCC_SITENAME",
         "LATITUDE",
         "LONGITUDE",
-        "DEPTH_M",
+        "SITE_DEPTH_M",
         "LOCALDATE",
         "CB_METHOD",
         "TRANSECT_PLANAR_LENGTH_M",
@@ -253,10 +252,17 @@ summarize_prod <- function(data,
       ),
       .direction = 'downup'
     )
-
-  summary_transect_substratecode[, 23:30][is.na(summary_transect_substratecode[, 23:30])] <- 0
-
-
+  
+  summary_transect_substratecode[, c((which(
+    colnames(summary_transect_substratecode) == "SUBSTRATE_COVER_CM"
+  )):(which(
+    colnames(summary_transect_substratecode) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
+  )))][is.na(summary_transect_substratecode[, c((which(
+    colnames(summary_transect_substratecode) == "SUBSTRATE_COVER_CM"
+  )):(which(
+    colnames(summary_transect_substratecode) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
+  )))])] <- 0
+  
   # Summarize production by SUBSTRATE_CLASS at TRANSECT level  ---------------
   transect_substrateclass <- suppressMessages(
     data %>% dplyr::group_by(
@@ -267,10 +273,9 @@ summarize_prod <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_METHOD,
       CB_TRANSECTID,
@@ -318,11 +323,13 @@ summarize_prod <- function(data,
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
     SUBSTRATE_CLASS = substrate_class_all
   )
-
+  
   substrate_full_table$OCC_SITEID_TRANSECT <-
     paste(substrate_full_table$OCC_SITEID,
           substrate_full_table$CB_TRANSECTID,
           sep = "-")
+  
+ substrate_full_table <- substrate_full_table[substrate_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT ,]
 
   # Populate full table with transect-level data
   summary_transect_substrateclass <-  merge(
@@ -345,10 +352,9 @@ summarize_prod <- function(data,
     "LOCATION",
     "LOCATIONCODE",
     "OCC_SITEID",
-    "OCC_SITENAME",
     "LATITUDE",
     "LONGITUDE",
-    "DEPTH_M",
+    "SITE_DEPTH_M",
     "LOCALDATE",
     "CB_METHOD",
     "CB_TRANSECTID",
@@ -379,10 +385,9 @@ summarize_prod <- function(data,
         "LOCATION",
         "LOCATIONCODE",
         "OCC_SITEID",
-        "OCC_SITENAME",
         "LATITUDE",
         "LONGITUDE",
-        "DEPTH_M",
+        "SITE_DEPTH_M",
         "LOCALDATE",
         "CB_METHOD",
         "TRANSECT_PLANAR_LENGTH_M",
@@ -391,7 +396,16 @@ summarize_prod <- function(data,
       .direction = 'downup'
     )
 
-  summary_transect_substrateclass[, 19:26][is.na(summary_transect_substrateclass[, 19:26])] <- 0
+  summary_transect_substrateclass[, c((which(
+    colnames(summary_transect_substrateclass) == "SUBSTRATE_COVER_CM"
+  )):(which(
+    colnames(summary_transect_substrateclass) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
+  )))][is.na(summary_transect_substrateclass[, c((which(
+    colnames(summary_transect_substrateclass) == "SUBSTRATE_COVER_CM"
+  )):(which(
+    colnames(summary_transect_substrateclass) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
+  )))])] <- 0
+  
 
   # Summarize production by CORAL_GROUP at TRANSECT level  -------------------
   transect_coral_group <- data %>% dplyr::group_by(
@@ -402,10 +416,9 @@ summarize_prod <- function(data,
     LOCATION,
     LOCATIONCODE,
     OCC_SITEID,
-    OCC_SITENAME,
     LATITUDE,
     LONGITUDE,
-    DEPTH_M,
+    SITE_DEPTH_M,
     LOCALDATE,
     CB_METHOD,
     CB_TRANSECTID,
@@ -445,6 +458,7 @@ summarize_prod <- function(data,
 
   coral_group_all <- c(
     "ACBR",
+    "ACTA",
     "ASMA",
     "BR",
     "ENC",
@@ -454,6 +468,7 @@ summarize_prod <- function(data,
     "MASS",
     "MOBR",
     "MOEN",
+    "MOFO",
     "PAEN",
     "PAMA",
     "POBR",
@@ -473,6 +488,8 @@ summarize_prod <- function(data,
     paste(coral_full_table$OCC_SITEID,
           coral_full_table$CB_TRANSECTID,
           sep = "-")
+  
+  coral_full_table <- coral_full_table[coral_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT ,]
 
   # Populate full table with transect-level data
   summary_transect_coral <-  merge(
@@ -495,10 +512,9 @@ summarize_prod <- function(data,
     "LOCATION",
     "LOCATIONCODE",
     "OCC_SITEID",
-    "OCC_SITENAME",
     "LATITUDE",
     "LONGITUDE",
-    "DEPTH_M",
+    "SITE_DEPTH_M",
     "LOCALDATE",
     "CB_METHOD",
     "CB_TRANSECTID",
@@ -528,10 +544,9 @@ summarize_prod <- function(data,
         "LOCATION",
         "LOCATIONCODE",
         "OCC_SITEID",
-        "OCC_SITENAME",
         "LATITUDE",
         "LONGITUDE",
-        "DEPTH_M",
+        "SITE_DEPTH_M",
         "LOCALDATE",
         "CB_METHOD",
         "TRANSECT_PLANAR_LENGTH_M",
@@ -551,10 +566,17 @@ summarize_prod <- function(data,
 
   summary_transect_coral$CORAL_GROUP_NAME <- prod_dbase$CORAL_GROUP_NAME[match(summary_transect_coral$CORAL_GROUP, as.factor(prod_dbase$CORAL_GROUP))]
 
-  summary_transect_coral[, 18:27][is.na(summary_transect_coral[, 18:27])] <- 0
-
-
-
+  summary_transect_coral[, c((which(
+    colnames(summary_transect_coral) == "SUBSTRATE_COVER_CM"
+  )):(which(
+    colnames(summary_transect_coral) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
+  )))][is.na(summary_transect_coral[, c((which(
+    colnames(summary_transect_coral) == "SUBSTRATE_COVER_CM"
+  )):(which(
+    colnames(summary_transect_coral) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
+  )))])] <- 0
+  
+  
   # Summarize production by TRANSECT ----------------------------------------
   if (dbase_type == "IPRB") {
 
@@ -567,10 +589,9 @@ summarize_prod <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        DEPTH_M,
+        SITE_DEPTH_M,
         LOCALDATE,
         CB_METHOD,
         CB_TRANSECTID,
@@ -668,10 +689,9 @@ summarize_prod <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        DEPTH_M,
+        SITE_DEPTH_M,
         LOCALDATE,
         CB_METHOD,
         CB_TRANSECTID,
@@ -771,10 +791,9 @@ summarize_prod <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_METHOD,
       SUBSTRATE_CLASS,
@@ -805,10 +824,9 @@ summarize_prod <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_METHOD,
       SUBSTRATE_CLASS
@@ -835,10 +853,9 @@ summarize_prod <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_METHOD,
       CORAL_GROUP,
@@ -867,10 +884,9 @@ summarize_prod <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_METHOD
     ) %>%

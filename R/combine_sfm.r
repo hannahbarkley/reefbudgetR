@@ -18,25 +18,32 @@
 #'    surveyor = "HCB"
 #' )
 
-combine_sfm <- function(sfm_folder,
-                        region_code,
-                        cruise_id
-                       ) {
+combine_sfm <- function(sfm_folder) {
 
-sfm_files <- list.files(sfm_folder, full.names = TRUE)
+sfm_files <- list.files(sfm_folder, full.names = TRUE, recursive = T)
 benthic_sfm <- NULL
 
 for (i in seq_along(sfm_files)) {
   transect_i <- read.csv(sfm_files[i], colClasses = "character")
-  colnames(transect_i) <- c("OBJECTID", "Shape", "OCC_SITEID", "CB_TRANSECTID","SUBSTRATE_CODE", "MORPHOLOGYCODE","Shape_Length", "SLength")
-  benthic_sfm <- rbind(benthic_sfm, transect_i)
 
+  names(transect_i)[names(transect_i) == 'OBJECTID..'] <- 'OBJECTID'
+  names(transect_i)[names(transect_i) == 'OID_'] <- 'OBJECTID'
+  names(transect_i)[names(transect_i) == 'Shape..'] <- 'Shape'
+  names(transect_i)[names(transect_i) == 'SITE'] <- 'OCC_SITEID'
+  names(transect_i)[names(transect_i) == 'Site'] <- 'OCC_SITEID'    
+  names(transect_i)[names(transect_i) == 'Transect'] <- 'CB_TRANSECTID'
+  names(transect_i)[names(transect_i) == 'CB_TRANSECT'] <- 'CB_TRANSECTID'
+  names(transect_i)[names(transect_i) == 'Taxon'] <- 'SUBSTRATE_CODE'
+  names(transect_i)[names(transect_i) == 'TAXON_ID'] <- 'SUBSTRATE_CODE'
+  names(transect_i)[names(transect_i) == 'MORPH_ID'] <- 'MORPHOLOGYCODE'
+  names(transect_i)[names(transect_i) == 'Morph'] <- 'MORPHOLOGYCODE'
+  names(transect_i)[names(transect_i) == 'Moprh'] <- 'MORPHOLOGYCODE'
+  names(transect_i)[names(transect_i) == 'Year'] <- 'YEAR'
+  names(transect_i)[names(transect_i) == 'DEPTH_M'] <- 'SITE_DEPTH_M'
+
+  benthic_sfm <- rbind(benthic_sfm, transect_i)
 }
 
-benthic_sfm$REGIONCODE <- region_code
-benthic_sfm$LOCATIONCODE <- substring(benthic_sfm$OCC_SITEID,5,7)
-benthic_sfm$LOCALDATE <- NA
-benthic_sfm$CRUISE_ID <- cruise_id
 
 benthic_sfm <- benthic_sfm[with(
   benthic_sfm,

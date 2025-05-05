@@ -70,7 +70,100 @@ run_calc_prod <- function(data,
   data$CORAL_GROUP_NAME <- NA
   data$CORAL_GROUP <- NA
 
-
+  test <- NULL
+  test <- tryCatch(expr = {for (i in sjmisc::seq_row(data)) {
+    test <- data[i,]
+    
+    substrate_code_i <- data$SUBSTRATE_CODE[i]
+    
+    data$SUBSTRATE_NAME[i] <-
+      unique(prod_dbase$SUBSTRATE_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i])
+    
+    data$SUBSTRATE_CLASS[i] <-
+      unique(prod_dbase$SUBSTRATE_CLASS[prod_dbase$SUBSTRATE_CODE == substrate_code_i])
+    
+    data$TAXA_LEVEL[i] <-
+      unique(prod_dbase$TAXA_LEVEL[prod_dbase$SUBSTRATE_CODE == substrate_code_i])
+    
+    if (data$SUBSTRATE_CODE[i] %in% c("PRUS", "PMRC") == TRUE ) {
+      data$MORPHOLOGYCODE[i] <- "LC"
+      
+      data$CORAL_GROUP[i] <- "POLC"
+      
+      data$CORAL_GROUP_NAME[i] <- "Laminar columnar Porites"
+      
+      data$MORPHOLOGY[i] <- "Laminar columnar"
+    }
+    
+    if (data$SUBSTRATE_CLASS[i] == "CORAL" &
+        data$TAXA_LEVEL[i] == "SPECIES" &
+        data$SUBSTRATE_CODE[i] %in% c("PRUS", "PMRC") == FALSE) {
+      data$MORPHOLOGYCODE[i] <-
+        as.character(paste0(unique(prod_dbase$MORPHOLOGYCODE[prod_dbase$SUBSTRATE_CODE == substrate_code_i])))
+      
+      data$CORAL_GROUP[i] <-
+        unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                        prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+      
+      data$CORAL_GROUP_NAME[i] <-
+        (unique(prod_dbase$CORAL_GROUP_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                              prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]]))
+      
+      data$MORPHOLOGY[i] <-
+        unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                       prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+      
+    }
+    
+    if (data$SUBSTRATE_CLASS[i] == "CORAL" &
+        data$TAXA_LEVEL[i] == "GENUS" &
+        data$SUBSTRATE_CODE[i] %in% c("PRUS", "PMRC") == FALSE) {
+      data$CORAL_GROUP[i] <-
+        unique(prod_dbase$CORAL_GROUP[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                        prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+      
+      data$CORAL_GROUP_NAME[i] <-
+        (unique(prod_dbase$CORAL_GROUP_NAME[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                              prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]]))
+      
+      data$MORPHOLOGY[i] <-
+        unique(prod_dbase$MORPHOLOGY[prod_dbase$SUBSTRATE_CODE == substrate_code_i &
+                                       prod_dbase$MORPHOLOGYCODE == data$MORPHOLOGYCODE[i]])
+      
+    }
+    
+    if (dbase_type == "IPRB") {
+      calc_i <- calc_prod(
+        substrate_class = data$SUBSTRATE_CLASS[i],
+        substrate_code = data$SUBSTRATE_CODE[i],
+        morphology_code = data$MORPHOLOGYCODE[i],
+        substrate_cover_cm = data$SUBSTRATE_COVER_CM[i],
+        dbase_type = "IPRB",
+        prod_dbase = prod_dbase
+      )
+    }
+    
+    if (dbase_type == "NCRMP") {
+      calc_i <- calc_prod(
+        substrate_class = data$SUBSTRATE_CLASS[i],
+        substrate_code = data$SUBSTRATE_CODE[i],
+        morphology_code = data$MORPHOLOGYCODE[i],
+        substrate_cover_cm = data$SUBSTRATE_COVER_CM[i],
+        dbase_type = "NCRMP",
+        prod_dbase = prod_dbase
+      )
+    }
+    
+    data$COLONY_PROD_G_YR[i] <- calc_i$cp_i
+    data$COLONY_PROD_G_YR_L95[i] <- calc_i$cp_l95_i
+    data$COLONY_PROD_G_YR_U95[i] <- calc_i$cp_u95_i
+    
+  }}, error = function(e){return(test)})
+  
+  if(is.null(nrow(test)) == FALSE){
+      return(test)
+  }
+  
   for (i in sjmisc::seq_row(data)) {
     substrate_code_i <- data$SUBSTRATE_CODE[i]
 
@@ -171,5 +264,6 @@ run_calc_prod <- function(data,
                                                             transect_summary$OCC_SITEID_TRANSECT)]
 
   return(list(data = data,
-              transect_summary = transect_summary))
+              transect_summary = transect_summary,
+              errors = test))
 }

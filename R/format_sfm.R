@@ -14,7 +14,7 @@ format_sfm <- function(data) {
   data$MORPHOLOGYCODE[data$MORPHOLOGYCODE == "<Null>"] <- NA
   data$TRANSECT_OBSID <- data$OBJECTID..
   data$MORPHOLOGYCODE[data$MORPHOLOGYCODE == "EN"] <- "EM"
-  data$SUBSTRATE_CODE[data$SUBSTRATE_CODE %in% c("CCAR", "CCAH")] <-
+  data$SUBSTRATE_CODE[data$SUBSTRATE_CODE %in% c("CCAR", "CCAH")] <
     "CCA"
   data$SUBSTRATE_CODE[data$SUBSTRATE_CODE %in% c("TURFR", "TURFH")] <-
     "TURF"
@@ -28,12 +28,10 @@ format_sfm <- function(data) {
 
   transect_summary <-
     data %>%
-    dplyr::group_by(.data$REGIONCODE,
-                    .data$LOCATIONCODE,
-                    .data$OCC_SITEID,
+    dplyr::group_by(.data$OCC_SITEID,
                     .data$CB_TRANSECTID) %>%
     summarize(
-      TRANSECT_PLANAR_LENGTH_M = sum(.data$LINEAR_METER),
+      TRANSECT_PLANAR_LENGTH_M = (sum(.data$LINEAR_METER)),
       TRANSECT_TOTAL_SUBSTRATE_COVER_M  =
         sum(.data$SUBSTRATE_COVER_CM / 100, na.rm = TRUE),
       TRANSECT_RUGOSITY =
@@ -48,17 +46,22 @@ format_sfm <- function(data) {
 
 
   data$TRANSECT_PLANAR_LENGTH_M <-
-    round(transect_summary$TRANSECT_PLANAR_LENGTH_M[match(data$OCC_SITEID_TRANSECT, transect_summary$OCC_SITEID_TRANSECT)], 2)
+    transect_summary$TRANSECT_PLANAR_LENGTH_M[match(data$OCC_SITEID_TRANSECT, transect_summary$OCC_SITEID_TRANSECT)]
 
-
+  data$TRANSECT_PLANAR_LENGTH_M <- round(data$TRANSECT_PLANAR_LENGTH_M, 2)
 
   data <- data[c(
-    "CRUISE_ID",
-    "LOCALDATE",
+    "REGION",
     "REGIONCODE",
+    "YEAR",
+    "CRUISE_ID",
+    "LOCATION",
     "LOCATIONCODE",
     "OCC_SITEID",
-    "CB_METHOD",
+    "LATITUDE",
+    "LONGITUDE",
+    "SITE_DEPTH_M",
+    "LOCALDATE",
     "CB_TRANSECTID",
     "OCC_SITEID_TRANSECT",
     "TRANSECT_PLANAR_LENGTH_M",

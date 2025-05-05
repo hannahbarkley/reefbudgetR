@@ -8,6 +8,7 @@
 #'database is derived from "IP Calcification and bioerosion rates database v.1.3",
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".
 #'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
+#'@param qc_check Remove transects where rugosity < 1.
 #'
 #'@import dplyr
 #'@import tools
@@ -37,20 +38,53 @@
 
 process_prod <- function(data,
                          dbase_type = "NCRMP",
-                         method_name = c("IPRB", "Chords", "SfM"),
+                         method_name = "SfM",
                          full_summary = TRUE,
                          label = NULL,
+                         qc_check = FALSE,
                          ...) {
-
   options(dplyr.summarise.inform = FALSE,
           scipen = 999)
-
+  
+  test = NULL
+  
+  test <- tryCatch(
+    expr = {
+      run_calc_prod(data,
+                    dbase_type,
+                    method_name)
+    },
+    error = function(e) {
+      print(test)
+    }
+  )
+  
+  if(is.null(nrow(test)) == FALSE){
+    
+    print("CHECK DATA")
+    print(test)
+    return(errors = test)
+    
+  }
+  
+  
+  
   calc_prod_output <- run_calc_prod(data,
                                     dbase_type,
                                     method_name)
   data <- calc_prod_output$data
   transect_summary <- calc_prod_output$transect_summary
-
+  
+  if(qc_check == TRUE){
+  bad_transects <- transect_summary$OCC_SITEID_TRANSECT[transect_summary$TRANSECT_RUGOSITY < 1] 
+  
+  if (length(bad_transects) > 0) {
+    data <- data[!data$OCC_SITEID_TRANSECT %in% bad_transects , ]
+    transect_summary <-
+      transect_summary[!transect_summary$OCC_SITEID_TRANSECT %in% bad_transects , ]
+  }
+  }
+  
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CODE on each TRANSECT
   prod_transect_substratecode <-
@@ -59,7 +93,7 @@ process_prod <- function(data,
                    dbase_type,
                    summarize_by = "substrate code",
                    level = "transect")
-
+  
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CLASS on each TRANSECT
   prod_transect_substrateclass <-
@@ -68,7 +102,7 @@ process_prod <- function(data,
                    dbase_type,
                    summarize_by = "substrate class",
                    level = "transect")
-
+  
   # Calculate cover, planar production, and carbonate production for each
   # CORAL_GROUP on each TRANSECT
   prod_transect_coral <-
@@ -77,7 +111,7 @@ process_prod <- function(data,
                    dbase_type,
                    summarize_by = "coral group",
                    level = "transect")
-
+  
   # Calculate cover, planar production, and carbonate production
   # on each TRANSECT
   prod_transect <-
@@ -86,7 +120,7 @@ process_prod <- function(data,
                    dbase_type,
                    summarize_by = "overall",
                    level = "transect")
-
+  
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CODE on each SITE
   prod_site_substratecode <-
@@ -95,17 +129,17 @@ process_prod <- function(data,
                    dbase_type,
                    summarize_by = "substrate code",
                    level = "site")
-
+  
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CLASS on each SITE
-
+  
   prod_site_substrateclass <-
     summarize_prod(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "substrate class",
                    level = "site")
-
+  
   # Calculate cover, planar production, and carbonate production for each
   # CORAL_GROUP on each SITE
   prod_site_coral <-
@@ -114,7 +148,7 @@ process_prod <- function(data,
                    dbase_type,
                    summarize_by = "coral group",
                    level = "site")
-
+  
   # Calculate cover, planar production, and carbonate production on each SITE
   prod_site <-
     summarize_prod(data,
@@ -122,7 +156,7 @@ process_prod <- function(data,
                    dbase_type,
                    summarize_by = "overall",
                    level = "site")
-
+  
   if (is.null(label) == FALSE) {
     prod_site$LABEL <- label
     prod_site_substrateclass$LABEL <- label
@@ -134,7 +168,7 @@ process_prod <- function(data,
     prod_transect_substratecode$LABEL <- label
     data$LABEL <- label
   }
-
+  
   if (full_summary == TRUE) {
     data <- data[c(
       "REGION",
@@ -144,10 +178,9 @@ process_prod <- function(data,
       "LOCATION",
       "LOCATIONCODE",
       "OCC_SITEID",
-      "OCC_SITENAME",
       "LATITUDE",
       "LONGITUDE",
-      "DEPTH_M",
+      "SITE_DEPTH_M",
       "LOCALDATE",
       "CB_METHOD",
       "CB_TRANSECTID",
@@ -163,8 +196,8 @@ process_prod <- function(data,
       "COLONY_PROD_G_YR_L95",
       "COLONY_PROD_G_YR_U95"
     )]
-
-
+    
+    
     return(
       list(
         summary_site = prod_site,
@@ -185,4 +218,3 @@ process_prod <- function(data,
     return(summary_site = prod_site)
   }
 }
-
