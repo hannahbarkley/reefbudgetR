@@ -112,7 +112,7 @@ Process urchin data:
  urch_taxon <- urch$transect_taxon
 ```
 
-Process fish data by method type:
+Process fish data:
 
 ``` r
 
