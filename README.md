@@ -124,6 +124,6 @@ Calculate net production rates :
 
 ``` r
 
-# Calculate net production at transect site
+# Calculate net production at transect level
 net_site <- process_net(prod = prod_transect, urch = urch_transect, fish = fish_site, sum_by = "transect")
 ```
