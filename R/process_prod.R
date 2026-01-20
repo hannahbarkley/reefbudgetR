@@ -23,23 +23,12 @@
 #'    na = "", check.names = FALSE)
 #'
 #' prod_iprb <- process_prod(
-#'    data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
-#'    method_name = "IPRB"
+#'    data = benthic_data,
 #' )
 
-#' prod_chords <- process_prod(
-#'    data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
-#'    method_name = "Chords"
-#' )
-
-#' prod_sfm <- process_prod(
-#'    data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
-#'    method_name = "SfM"
-#' )
 
 process_prod <- function(data,
                          dbase_type = "NCRMP",
-                         method_name = "SfM",
                          full_summary = TRUE,
                          label = NULL,
                          qc_check = FALSE,
@@ -53,8 +42,7 @@ process_prod <- function(data,
   test <- tryCatch(
     expr = {
       run_calc_prod(data,
-                    dbase_type,
-                    method_name)
+                    dbase_type)
     },
     error = function(e) {
       print(test)
@@ -72,8 +60,7 @@ process_prod <- function(data,
   
   
   calc_prod_output <- run_calc_prod(data,
-                                    dbase_type,
-                                    method_name)
+                                    dbase_type)
   data <- calc_prod_output$data
   transect_summary <- calc_prod_output$transect_summary
   
@@ -201,6 +188,23 @@ process_prod <- function(data,
     )]
     
     
+    sites_metadata <- transect_summary %>%
+      group_by(OCC_SITEID) %>%
+      summarize(across(
+        .cols = c("REGION",
+                  "REGIONCODE",
+                  "YEAR",
+                  "CRUISE_ID",
+                  "LOCALDATE",
+                  "LOCATION",
+                  "LOCATIONCODE",
+                  "LATITUDE",
+                  "LONGITUDE",
+                  "SITE_DEPTH_M",
+                  "SITEVISITID") ,
+        .fns = unique
+      ))
+    
     return(
       list(
         summary_site = prod_site,
@@ -213,7 +217,9 @@ process_prod <- function(data,
         summary_transect_coral = prod_transect_coral,
         summary_transect_substratecode =
           prod_transect_substratecode,
-        data = data
+        data = data,
+        transect_summary = transect_summary,
+        sites_metadata = sites_metadata
       )
     )
   }

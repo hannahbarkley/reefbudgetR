@@ -15,7 +15,6 @@
 #'@param macro_rate_ci Confidence interval for rate of macrobioerosion in kg/cm2/yr, Default is 0.129.
 #'@param micro_rate Rate of microbioerosion in kg/cm2/yr. Default is 0.262.
 #'@param micro_rate_ci Confidence interval for rate of microbioerosion in kg/cm2/yr. Default is 0.180.
-#'@param sites_metadata Data frame containing information about sites
 #'
 #'@import dplyr
 #'@importFrom sjmisc seq_row
@@ -72,7 +71,6 @@ summarize_prod <- function(data,
                            macro_rate_ci = 0.129,
                            micro_rate = 0.262,
                            micro_rate_ci = 0.180,
-                           sites_metadata = NULL,
                            ...
 
 ) { 
@@ -574,35 +572,38 @@ summarize_prod <- function(data,
       ),
       .direction = "downup"
     )
-
-  if(is.na(unique(summary_transect_coral$LATITUDE)) == TRUE) {
-    
-    summary_transect_coral$REGION  <- sites_metadata$REGION[match(summary_transect_coral$OCC_SITEID,
-                                                                  sites_metadata$OCC_SITEID)]
-    summary_transect_coral$REGIONCODE  <- sites_metadata$REGIONCODE[match(summary_transect_coral$OCC_SITEID,
-                                                                          sites_metadata$OCC_SITEID)]
-    summary_transect_coral$YEAR  <- sites_metadata$YEAR[match(summary_transect_coral$OCC_SITEID,
-                                                              sites_metadata$OCC_SITEID)]
-    summary_transect_coral$CRUISE_ID  <- sites_metadata$CRUISE_ID[match(summary_transect_coral$OCC_SITEID,
-                                                                        sites_metadata$OCC_SITEID)]
-    summary_transect_coral$LOCATIONCODE  <- sites_metadata$LOCATIONCODE[match(summary_transect_coral$OCC_SITEID,
-                                                                              sites_metadata$OCC_SITEID)]
-    summary_transect_coral$LOCATION  <- sites_metadata$LOCATION[match(summary_transect_coral$OCC_SITEID,
-                                                                      sites_metadata$OCC_SITEID)]
-    summary_transect_coral$LATITUDE  <- sites_metadata$LATITUDE[match(summary_transect_coral$OCC_SITEID,
-                                                                      sites_metadata$OCC_SITEID)]
-    summary_transect_coral$LONGITUDE  <- sites_metadata$LONGITUDE[match(summary_transect_coral$OCC_SITEID,
-                                                                        sites_metadata$OCC_SITEID)]
-    summary_transect_coral$SITE_DEPTH_M  <- sites_metadata$SITE_DEPTH_M[match(summary_transect_coral$OCC_SITEID,
-                                                                              sites_metadata$OCC_SITEID)]
-    summary_transect_coral$LOCALDATE  <- sites_metadata$LOCALDATE[match(summary_transect_coral$OCC_SITEID,
-                                                                        sites_metadata$OCC_SITEID)]
-    summary_transect_coral$TRANSECT_PLANAR_LENGTH_M  <- sites_metadata$TRANSECT_PLANAR_LENGTH_M[match(summary_transect_coral$OCC_SITEID,
-                                                                                                      sites_metadata$OCC_SITEID)]
-    summary_transect_coral$TRANSECT_TOTAL_SUBSTRATE_COVER_M  <- sites_metadata$TRANSECT_TOTAL_SUBSTRATE_COVER_M[match(summary_transect_coral$OCC_SITEID,
-                                                                                                                      sites_metadata$OCC_SITEID)]
+  
+  
+  for (i in 1:nrow(summary_transect_coral))
+  {
+    if (is.na(unique(summary_transect_coral$LATITUDE[i])) == TRUE) {
+      summary_transect_coral$REGION[i]  <- transect_summary$REGION[match(summary_transect_coral$OCC_SITEID[i],
+                                                                      transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$REGIONCODE[i]  <- transect_summary$REGIONCODE[match(summary_transect_coral$OCC_SITEID[i],
+                                                                              transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$YEAR[i]  <- transect_summary$YEAR[match(summary_transect_coral$OCC_SITEID[i],
+                                                                  transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$CRUISE_ID[i]  <- transect_summary$CRUISE_ID[match(summary_transect_coral$OCC_SITEID[i],
+                                                                            transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$LOCATIONCODE[i]  <- transect_summary$LOCATIONCODE[match(summary_transect_coral$OCC_SITEID[i],
+                                                                                  transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$LOCATION[i]  <- transect_summary$LOCATION[match(summary_transect_coral$OCC_SITEID[i],
+                                                                          transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$LATITUDE[i]  <- transect_summary$LATITUDE[match(summary_transect_coral$OCC_SITEID[i],
+                                                                          transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$LONGITUDE[i]  <- transect_summary$LONGITUDE[match(summary_transect_coral$OCC_SITEID[i],
+                                                                            transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$SITE_DEPTH_M[i]  <- transect_summary$SITE_DEPTH_M[match(summary_transect_coral$OCC_SITEID[i],
+                                                                                  transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$LOCALDATE[i]  <- transect_summary$LOCALDATE[match(summary_transect_coral$OCC_SITEID[i],
+                                                                            transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$TRANSECT_PLANAR_LENGTH_M[i]  <- transect_summary$TRANSECT_PLANAR_LENGTH_M[match(summary_transect_coral$OCC_SITEID[i],
+                                                                                                          transect_summary$OCC_SITEID[i])]
+      summary_transect_coral$TRANSECT_TOTAL_SUBSTRATE_COVER_M[i]  <- transect_summary$TRANSECT_TOTAL_SUBSTRATE_COVER_M[match(summary_transect_coral$OCC_SITEID[i],
+                                                                                                                          transect_summary$OCC_SITEID[i])]
+    }
   }
-
+  
   summary_transect_coral <-
     summary_transect_coral %>% group_by(CORAL_GROUP) %>%
     fill(

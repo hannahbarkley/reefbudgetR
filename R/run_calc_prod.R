@@ -7,7 +7,6 @@
 #'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 #'database is derived from "IP Calcification and bioerosion rates database v.1.3",
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.
-#'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
 #'
 #'@import dplyr
 #'@importFrom sjmisc seq_row
@@ -20,14 +19,12 @@
 #'
 #' calc_prod_output <- run_calc_prod(
 #'     data = benthic_data,
-#'     method_name = "IPRB",
 #'     dbase_type = "NCRMP"
 #'     )
 
 
 run_calc_prod <- function(data,
                           dbase_type,
-                          method_name,
                           ...) {
   if (dbase_type == "IPRB") {
     data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
@@ -43,9 +40,18 @@ run_calc_prod <- function(data,
   transect_summary <-
     data %>%
     dplyr::group_by(
+      .data$CRUISE_ID, 
+      .data$REGION,     
       .data$REGIONCODE,
+      .data$LOCATION,
       .data$LOCATIONCODE,
       .data$OCC_SITEID,
+      .data$LOCALDATE,     
+      .data$YEAR,  
+      .data$SITEVISITID,           
+      .data$LATITUDE,
+      .data$LONGITUDE,
+      .data$SITE_DEPTH_M,
       .data$CB_METHOD,
       .data$CB_TRANSECTID,
       .data$TRANSECT_PLANAR_LENGTH_M
