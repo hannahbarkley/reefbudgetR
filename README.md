@@ -12,20 +12,25 @@ benthic, urchin, and parrotfish census data and calculate carbonate
 production and erosion.
 
 For additional information on data analyses and methodological
-approaches, see: Hannah C. Barkley, Rebecca M. Weible, Ariel A.
-Halperin, Candace E. Alagata, Tye L. Kindinger, Damaris Torres-Pulliza,
-Mia S. Lamirand, Brittany E. Huntington, Courtney S. Couch, Corinne G.
-Amir, Nicole I. Besemer, Jonathan A. Charendoff, Jon Ehrenberg, Joao D.
-Garriques, Andrew E. Gray, Nathan Hayes, Kurt E. Ingeman, Lori H. Luers,
-Kaylyn S. McCoy, Noah V. Pomeroy, Joy N. Smith, Bernardo Vargas-Ángel,
-Erica K. Towle, Jennifer C. Samson. 2023. Carbonate budget assessments
-in the U.S. Pacific Islands: report of methods comparison results and
-summary of standard operating procedures. U.S. Dept. of Commerce, NOAA
-Technical Memorandum NMFS-PIFSC-##, p. <doi:10>… \[UPDATE when
-published\].
+approaches, see:
 
-For additional metadata and downloadable data, see:
-<https://www.fisheries.noaa.gov/inport/item/67804>.
+[Barkley, H.C., Halperin, A.A., Torres-Pulliza, D., Lamirand, M.S.,
+Couch, C.S., Alagata, C.E., Weible, R.M., Smith, J.N., Oliver, T.A. and
+Perry, C.T., 2025. Estimating coral reef carbonate budgets using
+Structure-from-Motion photogrammetry. Coral Reefs, 44(3),
+pp.937-951.](https://link.springer.com/article/10.1007/s00338-025-02660-7)
+
+[Barkley HC, Weible RM, Halperin AA, Alagata CE, Kindinger TL,
+Torres-Pulliza D, Lamirand MS, Huntington BE, Couch CS, Amir CG, et
+al. 2023. Carbonate budget assessments in the U.S. Pacific Islands:
+report of methods comparison results and summary of standard operating
+procedures. U.S. Dept. of Commerce, NOAA Technical Memorandum
+NMFS-PIFSC-154, 7979 p. doi:
+10.25923/g4hg-7686.](https://repository.library.noaa.gov/view/noaa/56372/noaa_56372_DS1.pdf)
+
+For additional metadata and downloadable data, see the [NCRMP carbonate
+budgets InPort
+record](https://www.fisheries.noaa.gov/inport/item/67804).
 
 This repository is a scientific product and is not official
 communication of the National Oceanic and Atmospheric Administration, or
@@ -51,135 +56,74 @@ You can install the development version of reefbudgetR from
 devtools::install_github("hannahbarkley/reefbudgetR")
 ```
 
-## Example Workflow
+## Example workflow for processing Hawaii data
 
-Load benthic, urchin, and fish data sets:
+Load benthic, urchin, and fish observation data sets:
 
 ``` r
 library(reefbudgetR)
 
 # Benthic observation data
-benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv", na = "", check.names = FALSE)
+benthic_data <- read.csv("ESD_NCRMP_CarbBudget_Benthic_HA_2024.csv", na = "", check.names = FALSE)
 
 #Urchin observation data
-urchin_data <- read.csv("ESD_CarbBudget_Urchins_OAHU_2021.csv", na = "", check.names = FALSE)
+urchin_data <- read.csv("ESD_NCRMP_CarbBudget_Urchin_HA_2024.csv", na = "", check.names = FALSE)
 
-# Fish belt transect data
-fish_data_belt <- read.csv("ESD_CarbBudget_Fixed_Belt_OAHU_2021.csv", na = "", check.names = FALSE)
-
-# Fish fixed-site and stratified random stationary point count (SPC) data
-fish_data_spc <- read.csv("ESD_CarbBudget_SPC_OAHU_2021.csv", na = "", check.names = FALSE)
+# Fish SPC data
+fish_data <- read.csv("ESD_NCRMP_CarbBudget_Fish_HA_2024.csv", na = "", check.names = FALSE)
 ```
 
-Process benthic data by method type:
+Process benthic data:
 
 ``` r
-# Process Indo-Pacific ReefBudget (IPRB) benthic data
-prod_iprb <- process_prod(
-  data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
-  method_name = "IPRB"
-)
 
-# Process NCRMP-intermediate (chords) benthic data
-prod_chords <- process_prod(
-  data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
-  method_name = "Chords"
-)
+# Process benthic production data
+prod <- process_prod(data = benthic_data)
 
-# Process NCRMP-leveraged (Structure-from-Motion, SfM) benthic data
-prod_sfm <- process_prod(
-  data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
-  method_name = "SfM"
-)
+# Summarize overall production data at site level
+prod_site <- prod$summary_site
 
-# Combine site-level production data
-prod_site <- bind_rows(
-  prod_iprb$summary_site,
-  prod_chords$summary_site,
-  prod_sfm$summary_site
-)
+# Summarize overall production data at transect level
+prod_transect <- prod$summary_transect
+
+# Summarize production data at site level by coral group
+prod_coral <- prod$summary_site_coral
+
+# Summarize production data at site level by substrate group
+prod_substrate <- prod$summary_site_substrateclass
+
+# Return a summary of site metadata
+sites_metadata <- prod$sites_metadata
 ```
 
-Process urchin data by method type:
+Process urchin data:
 
 ``` r
-# Process Indo-Pacific ReefBudget (IPRB) urchin data
-urch_iprb <- process_urchins(
-  data = urchin_data[urchin_data$CB_METHOD == "IPRB", ],
-  method_name = "IPRB"
-)
 
-# Process NCRMP-intermediate (chords) urchin data
-urch_chords <- process_urchins(
-  data = urchin_data[urchin_data$CB_METHOD == "Chords", ],
-  method_name = "Chords"
-)
+ urch <- process_urchins(data = urchin_data)
 
-# Process NCRMP-leveraged (Structure-from-Motion, SfM) urchin data
-urch_sfm <- process_urchins(
-  data = urchin_data[urchin_data$CB_METHOD == "SfM", ],
-  method_name = "SfM"
-)
-
-# Combine site-level urchin erosion data
-urch_site <- bind_rows(urch_iprb$site_erosion,
-                       urch_chords$site_erosion,
-                       urch_sfm$site_erosion)
+# Summarize urchin erosion data at site level
+ urch_site <- urch$site_erosion
+ 
+ # Summarize urchin erosion data at transect level
+ urch_transect <- urch$transect_erosion
+ 
+ # Summarize urchin erosion data at transect level by taxon
+ urch_taxon <- urch$transect_taxon
 ```
 
 Process fish data by method type:
 
 ``` r
-# Process fish belt and stationary point count (SPC) data
-fish_site <- process_fish(fish_data_belt,
-                               fish_data_spc,
-                               dbase_type = "Kindinger",
-                               sites_associated = "OAH")
+
+# Process fish erosion data for all sites
+fish_site <- process_fish(data = spc_data, method_type = "Fixed", fixed_metadata = sites_metadata) 
 ```
 
-Combine data and calculate net production rates by methodology:
+Calculate net production rates :
 
 ``` r
-# Calculate net production using IPRB methodology
-net_site_iprb <- process_net(
-  prod = prod_site[prod_site$CB_METHOD == "IPRB" ,],
-  urch = urch_site[urch_site$CB_METHOD == "IPRB" ,],
-  fish = fish_site[fish_site$CB_METHOD == "IPRB" ,],
-  sum_by = "site"
-)
 
-net_site_iprb$METHOD <- "IPRB"
-
-# Calculate net production using NCRMP-intermediate methodology
-net_site_int <- process_net(
-  prod = prod_site[prod_site$CB_METHOD == "Chords" ,],
-  urch = urch_site[urch_site$CB_METHOD == "Chords" ,],
-  fish = fish_site[fish_site$CB_METHOD == "Fixed SPC" ,],
-  sum_by = "site"
-)
-
-net_site_int$METHOD <- "NCRMP-intermediate"
-
-# Calculate net production using NCRMP-leveraged methodology
-net_site_lev <- process_net(
-  prod = prod_site[prod_site$CB_METHOD == "SfM" ,],
-  urch = urch_site[urch_site$CB_METHOD == "SfM" ,],
-  fish = fish_site[fish_site$CB_METHOD == "StRS SPC" ,],
-  sum_by = "site"
-)
-
-net_site_lev$METHOD <- "NCRMP-leveraged"
-
-# Calculate net production using NCRMP-proposed methodology
-net_site_prop <- process_net(
-  prod = prod_site[prod_site$CB_METHOD == "SfM" ,],
-  urch = urch_site[urch_site$CB_METHOD == "Chords" ,],
-  fish = fish_site[fish_site$CB_METHOD == "Fixed SPC" ,],
-  sum_by = "site"
-)
-
-net_site_prop$METHOD <- "NCRMP-proposed"
-
-# Combine net production data
-net_site <- bind_rows(net_site_iprb, net_site_int, net_site_lev, net_site_prop)
+# Calculate net production at transect site
+net_site <- process_net(prod = prod_transect, urch = urch_transect, fish = fish_site, sum_by = "transect")
 ```
