@@ -4,14 +4,14 @@
 \alias{combine_sfm}
 \title{Combine individual SfM benthic data transect files}
 \usage{
-combine_sfm(sfm_folder, region_code, cruise_id)
+combine_sfm(sfm_folder)
 }
 \arguments{
 \item{sfm_folder}{Directory containing SfM transect files.}
 
-\item{cruise_id}{Cruise ID for survey collection ("MP2108", "RA2201", ...).}
-
 \item{region_codeSurvey}{region ("MHI", "MARIAN", ...).}
+
+\item{cruise_id}{Cruise ID for survey collection ("MP2108", "RA2201", ...).}
 }
 \description{
 Combine individual SfM benthic data transect files

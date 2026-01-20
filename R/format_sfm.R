@@ -58,6 +58,7 @@ format_sfm <- function(data) {
     "LOCATION",
     "LOCATIONCODE",
     "OCC_SITEID",
+    "SITEVISITID",
     "LATITUDE",
     "LONGITUDE",
     "SITE_DEPTH_M",

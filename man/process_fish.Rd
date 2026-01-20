@@ -5,20 +5,25 @@
 \title{Process parrotfish erosion rates from belt and spc data}
 \usage{
 process_fish(
-  data_spc,
-  dbase_type = c("Kindinger", "IPRB"),
-  data_belt,
-  subset_distance_m
+  data,
+  method_type = "Fixed",
+  fixed_metadata = NULL,
+  dbase_type = "Kindinger",
+  subset_distance_m = 6000
 )
 }
 \arguments{
+\item{method_type}{Type of SPC data. "Fixed" (fixed only), "StRS" (stratified random), "Mean StRS" (average of nearby stratified random), or "Belt" (belt data only)}
+
+\item{fixed_metadata}{Dataframe with fixed site info}
+
 \item{dbase_type}{Erosion rates database to use. Choose either Indo-Pacific
 ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").}
 
-\item{data_belt}{fish belt survey data.}
-
 \item{subset_distance_m}{Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.}
+
+\item{fish_data}{Fish spc survey data.}
 }
 \description{
 Process parrotfish erosion rates from belt and spc data
@@ -26,11 +31,9 @@ Process parrotfish erosion rates from belt and spc data
 \examples{
 fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 
-fish_belt <- process_fish(data_spc = fish_data_spc, 
-dbase_type = "Kindinger", data_belt = fish_data_belt, subset_distance_m = 2000)
+fish_belt <- process_fish(spc_data = fish_data_spc,
+dbase_type = "Kindinger", belt_data = fish_data_belt, subset_distance_m = 2000)
 }
 \author{
 Rebecca Weible
-
-#'@param data_spc fish spc survey data.
 }

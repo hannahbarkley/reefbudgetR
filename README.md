@@ -1,23 +1,31 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# Pacific NCRMP reefbudgetR
+# reefbudgetR
 
 <!-- badges: start -->
 <!-- badges: end -->
 
 This R package provides tools for working with ReefBudget carbonate
-budget data collected by NOAA's National Coral Reef Monitoring Program (NCRMP) in the U.S. Pacific Islands, with functions to process
+budget data, with functions to process field-based and SfM-derived
 benthic, urchin, and parrotfish census data and calculate carbonate
-production and erosion rates. Package tools and processes are translated to R based on Indo-Pacific ReefBudget methdology and materials (Perry et al. 2018) and modified for use with Pacific NCRMP data.
+production and erosion.
 
 For additional information on data analyses and methodological
-approaches, see [Barkley et al. (2023)](https://repository.library.noaa.gov/view/noaa/56372) and [Barkley et al. (2025)](https://link.springer.com/article/10.1007/s00338-025-02660-7).
+approaches, see: Hannah C. Barkley, Rebecca M. Weible, Ariel A.
+Halperin, Candace E. Alagata, Tye L. Kindinger, Damaris Torres-Pulliza,
+Mia S. Lamirand, Brittany E. Huntington, Courtney S. Couch, Corinne G.
+Amir, Nicole I. Besemer, Jonathan A. Charendoff, Jon Ehrenberg, Joao D.
+Garriques, Andrew E. Gray, Nathan Hayes, Kurt E. Ingeman, Lori H. Luers,
+Kaylyn S. McCoy, Noah V. Pomeroy, Joy N. Smith, Bernardo Vargas-Ángel,
+Erica K. Towle, Jennifer C. Samson. 2023. Carbonate budget assessments
+in the U.S. Pacific Islands: report of methods comparison results and
+summary of standard operating procedures. U.S. Dept. of Commerce, NOAA
+Technical Memorandum NMFS-PIFSC-##, p. <doi:10>… \[UPDATE when
+published\].
 
-For additional information on ReefBudget, see [Perry et al. (2018)](http://geography.exeter.ac.uk/reefbudget/).
-
-For additional metadata and downloadable data, see [NOAA InPort](https://www.fisheries.noaa.gov/inport/item/67804). 
-
+For additional metadata and downloadable data, see:
+<https://www.fisheries.noaa.gov/inport/item/67804>.
 
 This repository is a scientific product and is not official
 communication of the National Oceanic and Atmospheric Administration, or
@@ -33,17 +41,9 @@ The Department of Commerce seal and logo, or the seal and logo of a DOC
 bureau, shall not be used in any manner to imply endorsement of any
 commercial product or activity by DOC or the United States Government.
 
-
-References:
-Barkley, HC, Halperin, AA, Torres-Pulliza, D et al. Estimating coral reef carbonate budgets using Structure-from-Motion photogrammetry. Coral Reefs (2025). https://doi.org/10.1007/s00338-025-02660-7
-
-Barkley HC, Weible RM, Halperin AA, Alagata CE, Kindinger TL, Torres-Pulliza D, Lamirand MS, Huntington BE, Couch CS, Amir CG, et al. 2023. Carbonate budget assessments in the U.S. Pacific Islands: report of methods comparison results and summary of standard operating procedures. U.S. Dept. of Commerce, NOAA Technical Memorandum NMFS-PIFSC-154, 7979 p. doi: 10.25923/g4hg-7686: https://repository.library.noaa.gov/view/noaa/56372.
-
-Perry CT, Lange I, Januchowski-Hartley FA (2018) ReefBudget Indo Pacific: online resource and methodology. Retrieved from http://geography.exeter.ac.uk/reefbudget/
-
 ## Installation
 
-You can install the development version of Pacific NCRMP reefbudgetR from
+You can install the development version of reefbudgetR from
 [GitHub](https://github.com/) with:
 
 ``` r
@@ -93,7 +93,7 @@ prod_sfm <- process_prod(
 )
 
 # Combine site-level production data
-prod_site <- dplyr::bind_rows(
+prod_site <- bind_rows(
   prod_iprb$summary_site,
   prod_chords$summary_site,
   prod_sfm$summary_site
@@ -122,21 +122,19 @@ urch_sfm <- process_urchins(
 )
 
 # Combine site-level urchin erosion data
-urch_site <- dplyr::bind_rows(urch_iprb$site_erosion,
-                              urch_chords$site_erosion,
-                              urch_sfm$site_erosion)
+urch_site <- bind_rows(urch_iprb$site_erosion,
+                       urch_chords$site_erosion,
+                       urch_sfm$site_erosion)
 ```
 
 Process fish data by method type:
 
 ``` r
-# Process fish belt and stationary point count (SPC) data, open plot window to see strs shapefile plots
-fish_site_ <- process_fish(spc_data = fish_data_spc,
+# Process fish belt and stationary point count (SPC) data
+fish_site <- process_fish(fish_data_belt,
+                               fish_data_spc,
                                dbase_type = "Kindinger",
-                               belt_data = fish_data_belt,
-                               subset_distance_m = 6000)
-fish_site <- fish_site_$dat
-fish_site_$assoc_site_count
+                               sites_associated = "OAH")
 ```
 
 Combine data and calculate net production rates by methodology:
@@ -183,5 +181,5 @@ net_site_prop <- process_net(
 net_site_prop$METHOD <- "NCRMP-proposed"
 
 # Combine net production data
-net_site <- dplyr::bind_rows(net_site_iprb, net_site_int, net_site_lev, net_site_prop)
+net_site <- bind_rows(net_site_iprb, net_site_int, net_site_lev, net_site_prop)
 ```

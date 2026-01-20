@@ -54,7 +54,7 @@ summarize_fish_erosion <- function(species_table,
     gather(
       .,
       "TRANSECT",
-      "value",-c(FXN_GRP:TAXON_CODE),
+      "value",-c(FXN_GRP:SPECIES),
       -METRIC
     ) %>%
     dplyr::group_by(
@@ -64,10 +64,9 @@ summarize_fish_erosion <- function(species_table,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      CB_METHOD,
+      METHOD,
       TRANSECT,
       FXN_GRP,
       METRIC
@@ -90,10 +89,9 @@ summarize_fish_erosion <- function(species_table,
           LOCATION,
           LOCATIONCODE,
           OCC_SITEID,
-          OCC_SITENAME,
           LATITUDE,
           LONGITUDE,
-          CB_METHOD,
+          METHOD,
           METRIC
         ) %>%
         dplyr::summarise(across(
@@ -108,7 +106,7 @@ summarize_fish_erosion <- function(species_table,
   # Calculate bioerosion per site and metric
   fish_erosion_transect <- fish_erosion_transect_wide %>%
     pivot_longer(.,
-                 cols = 13:22,
+                 cols = 12:21,
                  names_to = "TRANSECT",
                  values_to = "Values") %>%
     dplyr::select(
@@ -118,10 +116,9 @@ summarize_fish_erosion <- function(species_table,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      CB_METHOD,
+      METHOD,
       METRIC,
       everything()
     ) %>%
@@ -132,7 +129,7 @@ summarize_fish_erosion <- function(species_table,
   fish_erosion_transect$TRANSECT <- factor(fish_erosion_transect$TRANSECT, levels = seq(1,10,1))
 
   fish_erosion_transect <- fish_erosion_transect[
-    with(fish_erosion_transect, order(REGION, LOCATION, CB_METHOD, TRANSECT, FXN_GRP)),
+    with(fish_erosion_transect, order(REGION, LOCATION, METHOD, TRANSECT, FXN_GRP)),
   ]
 
   # final bioerosion calculations per site and metric
@@ -144,10 +141,9 @@ summarize_fish_erosion <- function(species_table,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      CB_METHOD,
+      METHOD,
       METRIC,
       everything()
     ) %>%
@@ -171,15 +167,14 @@ summarize_fish_erosion <- function(species_table,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      CB_METHOD,
+      METHOD,
       METRIC,
       everything()
     ) %>%
     pivot_longer(.,
-                 cols = 13:17,
+                 cols = 12:16,
                  names_to = "Variables",
                  values_to = "Values") %>%
     unite("METRIC", METRIC:FXN_GRP) %>% #combine columns with underscore

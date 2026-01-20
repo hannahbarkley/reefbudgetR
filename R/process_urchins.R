@@ -3,7 +3,6 @@
 #'@author Hannah Barkley
 #'
 #'@param data Urchin observation data set.
-#'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
 #'
 #'@import tidyr
 #'@import dplyr
@@ -27,7 +26,6 @@
 
 process_urchins <- function(data,
                             transect_length = NULL,
-                            method_name = NULL,
                             full_summary = TRUE) {
   options(dplyr.summarise.inform = FALSE)
 
@@ -45,7 +43,6 @@ process_urchins <- function(data,
     pivot_longer(
       cols = !c(
         "SITEVISITID",
-        "TRANSECTID",
         "CBURCHINID",
         "REGION",
         "REGIONCODE",
@@ -56,7 +53,7 @@ process_urchins <- function(data,
         "OCC_SITEID",
         "LATITUDE",
         "LONGITUDE",
-        "DEPTH_M",
+        "SITE_DEPTH_M",
         "LOCALDATE",
         "CB_TRANSECTID",
         "OCC_SITEID_TRANSECT",
@@ -126,7 +123,7 @@ process_urchins <- function(data,
         "OCC_SITEID",
         "LATITUDE",
         "LONGITUDE",
-        "DEPTH_M",
+        "SITE_DEPTH_M",
         "TRANSECT_LENGTH_M"
       ),
       .direction = "downup"
@@ -144,7 +141,7 @@ process_urchins <- function(data,
       data_full$LOCATIONCODE[i] <- data$LOCATIONCODE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LATITUDE[i] <- data$LATITUDE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LONGITUDE[i] <- data$LONGITUDE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
-      data_full$DEPTH_M[i] <- data$DEPTH_M[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
+      data_full$SITE_DEPTH_M[i] <- data$SITE_DEPTH_M[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$TRANSECT_LENGTH_M[i] <- data$TRANSECT_LENGTH_M[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
       data_full$LOCALDATE[i] <- data$LOCALDATE[match(data_full$OCC_SITEID[i], data$OCC_SITEID)]
 
@@ -213,7 +210,7 @@ process_urchins <- function(data,
       OCC_SITEID,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_TRANSECTID,
       TAXON_CODE,
@@ -238,7 +235,7 @@ process_urchins <- function(data,
       OCC_SITEID,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       TAXON_CODE,
       TAXON_NAME,
@@ -314,7 +311,7 @@ process_urchins <- function(data,
       OCC_SITEID,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_TRANSECTID,
       TRANSECT_LENGTH_M
@@ -328,6 +325,26 @@ process_urchins <- function(data,
           sep = "-")
 
   transect_erosion$URCHIN_DENSITY_NO_M2 <- transect_erosion$URCHIN_ABUNDANCE_NO / transect_erosion$TRANSECT_LENGTH_M
+  
+  transect_erosion <- transect_erosion[c(
+    "REGION",                 
+    "REGIONCODE",             
+    "YEAR",                    
+    "CRUISE_ID",               
+    "LOCATION",                
+    "LOCATIONCODE",            
+    "OCC_SITEID",              
+    "LATITUDE",               
+    "LONGITUDE",               
+    "SITE_DEPTH_M",            
+    "LOCALDATE",               
+    "CB_TRANSECTID",    
+    "OCC_SITEID_TRANSECT",  
+    "TRANSECT_LENGTH_M",       
+    "URCHIN_ABUNDANCE_NO", 
+    "URCHIN_DENSITY_NO_M2",
+    "URCHIN_EROSION_KG_M2_YR" 
+  )]
 
   transect_erosion_taxon <- transect_density_taxon %>%
     group_by(
@@ -340,7 +357,7 @@ process_urchins <- function(data,
       OCC_SITEID,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       CB_TRANSECTID,
       TAXON_CODE,
@@ -363,7 +380,7 @@ process_urchins <- function(data,
       OCC_SITEID,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE
     ) %>%
     summarize(
@@ -399,7 +416,7 @@ process_urchins <- function(data,
       OCC_SITEID,
       LATITUDE,
       LONGITUDE,
-      DEPTH_M,
+      SITE_DEPTH_M,
       LOCALDATE,
       TAXON_CODE,
       TAXON_NAME
@@ -436,7 +453,7 @@ process_urchins <- function(data,
     "OCC_SITEID",
     "LATITUDE",
     "LONGITUDE",
-    "DEPTH_M",
+    "SITE_DEPTH_M",
     "LOCALDATE",
     "CB_TRANSECTID",
     "TRANSECT_LENGTH_M",

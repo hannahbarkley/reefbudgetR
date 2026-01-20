@@ -4,14 +4,24 @@
 \alias{calc_fish_strs_spc}
 \title{Calculate parrotfish erosion rates from associated spc data}
 \usage{
-calc_fish_strs_spc(data, rates_dbase = rates_dbase, subset_distance_m)
+calc_fish_strs_spc(
+  data,
+  rates_dbase = rates_dbase,
+  fixed_metadata = NULL,
+  subset_distance_m = NULL,
+  method_type = method_type
+)
 }
 \arguments{
 \item{data}{fish survey data.}
 
 \item{rates_dbase}{Erosion rates database to use.}
 
+\item{fixed_metadata}{Dataframe with fixed site info}
+
 \item{subset_distance_m}{Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.}
+
+\item{method_type}{Calculate erosion rates for each StRS survey ("StRS") or average all surveys within a specified distance ("Mean StRS")}
 }
 \description{
 Calculate parrotfish erosion rates from associated spc data

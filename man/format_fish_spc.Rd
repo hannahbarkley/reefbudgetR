@@ -4,13 +4,13 @@
 \alias{format_fish_spc}
 \title{Format Stationary Point Count data}
 \usage{
-format_fish_spc(data, method = c("IPRB", "nSPC"), rates_dbase = rates_dbase)
+format_fish_spc(data, method = c("fSPC", "nSPC"), rates_dbase = rates_dbase)
 }
 \arguments{
 \item{data}{all stationary point count data.}
 
 \item{method}{type of SPC survey conducted. Choose either Fixed site SPC
-("method = "CbB") or stratified random sampling SPC ("method = "nSPC").}
+("method = "fSPC") or stratified random sampling SPC ("method = "nSPC").}
 
 \item{rates_dbase}{Erosion rates database to use.}
 }

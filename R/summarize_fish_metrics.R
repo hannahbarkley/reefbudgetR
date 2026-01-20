@@ -74,10 +74,9 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         TRANSECT,
         SIZE_CLASS,
         PHASE) %>%
@@ -101,10 +100,9 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         TRANSECT,
         SIZE_CLASS,
         PHASE) %>%
@@ -129,7 +127,7 @@ summarize_fish_metrics <- function(data,
     Rmisc::summarySE(
       .,
       measurevar = "value",
-      groupvars = c("OCC_SITEID", "OCC_SITENAME", "SIZE_CLASS", "PHASE"),
+      groupvars = c("OCC_SITEID", "SIZE_CLASS", "PHASE"),
       na.rm = T
     ) %>%
     # Order rows by Chlorurus, Scarus, than Other
@@ -152,13 +150,12 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         TRANSECT,
         FXN_GRP,
-        TAXON_CODE) %>%
+        SPECIES) %>%
       # calculate metric by species
       dplyr::reframe('SPECIES_SUM' = sum(!!sym(metric)) / AREA_M2) %>%
       distinct() %>%
@@ -178,13 +175,12 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         TRANSECT,
         FXN_GRP,
-        TAXON_CODE) %>%
+        SPECIES) %>%
       # calculate metric by species
       dplyr::reframe('SPECIES_SUM' = sum(!!sym(metric)) / (AREA_M2 / 10000)) %>%
       distinct() %>%
@@ -207,10 +203,9 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD
+        METHOD
       ) %>%
       reframe(AREA_AVG = mean(AREA_M2)) %>%
       right_join(., data, by = colnames(.)[colnames(.) %in% colnames(data)]) %>%
@@ -222,12 +217,11 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         FXN_GRP,
-        TAXON_CODE,
+        SPECIES,
         AREA_AVG, 
         PHASE, 
         SIZE_CLASS) %>%
@@ -244,12 +238,11 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         FXN_GRP,
-        TAXON_CODE) %>%
+        SPECIES) %>%
       dplyr::reframe(
         'value' = (sum(MEAN) / AREA_AVG),
         #calculate average value per sp
@@ -260,12 +253,12 @@ summarize_fish_metrics <- function(data,
       ) %>%
       distinct() %>% # eliminate duplicate rows
       # Attach Grazing Types Classifications for Excavator, Scraper, etc.
-      left_join(., fish_grazing_types %>% dplyr::rename(TAXON_CODE = SPECIES) %>% dplyr::select(TAXON_CODE, GENUS), by = "TAXON_CODE", relationship = "many-to-many") %>%
+      left_join(., fish_grazing_types %>% dplyr::rename(SPECIES = SPECIES) %>% dplyr::select(SPECIES, GENUS), by = "SPECIES", relationship = "many-to-many") %>%
       # Order rows by Chlorurus, Scarus, then Other
       arrange(match(GENUS, c(
         "Chlorurus", "Scarus", "Calotomus", "Parrotfish"
       ))) %>%
-      dplyr::select(REGION:FXN_GRP, GENUS, TAXON_CODE:se)
+      dplyr::select(REGION:FXN_GRP, GENUS, SPECIES:se)
     
   } else {
     
@@ -278,10 +271,9 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD
+        METHOD
       ) %>%
       reframe(AREA_AVG = mean(AREA_M2)) %>%
       right_join(., data, by = colnames(.)[colnames(.) %in% colnames(data)]) %>%
@@ -293,12 +285,11 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         FXN_GRP,
-        TAXON_CODE, 
+        SPECIES, 
         AREA_AVG, 
         PHASE, 
         SIZE_CLASS) %>%
@@ -315,12 +306,11 @@ summarize_fish_metrics <- function(data,
         LOCATION,
         LOCATIONCODE,
         OCC_SITEID,
-        OCC_SITENAME,
         LATITUDE,
         LONGITUDE,
-        CB_METHOD,
+        METHOD,
         FXN_GRP,
-        TAXON_CODE) %>%
+        SPECIES) %>%
       dplyr::reframe(
         'value' = (sum(MEAN) / (AREA_AVG / 10000)),
         #calculate average value per sp
@@ -331,12 +321,12 @@ summarize_fish_metrics <- function(data,
       ) %>%
       distinct() %>% # eliminate duplicate rows
       # Attach Grazing Types Classifications for Excavator, Scraper, etc.
-      left_join(., fish_grazing_types %>% dplyr::rename(TAXON_CODE = SPECIES) %>% dplyr::select(TAXON_CODE, GENUS), by = "TAXON_CODE") %>%
+      left_join(., fish_grazing_types %>% dplyr::rename(SPECIES = SPECIES) %>% dplyr::select(SPECIES, GENUS), by = "SPECIES") %>%
       # Order rows by Chlorurus, Scarus, then Other
       arrange(match(GENUS, c(
         "Chlorurus", "Scarus", "Calotomus", "Parrotfish"
       ))) %>%
-      dplyr::select(REGION:FXN_GRP, GENUS, TAXON_CODE:se)
+      dplyr::select(REGION:FXN_GRP, GENUS, SPECIES:se)
     
   }
   
@@ -351,10 +341,9 @@ summarize_fish_metrics <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      CB_METHOD,
+      METHOD,
       TRANSECT) %>%
     dplyr::reframe('TRANSECT_SUM' = sum(value)) %>%
     spread(., TRANSECT, "TRANSECT_SUM") %>%
@@ -371,10 +360,9 @@ summarize_fish_metrics <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      CB_METHOD,
+      METHOD,
       TRANSECT
     ) %>%
     reframe('TRANSECT_SUM' = sum(value)) %>%
@@ -385,10 +373,9 @@ summarize_fish_metrics <- function(data,
       LOCATION,
       LOCATIONCODE,
       OCC_SITEID,
-      OCC_SITENAME,
       LATITUDE,
       LONGITUDE,
-      CB_METHOD
+      METHOD
     ) %>%
     reframe(
       TOTAL = sum(TRANSECT_SUM),

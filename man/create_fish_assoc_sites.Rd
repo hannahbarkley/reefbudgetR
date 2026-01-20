@@ -4,7 +4,7 @@
 \alias{create_fish_assoc_sites}
 \title{Create fish associated SPC sites in relation to fixed sites}
 \usage{
-create_fish_assoc_sites(data, subset_distance_m)
+create_fish_assoc_sites(data, fixed_metadata, subset_distance_m)
 }
 \arguments{
 \item{data}{fish survey data.}

@@ -7,9 +7,11 @@
 process_prod(
   data,
   dbase_type = "NCRMP",
-  method_name = c("IPRB", "Chords", "SfM"),
+  method_name = "SfM",
   full_summary = TRUE,
   label = NULL,
+  qc_check = FALSE,
+  sites_metadata = NULL,
   ...
 )
 }
@@ -22,6 +24,10 @@ database is derived from "IP Calcification and bioerosion rates database v.1.3",
 downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".}
 
 \item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
+
+\item{qc_check}{Remove transects where rugosity < 1.}
+
+\item{sites_metadata}{Data frame containing information about sites}
 }
 \description{
 Calculate carbonate production rates from benthic census data

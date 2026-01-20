@@ -4,17 +4,10 @@
 \alias{process_urchins}
 \title{Calculate urchin erosion rates from urchin census data}
 \usage{
-process_urchins(
-  data,
-  transect_length = NULL,
-  method_name = NULL,
-  full_summary = TRUE
-)
+process_urchins(data, transect_length = NULL, full_summary = TRUE)
 }
 \arguments{
 \item{data}{Urchin observation data set.}
-
-\item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
 }
 \description{
 Calculate urchin erosion rates from urchin census data

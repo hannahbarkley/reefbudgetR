@@ -24,7 +24,7 @@ calc_fish_fixed_spc <- function(data,
     # FOR FIXED SPC DATA ----------------------------------------------------------------
     
     format_spc_output <- format_fish_spc(data,                                                 
-                                         method = "IPRB",
+                                         method = "fSPC",
                                          rates_dbase = rates_dbase)
   
     # created associated SPC sites to each OCC fixed site SPC
@@ -88,7 +88,7 @@ calc_fish_fixed_spc <- function(data,
                                       filter_all(all_vars(!is.na(.))) %>%
                                       distinct(.)
       
-      } else {format_fixed_spc_erosion2 <- format_fixed_spc_erosion}
+    } else {format_fixed_spc_erosion2 <- format_fixed_spc_erosion}
       
     # Continue formatting dataframe to match BELT FINAL BIOEROSION OUTPUT
     format_fixed_spc_erosion3 <-   
@@ -96,23 +96,48 @@ calc_fish_fixed_spc <- function(data,
       unite("METRIC", METRIC,FXN_GRP) %>% 
       unite("METRIC", METRIC:calc) %>%
       # fill in missing metadata info
-      left_join(., data %>% dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE, CB_METHOD), by = "REA_SITEID", relationship = "many-to-many") %>% #join important metadata that was lost during averaging replicates
+      left_join(., data %>% 
+                  dplyr::filter(., !(TRAINING_YN %in% "-1")) %>%
+                  dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE, METHOD), by = "REA_SITEID", relationship = "many-to-many") %>% #join important metadata that was lost during averaging replicates
       distinct(.) %>% #left_join creates duplicates, so remove duplicates
       mutate(LATITUDE = round(LATITUDE, 5)) %>%
       mutate(LONGITUDE = round(LONGITUDE, 5)) %>%
       #mutate(REGIONCODE = sites_associated_dbase$REGIONCODE[1],
       #       LOCATIONCODE = str_extract(REA_SITEID, "(\\w+)")) %>%
       #add OCC_SITEID column
-      left_join(., data %>% dplyr::select(REA_SITEID, OCC_SITEID, OCC_SITENAME), by = "REA_SITEID") %>%
+      left_join(., data %>% 
+                  dplyr::filter(., !(TRAINING_YN %in% "-1")) %>%
+                  dplyr::select(REA_SITEID, OCC_SITEID), by = "REA_SITEID",  relationship = "many-to-many") %>%
       distinct(.) %>%
       spread(., METRIC, value, fill = 0) %>%
-      dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, OCC_SITENAME, LATITUDE, LONGITUDE, CB_METHOD, everything(.), -REA_SITEID)
+      dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, LATITUDE, LONGITUDE, METHOD, everything(.), -REA_SITEID)
     
+    # Identify any sites with no parrotfish observations that were dropped from output
+    missing_sites <- data %>%
+      dplyr::filter(.,
+                    !(TRAINING_YN %in% "-1") &
+                      OCC_SITEID %in%  unique(data$OCC_SITEID)[!unique(data$OCC_SITEID) %in% unique(format_fixed_spc_erosion3$OCC_SITEID)]) %>%
+      dplyr::select(
+        REGION,
+        REGIONCODE,
+        CRUISE_ID,
+        LOCATION,
+        LOCATIONCODE,
+        OCC_SITEID,
+        LATITUDE,
+        LONGITUDE,
+        METHOD
+      ) %>%
+      distinct(.)
     
-    summary_fixed_spc_erosion <- format_fixed_spc_erosion3 %>%
+    # Bind missing sites data frame and set values equal to 0
+    format_fixed_spc_erosion4 <- bind_rows(format_fixed_spc_erosion3, missing_sites) %>%
+      mutate_if(is.numeric, funs(ifelse(is.na(.), 0, .)))
+    
+    summary_fixed_spc_erosion <- format_fixed_spc_erosion4 %>%
       filter(!is.na(OCC_SITEID)) %>% # remove all non fixed SPC site data
-      mutate(CB_METHOD = "Fixed SPC") %>%
-      mutate_at(vars(REGION:CB_METHOD), as.factor) %>%
+      mutate(METHOD = "Fixed SPC") %>%
+      mutate_at(vars(REGION:METHOD), as.factor) %>%
       mutate_at(vars(FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95), as.numeric)
     
     return(summary_fixed_spc_erosion)

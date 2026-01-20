@@ -22,12 +22,13 @@
 #'sites_associated_dbase <- create_fish_assoc_sites(data = fish_data, subset_distance_m = 2000)
 
 
-
-create_fish_assoc_sites <- function(data, subset_distance_m){
+create_fish_assoc_sites <- function(data, fixed_metadata, subset_distance_m){
   
   # Download shapefile from GSHHG to users Downloads folder---------------------------------------------------
   if(unique(data$REGION) == "American Samoa") {
-    load("islands_shp.Rdata") #loaded as shape_file
+    #load("islands_shp.Rdata") #loaded as shape_file
+    shape_file <- shape_file
+    
     } else{
       
     data_path <- paste0("C:/Users/", Sys.info()[7], "/Downloads") # can use stringr::str_extract(getwd(), "^.{3}") before "/Users/" if you need to paste working directory letter.
@@ -64,18 +65,23 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   sf_use_s2(FALSE)
   ALLisl_poly=shape_file %>% st_make_valid() # could take a couple minutes; st_make_valid() is necessary to catch any errors in points
   
-  
-  # Filter spc fixed site, aka occ fixed site, data only
-  ptsOCC = data %>%
-    dplyr::select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
-    filter(CB_METHOD %in% "IPRB") %>% #IPRB indicates fixed OCC sites
-    distinct(.)
+  if("OCC_SITEID" %in% colnames(data)== FALSE) {
+    data$OCC_SITEID <- NA
+  }
   
   # Filter spc field data (without fixed site SPC)
   ptsFISH = data %>%
-    dplyr::select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
-    filter(CB_METHOD %in% "nSPC") %>% #nSPC indicates SPC field data (excluding fixed sites)
+    dplyr::select(REGION:REA_SITEID,LATITUDE:LONGITUDE, METHOD, HABITAT_CODE:HABITAT_TYPE, OCC_SITEID) %>%
+    filter(METHOD %in% "nSPC") %>% #nSPC indicates SPC field data (excluding fixed sites)
     distinct(.)
+  
+  # Filter spc fixed site, aka occ fixed site, data only
+  ptsOCC = fixed_metadata %>%
+            filter(LOCATIONCODE %in% ptsFISH$LOCATIONCODE) %>%
+            select(-LOCALDATE, -SITE_DEPTH_M) %>%
+            mutate(REA_SITEID = "NA",
+                   METHOD = "NA")
+            
   
   
   # Reformat spc and field and fixed site dataframes into simple features point format
@@ -98,7 +104,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
     ptsOCC_ISL=ptsOCC %>% filter(LOCATIONCODE==uLC[i_isl]) # ...filter data by island
   
     #clip shape file to rasterize
-    pts_ext=terra::ext(rbind(ptsFISH_ISL,ptsOCC_ISL))*1.5 # 1.5 is to zoom out of the spatial extent...can adjust to zoom out more or less
+    pts_ext=terra::ext(bind_rows(ptsFISH_ISL,ptsOCC_ISL))*1.5 # 1.5 is to zoom out of the spatial extent...can adjust to zoom out more or less
     options(warn = 1)
     poly_ISL=st_crop(x = ALLisl_poly,y = st_bbox(pts_ext))
     options(warn = 0) # more conservative
@@ -129,7 +135,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   
   # Create Associated fish SPC site labels based on distance from each fixed SPC/OCC site ----------------
   
-  # subset distance matrix/dataframe for fish SPC sites within 1500m of each fixed SPC/OCC site
+  # subset distance matrix/dataframe for fish SPC sites within 6000m of each fixed SPC/OCC site
   subset_by_dist <- out %>%
                       mutate(value = case_when(DISTANCE_m <= subset_distance_m ~ "-1",
                                                DISTANCE_m > subset_distance_m ~ "0",))
@@ -141,9 +147,17 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   
   
   # create final dataframe with associated sites-----------------------------------------------------------
+  fixed_dat <- fixed_metadata %>%
+                filter(LOCATIONCODE %in% ptsFISH$LOCATIONCODE) %>%
+                select(-LOCALDATE, -SITE_DEPTH_M) %>%
+                mutate(REA_SITEID = "NA",
+                       METHOD = "NA")
+  
   finaldf <- data %>%
-              dplyr::select(REGION:LONGITUDE, CB_METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
+              dplyr::select(REGION:LONGITUDE, METHOD, HABITAT_CODE:HABITAT_TYPE) %>%
               distinct()
+  
+  finaldf <- bind_rows(fixed_dat, finaldf)
     
   # filter all fixed SPC/OCC sites within distance chosen (i.e. 1500m) of each fish SPC site
   for (i in 1:nrow(finaldf)) {
@@ -156,7 +170,7 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
     }
   
   
-  finaldf <- separate_rows(finaldf, ASSOC_OCCSITEID, sep = ",") # duplicate rows with multiple ASSOC_OCCSITEIDs 
+  finaldf <- separate_rows(finaldf, ASSOC_OCCSITEID, sep = ", ") # duplicate rows with multiple ASSOC_OCCSITEIDs 
   finaldf$ASSOC_OCCSITEID <- gsub(" ", "", finaldf$ASSOC_OCCSITEID)
   
   # Assign "value" column to 1
@@ -182,9 +196,9 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   # number of associated sites with each fixed SPC/OCC site
   strs_samplesize <- finaldf %>% 
                       dplyr::select(ASSOC_OCCSITEID, HABITAT_CODE, value) %>%
-                      group_by(ASSOC_OCCSITEID, value) %>% 
-                      count() %>% 
-                      spread(value, n) %>% 
+                      dplyr::group_by(ASSOC_OCCSITEID, value) %>% 
+                      dplyr::count() %>% 
+                      tidyr::spread(value, n) %>% 
                       dplyr::rename(Associated = `-1`) %>% 
                       dplyr::rename(Not_Associated = `0`) %>% 
                       dplyr::rename(Fixed = `1`)
@@ -193,12 +207,6 @@ create_fish_assoc_sites <- function(data, subset_distance_m){
   return(list(output = finaldf, surveysamplesize = strs_samplesize))
 
   }
-  
-  
-  
-  
-  
-  
   
   
   

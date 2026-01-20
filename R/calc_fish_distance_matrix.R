@@ -26,7 +26,7 @@ calc_fish_distance_matrix <- function(pointsOCC, pointsFISH, island_poly, resolu
   
   res_d=resolution_m/111111
   # Create a raster covering the combined extent of the island and points
-  all_features <- rbind(pointsOCC, pointsFISH)
+  all_features <- bind_rows(pointsOCC, pointsFISH)
   r <- rast(ext(all_features)*1.2, res=res_d) # may need to add crs back if not present
 
   # Rasterize the island

@@ -2,12 +2,13 @@
 #'
 #'@author Rebecca Weible
 #'
-#'#'@param data_spc fish spc survey data.
+#'@param fish_data Fish spc survey data.
+#'@param method_type Type of SPC data. "Fixed" (fixed only), "StRS" (stratified random), "Mean StRS" (average of nearby stratified random), or "Belt" (belt data only)
+#'@param fixed_metadata Dataframe with fixed site info
 #'@param dbase_type Erosion rates database to use. Choose either Indo-Pacific
 #'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
 #'by Tye Kindinger, NOAA PIFSC ("dbase_type = "Kindinger").
-#'@param data_belt fish belt survey data.
-#'@param subset_distance_m Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries. 
+#'@param subset_distance_m Assigned associated site distances, in meters, from fixed SPC/OCC site to all other fish SPC sites, based on parrotfish foraging boundaries.
 #'
 #'@import Rmisc
 #'@import tidyverse
@@ -18,70 +19,54 @@
 #'@examples
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
-#'fish_belt <- process_fish(spc_data = fish_data_spc, 
+#'fish_belt <- process_fish(spc_data = fish_data_spc,
 #'dbase_type = "Kindinger", belt_data = fish_data_belt, subset_distance_m = 2000)
 
-process_fish <- function(spc_data= data_spc,
-                         dbase_type = c("Kindinger", "IPRB"),
-                         belt_data = data_belt,
-                         subset_distance_m) {
+process_fish <- function(data,
+                         method_type = "Fixed",                         
+                         fixed_metadata = NULL,
+                         dbase_type = "Kindinger",
+                         subset_distance_m = 6000) {
   
-  if(dbase_type == "Kindinger") {
+  if (dbase_type == "Kindinger") {
     rates_dbase <- fish_erosion_dbase_kindinger
   } else{
     rates_dbase <- fish_erosion_dbase_iprb
   }
   
+  
   # if you have SPC data then....
-  if(!missing(spc_data)){
+  if (method_type == "Fixed") {
+      fish_fixed_spc <- calc_fish_fixed_spc(data = data, rates_dbase = rates_dbase)
+      
+      return(fish_fixed_spc)
+  }
+    
   
-    fish_fixed_spc <- calc_fish_fixed_spc(
-                        data = spc_data, 
-                        rates_dbase = rates_dbase)
-    
-    
-    fish_strs_spc_ <- calc_fish_strs_spc(
-                      data = spc_data, 
-                      rates_dbase = rates_dbase,
-                      subset_distance_m)
-    fish_strs_spc <- fish_strs_spc_$calc_strs_ero
-    
-    
-    if (!missing(belt_data)) {
+  if (method_type == "StRS") {
+      fish_strs_spc_ <- calc_fish_strs_spc(data = data,
+                                           rates_dbase = rates_dbase,
+                                           method_type = "StRS")
       
-      fish_belt_ <- calc_fish_belt(
-                    data = belt_data, 
-                    rates_dbase = rates_dbase, 
-                    full_summary = TRUE)
-      
-        return(list(dat = rbind(fish_belt_$fish_erosion_site, 
-                                  fish_fixed_spc,
-                                  fish_strs_spc),
-                    assoc_site_count = fish_strs_spc_$assoc_survey_count))
-    }
-    
-    
-    
-    if (missing(belt_data)) {
-        return(list(dat = rbind(fish_fixed_spc,
-                                  fish_strs_spc),
-                    assoc_site_count = fish_strs_spc_$assoc_survey_count))
-    }
+      return(fish_strs_spc_)
   }
   
-  # If missing SPC data then...
-  else {
+  if (method_type == "Mean StRS") {
+    fish_strs_spc_ <- calc_fish_strs_spc(data = data,
+                                         fixed_metadata = fixed_metadata,
+                                         rates_dbase = rates_dbase,
+                                         subset_distance_m,
+                                         method_type = "Mean StRS")
     
-    fish_belt_ <- calc_fish_belt(
-      data = belt_data, 
-      rates_dbase = rates_dbase, 
-      full_summary = TRUE)
-    
-    return(fish_belt_)
-    
+    return(fish_strs_spc_)
   }
-
-  
+    
+    
+  if (method_type == "Belt") {
+      fish_belt_ <- calc_fish_belt(data = data, 
+                                    rates_dbase = rates_dbase, 
+                                    full_summary = TRUE)
+      return(fish_belt_)
+    }
+    
 }
-
-

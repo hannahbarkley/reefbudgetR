@@ -9,6 +9,7 @@
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".
 #'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
 #'@param qc_check Remove transects where rugosity < 1.
+#'@param sites_metadata Data frame containing information about sites
 #'
 #'@import dplyr
 #'@import tools
@@ -42,6 +43,7 @@ process_prod <- function(data,
                          full_summary = TRUE,
                          label = NULL,
                          qc_check = FALSE,
+                         sites_metadata = NULL,
                          ...) {
   options(dplyr.summarise.inform = FALSE,
           scipen = 999)
@@ -178,6 +180,7 @@ process_prod <- function(data,
       "LOCATION",
       "LOCATIONCODE",
       "OCC_SITEID",
+      "SITEVISITID",
       "LATITUDE",
       "LONGITUDE",
       "SITE_DEPTH_M",

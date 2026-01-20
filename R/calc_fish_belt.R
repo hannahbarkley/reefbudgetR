@@ -10,7 +10,7 @@
 #'@import tibble
 #'@import dplyr
 #'
-#'@export process_fish
+#'@export calc_fish_belt
 #'
 #'@examples
 #'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)

@@ -25,7 +25,7 @@ benthic_sfm <- NULL
 
 for (i in seq_along(sfm_files)) {
   transect_i <- read.csv(sfm_files[i], colClasses = "character")
-
+  
   names(transect_i)[names(transect_i) == 'OBJECTID..'] <- 'OBJECTID'
   names(transect_i)[names(transect_i) == 'OID_'] <- 'OBJECTID'
   names(transect_i)[names(transect_i) == 'Shape..'] <- 'Shape'
@@ -40,8 +40,12 @@ for (i in seq_along(sfm_files)) {
   names(transect_i)[names(transect_i) == 'Moprh'] <- 'MORPHOLOGYCODE'
   names(transect_i)[names(transect_i) == 'Year'] <- 'YEAR'
   names(transect_i)[names(transect_i) == 'DEPTH_M'] <- 'SITE_DEPTH_M'
+  
+  if (is.null(transect_i$OBJECTID) == TRUE) {
+    transect_i$OBJECTID <- NA
+  }
 
-  benthic_sfm <- rbind(benthic_sfm, transect_i)
+  benthic_sfm <- bind_rows(benthic_sfm, transect_i)
 }
 
 
