@@ -571,38 +571,42 @@ summarize_prod <- function(data,
         "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
       ),
       .direction = "downup"
-    )
-  
-  
-  for (i in 1:nrow(summary_transect_coral))
-  {
-    if (is.na(unique(summary_transect_coral$LATITUDE[i])) == TRUE) {
-      summary_transect_coral$REGION[i]  <- transect_summary$REGION[match(summary_transect_coral$OCC_SITEID[i],
-                                                                      transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$REGIONCODE[i]  <- transect_summary$REGIONCODE[match(summary_transect_coral$OCC_SITEID[i],
-                                                                              transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$YEAR[i]  <- transect_summary$YEAR[match(summary_transect_coral$OCC_SITEID[i],
-                                                                  transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$CRUISE_ID[i]  <- transect_summary$CRUISE_ID[match(summary_transect_coral$OCC_SITEID[i],
-                                                                            transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$LOCATIONCODE[i]  <- transect_summary$LOCATIONCODE[match(summary_transect_coral$OCC_SITEID[i],
-                                                                                  transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$LOCATION[i]  <- transect_summary$LOCATION[match(summary_transect_coral$OCC_SITEID[i],
-                                                                          transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$LATITUDE[i]  <- transect_summary$LATITUDE[match(summary_transect_coral$OCC_SITEID[i],
-                                                                          transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$LONGITUDE[i]  <- transect_summary$LONGITUDE[match(summary_transect_coral$OCC_SITEID[i],
-                                                                            transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$SITE_DEPTH_M[i]  <- transect_summary$SITE_DEPTH_M[match(summary_transect_coral$OCC_SITEID[i],
-                                                                                  transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$LOCALDATE[i]  <- transect_summary$LOCALDATE[match(summary_transect_coral$OCC_SITEID[i],
-                                                                            transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$TRANSECT_PLANAR_LENGTH_M[i]  <- transect_summary$TRANSECT_PLANAR_LENGTH_M[match(summary_transect_coral$OCC_SITEID[i],
-                                                                                                          transect_summary$OCC_SITEID[i])]
-      summary_transect_coral$TRANSECT_TOTAL_SUBSTRATE_COVER_M[i]  <- transect_summary$TRANSECT_TOTAL_SUBSTRATE_COVER_M[match(summary_transect_coral$OCC_SITEID[i],
-                                                                                                                          transect_summary$OCC_SITEID[i])]
+    ) %>% ungroup() %>%
+    {
+      # Only perform left_join if there are NA values in location fields
+      if (any(is.na(.$LATITUDE)) || any(is.na(.$REGION))) {
+        . %>%
+          left_join(
+            transect_summary %>%
+              select(OCC_SITEID, SITEVISITID, CB_TRANSECTID, CB_METHOD, REGION, REGIONCODE, YEAR, CRUISE_ID,
+                     LOCATION, LOCATIONCODE, LATITUDE, LONGITUDE,
+                     SITE_DEPTH_M, LOCALDATE, TRANSECT_PLANAR_LENGTH_M,
+                     TRANSECT_TOTAL_SUBSTRATE_COVER_M) %>%
+              distinct(),
+            by = c("OCC_SITEID", "SITEVISITID", "CB_TRANSECTID"),
+            suffix = c("", ".transect")
+          ) %>%
+          mutate(
+            CB_METHOD = coalesce(CB_METHOD, CB_METHOD.transect),
+            REGION = coalesce(REGION, REGION.transect),
+            REGIONCODE = coalesce(REGIONCODE, REGIONCODE.transect),
+            YEAR = coalesce(YEAR, YEAR.transect),
+            CRUISE_ID = coalesce(CRUISE_ID, CRUISE_ID.transect),
+            LOCATION = coalesce(LOCATION, LOCATION.transect),
+            LOCATIONCODE = coalesce(LOCATIONCODE, LOCATIONCODE.transect),
+            LATITUDE = coalesce(LATITUDE, LATITUDE.transect),
+            LONGITUDE = coalesce(LONGITUDE, LONGITUDE.transect),
+            SITE_DEPTH_M = coalesce(SITE_DEPTH_M, SITE_DEPTH_M.transect),
+            LOCALDATE = coalesce(LOCALDATE, LOCALDATE.transect),
+            TRANSECT_PLANAR_LENGTH_M = coalesce(TRANSECT_PLANAR_LENGTH_M, TRANSECT_PLANAR_LENGTH_M.transect),
+            TRANSECT_TOTAL_SUBSTRATE_COVER_M = coalesce(TRANSECT_TOTAL_SUBSTRATE_COVER_M, TRANSECT_TOTAL_SUBSTRATE_COVER_M.transect)
+          ) %>%
+          select(-ends_with(".transect"))
+      } else {
+        .
+      }
     }
-  }
+  
   
   summary_transect_coral <-
     summary_transect_coral %>% group_by(CORAL_GROUP) %>%
