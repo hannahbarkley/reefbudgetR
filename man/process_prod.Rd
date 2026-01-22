@@ -7,7 +7,6 @@
 process_prod(
   data,
   dbase_type = "NCRMP",
-  method_name = "SfM",
   full_summary = TRUE,
   label = NULL,
   qc_check = FALSE,
@@ -23,11 +22,11 @@ or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific Reef
 database is derived from "IP Calcification and bioerosion rates database v.1.3",
 downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".}
 
-\item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
-
 \item{qc_check}{Remove transects where rugosity < 1.}
 
 \item{sites_metadata}{Data frame containing information about sites}
+
+\item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
 }
 \description{
 Calculate carbonate production rates from benthic census data
@@ -37,16 +36,7 @@ benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv",
    na = "", check.names = FALSE)
 
 prod_iprb <- process_prod(
-   data = benthic_data[benthic_data$CB_METHOD == "IPRB", ],
-   method_name = "IPRB"
-)
-prod_chords <- process_prod(
-   data = benthic_data[benthic_data$CB_METHOD == "Chords", ],
-   method_name = "Chords"
-)
-prod_sfm <- process_prod(
-   data = benthic_data[benthic_data$CB_METHOD == "SfM", ],
-   method_name = "SfM"
+   data = benthic_data,
 )
 }
 \author{

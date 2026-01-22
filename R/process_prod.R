@@ -9,7 +9,6 @@
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".
 #'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
 #'@param qc_check Remove transects where rugosity < 1.
-#'@param sites_metadata Data frame containing information about sites
 #'
 #'@import dplyr
 #'@import tools
@@ -29,10 +28,10 @@
 
 process_prod <- function(data,
                          dbase_type = "NCRMP",
+                         macro_rates = "IPRB",
+                         micro_rates = "IPRB",
                          full_summary = TRUE,
-                         label = NULL,
                          qc_check = FALSE,
-                         sites_metadata = NULL,
                          ...) {
   options(dplyr.summarise.inform = FALSE,
           scipen = 999)
@@ -81,7 +80,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "substrate code",
-                   level = "transect")
+                   level = "transect",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CLASS on each TRANSECT
@@ -90,7 +91,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "substrate class",
-                   level = "transect")
+                   level = "transect",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   # Calculate cover, planar production, and carbonate production for each
   # CORAL_GROUP on each TRANSECT
@@ -99,7 +102,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "coral group",
-                   level = "transect")
+                   level = "transect",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   # Calculate cover, planar production, and carbonate production
   # on each TRANSECT
@@ -108,7 +113,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "overall",
-                   level = "transect")
+                   level = "transect",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CODE on each SITE
@@ -117,7 +124,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "substrate code",
-                   level = "site")
+                   level = "site",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   # Calculate cover, planar production, and carbonate production for each
   # SUBSTRATE_CLASS on each SITE
@@ -127,7 +136,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "substrate class",
-                   level = "site")
+                   level = "site",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   # Calculate cover, planar production, and carbonate production for each
   # CORAL_GROUP on each SITE
@@ -136,7 +147,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "coral group",
-                   level = "site")
+                   level = "site",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   # Calculate cover, planar production, and carbonate production on each SITE
   prod_site <-
@@ -144,19 +157,9 @@ process_prod <- function(data,
                    transect_summary,
                    dbase_type,
                    summarize_by = "overall",
-                   level = "site")
-  
-  if (is.null(label) == FALSE) {
-    prod_site$LABEL <- label
-    prod_site_substrateclass$LABEL <- label
-    prod_site_coral$LABEL <- label
-    prod_site_substratecode$LABEL <- label
-    prod_transect$LABEL <- label
-    prod_transect_substrateclass$LABEL <- label
-    prod_transect_coral$LABEL <- label
-    prod_transect_substratecode$LABEL <- label
-    data$LABEL <- label
-  }
+                   level = "site",
+                   macro_rates = macro_rates,
+                   micro_rates = micro_rates)
   
   if (full_summary == TRUE) {
     data <- data[c(

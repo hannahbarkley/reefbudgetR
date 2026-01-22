@@ -4,7 +4,7 @@
 \alias{run_calc_prod}
 \title{Run calc_prod function}
 \usage{
-run_calc_prod(data, dbase_type, method_name, ...)
+run_calc_prod(data, dbase_type, ...)
 }
 \arguments{
 \item{data}{Benthic data set to process}
@@ -13,8 +13,6 @@ run_calc_prod(data, dbase_type, method_name, ...)
 or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
 database is derived from "IP Calcification and bioerosion rates database v.1.3",
 downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
-
-\item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
 }
 \description{
 Run calc_prod function
@@ -25,7 +23,6 @@ benthic_data <- read.csv("ESD_CarbBudget_Benthic_OAHU_2021.csv",
 
 calc_prod_output <- run_calc_prod(
     data = benthic_data,
-    method_name = "IPRB",
     dbase_type = "NCRMP"
     )
 }

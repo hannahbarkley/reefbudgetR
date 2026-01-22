@@ -14,7 +14,6 @@ summarize_prod(
   macro_rate_ci = 0.129,
   micro_rate = 0.262,
   micro_rate_ci = 0.18,
-  sites_metadata = NULL,
   ...
 )
 }
@@ -40,8 +39,6 @@ downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
 \item{micro_rate}{Rate of microbioerosion in kg/cm2/yr. Default is 0.262.}
 
 \item{micro_rate_ci}{Confidence interval for rate of microbioerosion in kg/cm2/yr. Default is 0.180.}
-
-\item{sites_metadata}{Data frame containing information about sites}
 }
 \description{
 Summarize carbonate production rates at transect and site level
