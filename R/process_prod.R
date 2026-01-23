@@ -31,6 +31,7 @@ process_prod <- function(data,
                          macro_rates = "IPRB",
                          micro_rates = "IPRB",
                          full_summary = TRUE,
+                         prod_dbase_custom = NULL,
                          qc_check = FALSE,
                          ...) {
   options(dplyr.summarise.inform = FALSE,
@@ -59,7 +60,8 @@ process_prod <- function(data,
   
   
   calc_prod_output <- run_calc_prod(data,
-                                    dbase_type)
+                                    dbase_type,
+                                    prod_dbase_custom = NULL)
   data <- calc_prod_output$data
   transect_summary <- calc_prod_output$transect_summary
   

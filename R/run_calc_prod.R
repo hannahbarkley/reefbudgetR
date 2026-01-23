@@ -3,9 +3,9 @@
 #'@author Hannah Barkley
 #'
 #'@param data Benthic data set to process
-#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
-#'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
-#'database is derived from "IP Calcification and bioerosion rates database v.1.3",
+#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB"), the 
+#'U.S. Pacific Islands NCRMP-specific database ("NCRMP"), or upload a customized database with location-specific rates ("Custom"). 
+#'The Indo-Pacific ReefBudget database is derived from "IP Calcification and bioerosion rates database v.1.3",
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.
 #'
 #'@import dplyr
@@ -25,15 +25,26 @@
 
 run_calc_prod <- function(data,
                           dbase_type,
+                          prod_dbase_custom = NULL,
                           ...) {
   if (dbase_type == "IPRB") {
+    
     data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
     prod_dbase <- prod_dbase_iprb
+    
   }
 
   if (dbase_type == "NCRMP") {
+    
     prod_dbase <- prod_dbase_ncrmp
+    
   }
+  
+  if (dbase_type == "Custom") {
+    
+    prod_dbase <- prod_dbase_custom
+    
+  } 
 
   transects <-
     unique(data[c("OCC_SITEID_TRANSECT", "TRANSECT_PLANAR_LENGTH_M")])
@@ -57,7 +68,7 @@ run_calc_prod <- function(data,
       .data$TRANSECT_PLANAR_LENGTH_M
     ) %>%
     summarize(
-      TRANSECT_PLANAR_LENGTH_M = mean(as.numeric(.data$TRANSECT_PLANAR_LENGTH_M)),
+      TRANSECT_PLANAR_LENGTH_M = first(as.numeric(.data$TRANSECT_PLANAR_LENGTH_M)),
       TRANSECT_TOTAL_SUBSTRATE_COVER_M =
         sum(.data$SUBSTRATE_COVER_CM / 100, na.rm = TRUE),
       TRANSECT_RUGOSITY =
@@ -160,6 +171,19 @@ run_calc_prod <- function(data,
       )
     }
     
+    if (dbase_type == "Custom") {
+      calc_i <- calc_prod(
+        substrate_class = data$SUBSTRATE_CLASS[i],
+        substrate_code = data$SUBSTRATE_CODE[i],
+        morphology_code = data$MORPHOLOGYCODE[i],
+        substrate_cover_cm = data$SUBSTRATE_COVER_CM[i],
+        location_code = data$LOCATIONCODE[i],
+        dbase_type = "Custom",
+        prod_dbase = prod_dbase
+      )
+    }
+    
+    
     data$COLONY_PROD_G_YR[i] <- calc_i$cp_i
     data$COLONY_PROD_G_YR_L95[i] <- calc_i$cp_l95_i
     data$COLONY_PROD_G_YR_U95[i] <- calc_i$cp_u95_i
@@ -247,6 +271,18 @@ run_calc_prod <- function(data,
         morphology_code = data$MORPHOLOGYCODE[i],
         substrate_cover_cm = data$SUBSTRATE_COVER_CM[i],
         dbase_type = "NCRMP",
+        prod_dbase = prod_dbase
+      )
+    }
+    
+    if (dbase_type == "Custom") {
+      calc_i <- calc_prod(
+        substrate_class = data$SUBSTRATE_CLASS[i],
+        substrate_code = data$SUBSTRATE_CODE[i],
+        morphology_code = data$MORPHOLOGYCODE[i],
+        substrate_cover_cm = data$SUBSTRATE_COVER_CM[i],
+        location_code = data$LOCATIONCODE[i],
+        dbase_type = "Custom",
         prod_dbase = prod_dbase
       )
     }

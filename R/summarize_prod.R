@@ -67,10 +67,8 @@ summarize_prod <- function(data,
                                             "coral group",
                                             "overall"),
                            level = c("transect", "site"),
-                           macro_rate = 0.209,
-                           macro_rate_ci = 0.129,
-                           micro_rate = 0.262,
-                           micro_rate_ci = 0.180,
+                           macro_rates = c("IPRB", "NCRMP"),
+                           micro_rates = c("IPRB", "NCRMP"),
                            ...
 
 ) { 
@@ -83,10 +81,11 @@ summarize_prod <- function(data,
   if (dbase_type == "NCRMP") {
     prod_dbase <- prod_dbase_ncrmp
   }
+  
 
   # Summarize production by SUBSTRATE_CODE at TRANSECT level  ----------------
 
-  transect_substratecode <- suppressMessages(
+  transect_substratecode <-
     data %>% dplyr::group_by(
       REGION,
       REGIONCODE,
@@ -110,9 +109,9 @@ summarize_prod <- function(data,
     ) %>%
       reframe(
         TRANSECT_PLANAR_LENGTH_M =
-          mean(TRANSECT_PLANAR_LENGTH_M),
+          first(TRANSECT_PLANAR_LENGTH_M),
         TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-          mean(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+          first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
         SUBSTRATE_COVER_CM =
           sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
         SUBSTRATE_COVER_PCT =
@@ -134,69 +133,84 @@ summarize_prod <- function(data,
           SUBSTRATE_PLANAR_PROD_KG_YR_U95 *
           (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
       )
-  )
   
+  # Create unique pairs and lookup ID
+  substrate_code_morphology_all <- data %>%
+    distinct(SUBSTRATE_CODE, MORPHOLOGYCODE) %>%
+    unite(
+      "SUBSTRATE_CODE_MORPHOLOGYCODE", 
+      SUBSTRATE_CODE, MORPHOLOGYCODE, 
+      sep = "-", 
+      remove = FALSE, # Keeps original columns
+      na.rm = TRUE    # If MORPHOLOGYCODE is NA, it won't add "-NA"
+    )
 
-  substrate_code_morphology_all <-
-    unique(data[c("SUBSTRATE_CODE", "MORPHOLOGYCODE")])
-
-  substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE <-
-    paste0(substrate_code_morphology_all$SUBSTRATE_CODE, "-", substrate_code_morphology_all$MORPHOLOGYCODE)
-
-  substrate_code_full_table <- expand.grid(
+  # Build the full substrate code table for each OCC SITE and substrate/morphology pair
+  
+  substrate_code_full_table <- expand_grid(
     OCC_SITEID = unique(transect_summary$OCC_SITEID),
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
-    SUBSTRATE_CODE_MORPHOLOGYCODE = substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE
-  )
+    substrate_code_morphology_all %>%
+      select(
+        SUBSTRATE_CODE,
+        MORPHOLOGYCODE,
+        SUBSTRATE_CODE_MORPHOLOGYCODE
+      )
+  ) %>%
+    mutate(OCC_SITEID_TRANSECT = str_c(OCC_SITEID, CB_TRANSECTID, sep = "-"))
   
-  substrate_code_full_table$SUBSTRATE_CODE <- substrate_code_morphology_all$SUBSTRATE_CODE[
-    match(substrate_code_full_table$SUBSTRATE_CODE_MORPHOLOGYCODE,
-          substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE)]
-
-  substrate_code_full_table$MORPHOLOGYCODE <- substrate_code_morphology_all$MORPHOLOGYCODE[
-    match(substrate_code_full_table$SUBSTRATE_CODE_MORPHOLOGYCODE,
-          substrate_code_morphology_all$SUBSTRATE_CODE_MORPHOLOGYCODE)]
-
-  substrate_code_full_table$OCC_SITEID_TRANSECT <-
-    paste(substrate_code_full_table$OCC_SITEID,
-          substrate_code_full_table$CB_TRANSECTID,
-          sep = "-")
+  substrate_code_full_table <- substrate_code_full_table[substrate_code_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT , ]
   
-   substrate_code_full_table <- substrate_code_full_table[substrate_code_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT ,]
-
+  
   # Populate full table with transect-level data
-  summary_transect_substratecode <-  merge(
-    substrate_code_full_table,
-    transect_substratecode,
-    by = c(
-      "OCC_SITEID",
-      "CB_TRANSECTID",
-      "OCC_SITEID_TRANSECT",
-      "SUBSTRATE_CODE",
-      "MORPHOLOGYCODE"
-    ),
-    all.x = TRUE
-  )
-
-  prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE <-
-    paste0(prod_dbase$SUBSTRATE_CODE, "-", prod_dbase$MORPHOLOGYCODE)
-
-  summary_transect_substratecode$MORPHOLOGY <- prod_dbase$MORPHOLOGY[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
-
-  summary_transect_substratecode$MORPHOLOGY[summary_transect_substratecode$SUBSTRATE_CODE == "PRUS"] <- "Laminar Columnar"
-  summary_transect_substratecode$MORPHOLOGY[summary_transect_substratecode$SUBSTRATE_CODE == "PMRC"] <- "Laminar Columnar"
   
-  summary_transect_substratecode$SUBSTRATE_CLASS <- prod_dbase$SUBSTRATE_CLASS[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
-
-  summary_transect_substratecode$SUBSTRATE_CLASS[summary_transect_substratecode$SUBSTRATE_CODE == "PRUS"] <- "CORAL"
-  summary_transect_substratecode$SUBSTRATE_CLASS[summary_transect_substratecode$SUBSTRATE_CODE == "PMRC"] <- "CORAL"
-
-  summary_transect_substratecode$SUBSTRATE_NAME <- prod_dbase$SUBSTRATE_NAME[match(summary_transect_substratecode$SUBSTRATE_CODE_MORPHOLOGYCODE, as.factor(prod_dbase$SUBSTRATE_CODE_MORPHOLOGYCODE))]
-
-  summary_transect_substratecode$SUBSTRATE_NAME[summary_transect_substratecode$SUBSTRATE_CODE == "PRUS"] <- "Porites rus"
-  summary_transect_substratecode$SUBSTRATE_NAME[summary_transect_substratecode$SUBSTRATE_CODE == "PMRC"] <- "Porites monticulosa/rus complex"
+  summary_transect_substratecode <- substrate_code_full_table %>%
+    left_join(
+      transect_substratecode, 
+      by = c("OCC_SITEID", "CB_TRANSECTID", "OCC_SITEID_TRANSECT", "SUBSTRATE_CODE", "MORPHOLOGYCODE")
+    ) 
   
-
+  summary_transect_substratecode <- summary_transect_substratecode %>%
+    left_join(
+      prod_dbase %>% 
+        select(SUBSTRATE_CODE, MORPHOLOGYCODE, MORPHOLOGY, SUBSTRATE_CLASS, SUBSTRATE_NAME) %>%
+        distinct(), 
+      by = c("SUBSTRATE_CODE", "MORPHOLOGYCODE"),
+      suffix = c("", ".db") # Adds .db to columns from prod_dbase if names overlap
+    ) %>%
+    mutate(
+      SUBSTRATE_CLASS = coalesce(SUBSTRATE_CLASS, SUBSTRATE_CLASS.db),
+      SUBSTRATE_NAME = coalesce(SUBSTRATE_NAME, SUBSTRATE_NAME.db),
+      MORPHOLOGY = coalesce(MORPHOLOGY,MORPHOLOGY.db),
+    ) %>%
+    select(-ends_with(".db")) %>%
+    mutate(
+      MORPHOLOGY = case_when(
+        SUBSTRATE_CODE %in% c("PRUS", "PMRC") ~ "Laminar Columnar",
+        TRUE ~ MORPHOLOGY # Keeps the joined value if not PRUS or PMRC
+      ),
+      SUBSTRATE_CLASS = case_when(
+        SUBSTRATE_CODE %in% c("PRUS", "PMRC") ~ "CORAL",
+        TRUE ~ SUBSTRATE_CLASS
+      ),
+      SUBSTRATE_NAME = case_when(
+        SUBSTRATE_CODE == "PRUS" ~ "Porites rus",
+        SUBSTRATE_CODE == "PMRC" ~ "Porites monticulosa/rus complex",
+        TRUE ~ SUBSTRATE_NAME
+      )
+    ) %>%
+    group_by(OCC_SITEID) %>%
+    fill(
+      REGION, REGIONCODE, YEAR, CRUISE_ID, LOCATION, LOCATIONCODE, 
+      SITEVISITID, LATITUDE, LONGITUDE, SITE_DEPTH_M, LOCALDATE, 
+      TRANSECT_PLANAR_LENGTH_M, TRANSECT_TOTAL_SUBSTRATE_COVER_M,
+      .direction = 'downup'
+    ) %>%
+    ungroup() %>%
+    mutate(across(
+      c(SUBSTRATE_COVER_CM:SUBSTRATE_CARB_PROD_KG_M2_YR_U95),
+      ~ replace_na(.x, 0)
+    ))
   
   summary_transect_substratecode <- summary_transect_substratecode[c(
     "REGION",
@@ -230,42 +244,9 @@ summarize_prod <- function(data,
     "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
   )]
 
-
-  summary_transect_substratecode <-
-    summary_transect_substratecode %>%
-    group_by(OCC_SITEID) %>%
-    fill(
-      c(
-        "REGION",
-        "REGIONCODE",
-        "YEAR",
-        "CRUISE_ID",
-        "LOCATION",
-        "LOCATIONCODE",
-        "OCC_SITEID",
-        "SITEVISITID",
-        "LATITUDE",
-        "LONGITUDE",
-        "SITE_DEPTH_M",
-        "LOCALDATE",
-        "TRANSECT_PLANAR_LENGTH_M",
-        "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
-      ),
-      .direction = 'downup'
-    )
-  
-  summary_transect_substratecode[, c((which(
-    colnames(summary_transect_substratecode) == "SUBSTRATE_COVER_CM"
-  )):(which(
-    colnames(summary_transect_substratecode) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
-  )))][is.na(summary_transect_substratecode[, c((which(
-    colnames(summary_transect_substratecode) == "SUBSTRATE_COVER_CM"
-  )):(which(
-    colnames(summary_transect_substratecode) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
-  )))])] <- 0
   
   # Summarize production by SUBSTRATE_CLASS at TRANSECT level  ---------------
-  transect_substrateclass <- suppressMessages(
+  transect_substrateclass <- 
     data %>% dplyr::group_by(
       REGION,
       REGIONCODE,
@@ -307,7 +288,7 @@ summarize_prod <- function(data,
           SUBSTRATE_PLANAR_PROD_KG_YR_U95 *
           (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
       )
-  )
+  
 
   # Create a table of all substrate classes for each transect
   substrate_class_all <- c("CORAL",
@@ -318,22 +299,20 @@ summarize_prod <- function(data,
                            "SAND",
                            "TURF",
                            "OTHER")
+  
 
-  substrate_full_table <- expand.grid(
+  substrate_full_table <- expand_grid(
     OCC_SITEID = unique(transect_summary$OCC_SITEID),
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
     SUBSTRATE_CLASS = substrate_class_all
-  )
+  ) %>%
+    mutate(OCC_SITEID_TRANSECT = str_c(OCC_SITEID, CB_TRANSECTID, sep = "-"))
   
-  substrate_full_table$OCC_SITEID_TRANSECT <-
-    paste(substrate_full_table$OCC_SITEID,
-          substrate_full_table$CB_TRANSECTID,
-          sep = "-")
   
- substrate_full_table <- substrate_full_table[substrate_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT ,]
+  substrate_full_table <- substrate_full_table[substrate_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT , ]
 
   # Populate full table with transect-level data
-  summary_transect_substrateclass <-  merge(
+  summary_transect_substrateclass <-  left_join(
     substrate_full_table,
     transect_substrateclass,
     by = c(
@@ -341,9 +320,20 @@ summarize_prod <- function(data,
       "CB_TRANSECTID",
       "OCC_SITEID_TRANSECT",
       "SUBSTRATE_CLASS"
-    ),
-    all.x = TRUE
+    )
   )
+  
+  summary_transect_substrateclass <- summary_transect_substrateclass %>%
+    group_by(OCC_SITEID) %>%
+    fill(
+      REGION:TRANSECT_TOTAL_SUBSTRATE_COVER_M, 
+      .direction = 'downup'
+    ) %>%
+    ungroup() %>%
+    mutate(across(
+      SUBSTRATE_COVER_CM:SUBSTRATE_CARB_PROD_KG_M2_YR_U95, 
+      ~ replace_na(.x, 0)
+    ))
 
   summary_transect_substrateclass <- summary_transect_substrateclass[c(
     "REGION",
@@ -373,39 +363,6 @@ summarize_prod <- function(data,
     "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
   )]
 
-
-  summary_transect_substrateclass <-
-    summary_transect_substrateclass %>%
-    group_by(OCC_SITEID) %>%
-    fill(
-      c(
-        "REGION",
-        "REGIONCODE",
-        "YEAR",
-        "CRUISE_ID",
-        "LOCATION",
-        "LOCATIONCODE",
-        "OCC_SITEID",
-        "SITEVISITID",
-        "LATITUDE",
-        "LONGITUDE",
-        "SITE_DEPTH_M",
-        "LOCALDATE",
-        "TRANSECT_PLANAR_LENGTH_M",
-        "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
-      ),
-      .direction = 'downup'
-    )
-
-  summary_transect_substrateclass[, c((which(
-    colnames(summary_transect_substrateclass) == "SUBSTRATE_COVER_CM"
-  )):(which(
-    colnames(summary_transect_substrateclass) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
-  )))][is.na(summary_transect_substrateclass[, c((which(
-    colnames(summary_transect_substrateclass) == "SUBSTRATE_COVER_CM"
-  )):(which(
-    colnames(summary_transect_substrateclass) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
-  )))])] <- 0
 
   # Summarize production by CORAL_GROUP at TRANSECT level  -------------------
   transect_coral_group <- data %>% dplyr::group_by(
@@ -452,9 +409,6 @@ summarize_prod <- function(data,
         (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
     )
 
-  # transect_coral_group <-
-  #   subset(transect_coral_group,
-  #          transect_coral_group$CORAL_GROUP != "NA")
 
   coral_group_all <- c(
     "ACBR",
@@ -482,44 +436,49 @@ summarize_prod <- function(data,
     OCC_SITEID = unique(transect_summary$OCC_SITEID),
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
     CORAL_GROUP = coral_group_all
-  )
-
-  coral_full_table$OCC_SITEID_TRANSECT <-
-    paste(coral_full_table$OCC_SITEID,
-          coral_full_table$CB_TRANSECTID,
-          sep = "-")
+  ) %>%
+    mutate(OCC_SITEID_TRANSECT = str_c(OCC_SITEID, CB_TRANSECTID, sep = "-")) %>%
+    left_join(
+      prod_dbase %>% select(CORAL_GROUP, CORAL_GROUP_NAME) %>% distinct (CORAL_GROUP, CORAL_GROUP_NAME), by = "CORAL_GROUP"
+    )
   
   coral_full_table <- coral_full_table[coral_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT ,]
 
+  
   # Populate full table with transect-level data
   
   if (all(is.na(transect_coral_group$CORAL_GROUP)) == TRUE) {
     
-    transect_coral_group <- transect_coral_group %>% select(-c(CORAL_GROUP, CORAL_GROUP_NAME))
+    transect_coral_group <- transect_coral_group %>% select(-c(CORAL_GROUP, CORAL_GROUP_NAME)) %>%
+      mutate(across(
+        SUBSTRATE_COVER_CM:SUBSTRATE_CARB_PROD_KG_M2_YR_U95, 
+        ~ 0 ))
     
-    summary_transect_coral <- merge(
+    summary_transect_coral <- left_join(
       coral_full_table,
       transect_coral_group,
-      by = c("OCC_SITEID", "CB_TRANSECTID", "OCC_SITEID_TRANSECT"),
-      all.x = TRUE
+      by = c("OCC_SITEID", "CB_TRANSECTID", "OCC_SITEID_TRANSECT")
       )
     
-      summary_transect_coral$CORAL_GROUP_NAME <- prod_dbase$CORAL_GROUP_NAME[match(summary_transect_coral$CORAL_GROUP, prod_dbase$CORAL_GROUP)] 
-      
-    
   } else {
-    summary_transect_coral <-  merge(
+    summary_transect_coral <-  left_join(
       coral_full_table,
       transect_coral_group,
       by = c(
         "OCC_SITEID",
         "CB_TRANSECTID",
         "OCC_SITEID_TRANSECT",
-        "CORAL_GROUP"
-      ),
-      all.x = TRUE
+        "CORAL_GROUP",
+        "CORAL_GROUP_NAME"
+      )
     )
   } 
+  
+  summary_transect_coral <- summary_transect_coral %>%
+    group_by(OCC_SITEID) %>%
+    fill(REGION:TRANSECT_TOTAL_SUBSTRATE_COVER_M, .direction = "downup") %>%
+    ungroup() 
+  
   
   summary_transect_coral <- summary_transect_coral[c(
     "REGION",
@@ -549,88 +508,37 @@ summarize_prod <- function(data,
     "SUBSTRATE_CARB_PROD_KG_M2_YR_L95",
     "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
   )]
-
-
-  summary_transect_coral <-
-    summary_transect_coral %>% group_by(OCC_SITEID) %>%
-    fill(
-      c(
-        "REGION",
-        "REGIONCODE",
-        "YEAR",
-        "CRUISE_ID",
-        "LOCATION",
-        "LOCATIONCODE",
-        "OCC_SITEID",
-        "SITEVISITID",
-        "LATITUDE",
-        "LONGITUDE",
-        "SITE_DEPTH_M",
-        "LOCALDATE",
-        "TRANSECT_PLANAR_LENGTH_M",
-        "TRANSECT_TOTAL_SUBSTRATE_COVER_M",
-      ),
-      .direction = "downup"
-    ) %>% ungroup() %>%
-    {
-      # Only perform left_join if there are NA values in location fields
-      if (any(is.na(.$LATITUDE)) || any(is.na(.$REGION))) {
-        . %>%
-          left_join(
-            transect_summary %>%
-              select(OCC_SITEID, SITEVISITID, CB_TRANSECTID, CB_METHOD, REGION, REGIONCODE, YEAR, CRUISE_ID,
-                     LOCATION, LOCATIONCODE, LATITUDE, LONGITUDE,
-                     SITE_DEPTH_M, LOCALDATE, TRANSECT_PLANAR_LENGTH_M,
-                     TRANSECT_TOTAL_SUBSTRATE_COVER_M) %>%
-              distinct(),
-            by = c("OCC_SITEID", "SITEVISITID", "CB_TRANSECTID"),
-            suffix = c("", ".transect")
-          ) %>%
-          mutate(
-            CB_METHOD = coalesce(CB_METHOD, CB_METHOD.transect),
-            REGION = coalesce(REGION, REGION.transect),
-            REGIONCODE = coalesce(REGIONCODE, REGIONCODE.transect),
-            YEAR = coalesce(YEAR, YEAR.transect),
-            CRUISE_ID = coalesce(CRUISE_ID, CRUISE_ID.transect),
-            LOCATION = coalesce(LOCATION, LOCATION.transect),
-            LOCATIONCODE = coalesce(LOCATIONCODE, LOCATIONCODE.transect),
-            LATITUDE = coalesce(LATITUDE, LATITUDE.transect),
-            LONGITUDE = coalesce(LONGITUDE, LONGITUDE.transect),
-            SITE_DEPTH_M = coalesce(SITE_DEPTH_M, SITE_DEPTH_M.transect),
-            LOCALDATE = coalesce(LOCALDATE, LOCALDATE.transect),
-            TRANSECT_PLANAR_LENGTH_M = coalesce(TRANSECT_PLANAR_LENGTH_M, TRANSECT_PLANAR_LENGTH_M.transect),
-            TRANSECT_TOTAL_SUBSTRATE_COVER_M = coalesce(TRANSECT_TOTAL_SUBSTRATE_COVER_M, TRANSECT_TOTAL_SUBSTRATE_COVER_M.transect)
-          ) %>%
-          select(-ends_with(".transect"))
-      } else {
-        .
-      }
-    }
-  
-  
-  summary_transect_coral <-
-    summary_transect_coral %>% group_by(CORAL_GROUP) %>%
-    fill(
-      c(
-        "CORAL_GROUP_NAME"
-      ),
-      .direction = "downup"
-    )
-
-  summary_transect_coral$CORAL_GROUP_NAME <- prod_dbase$CORAL_GROUP_NAME[match(summary_transect_coral$CORAL_GROUP, as.factor(prod_dbase$CORAL_GROUP))]
-
-  summary_transect_coral[, c((which(
-    colnames(summary_transect_coral) == "SUBSTRATE_COVER_CM"
-  )):(which(
-    colnames(summary_transect_coral) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
-  )))][is.na(summary_transect_coral[, c((which(
-    colnames(summary_transect_coral) == "SUBSTRATE_COVER_CM"
-  )):(which(
-    colnames(summary_transect_coral) == "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
-  )))])] <- 0
   
   # Summarize production by TRANSECT ----------------------------------------
-  if (dbase_type == "IPRB") {
+ 
+  if (macro_rates == "IPRB"){
+    
+    summary_transect_substratecode$MACROBIOEROSION_RATE_KG_M2_YR <- 0.209
+    summary_transect_substratecode$MACROBIOEROSION_RATE_KG_M2_YR_CI <- 0.129
+  }
+  
+  if (micro_rates == "IPRB"){
+    
+    summary_transect_substratecode$MICROBIOEROSION_RATE_KG_M2_YR <- 0.262
+    summary_transect_substratecode$MICROBIOEROSION_RATE_KG_M2_YR_CI <- 0.180
+  }
+  
+  if (macro_rates == "NCRMP"){
+    
+    summary_transect_substratecode <- summary_transect_substratecode %>%
+      left_join(macro_dbase_ncrmp %>% select(LOCATIONCODE, MACROBIOEROSION_RATE_KG_M2_YR, MACROBIOEROSION_RATE_KG_M2_YR_CI),
+                by = "LOCATIONCODE"
+      )
+  }
+  
+  if (micro_rates == "NCRMP"){
+    
+    summary_transect_substratecode$MICROBIOEROSION_RATE_KG_M2_YR <- 0.184
+    summary_transect_substratecode$MICROBIOEROSION_RATE_KG_M2_YR_CI <- 0.121
+  }
+  
+  
+   if (dbase_type == "IPRB") {
 
     summary_transect <- summary_transect_substratecode  %>%
       dplyr::group_by(
@@ -709,17 +617,17 @@ summarize_prod <- function(data,
             SUBSTRATE_CLASS == "CCA"],
               na.rm = TRUE),
         MACROBIOEROSION_KG_M2_YR =
-          SUBSTRATE_AVAILABLE_MACRO_INDEX * macro_rate,
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * first(MACROBIOEROSION_RATE_KG_M2_YR),
         MACROBIOEROSION_KG_M2_YR_L95 =
-          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate - macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (first(MACROBIOEROSION_RATE_KG_M2_YR) - first(MACROBIOEROSION_RATE_KG_M2_YR_CI)),
         MACROBIOEROSION_KG_M2_YR_U95 =
-          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate + macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (first(MACROBIOEROSION_RATE_KG_M2_YR) + first(MACROBIOEROSION_RATE_KG_M2_YR_CI)),
         MICROBIOEROSION_KG_M2_YR =
-          SUBSTRATE_AVAILABLE_MICRO_INDEX * micro_rate,
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * first(MICROBIOEROSION_RATE_KG_M2_YR),
         MICROBIOEROSION_KG_M2_YR_L95 =
-          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate - micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (first(MICROBIOEROSION_RATE_KG_M2_YR) - first(MICROBIOEROSION_RATE_KG_M2_YR_CI)),
         MICROBIOEROSION_KG_M2_YR_U95 =
-          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate + micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (first(MICROBIOEROSION_RATE_KG_M2_YR) + first(MICROBIOEROSION_RATE_KG_M2_YR_CI)),
         BIOEROSION_KG_M2_YR =
           MACROBIOEROSION_KG_M2_YR +
           MICROBIOEROSION_KG_M2_YR,
@@ -801,17 +709,17 @@ summarize_prod <- function(data,
             SUBSTRATE_CLASS == "CCA"],
               na.rm = TRUE),
         MACROBIOEROSION_KG_M2_YR =
-          SUBSTRATE_AVAILABLE_MACRO_INDEX * macro_rate,
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * first(MACROBIOEROSION_RATE_KG_M2_YR),
         MACROBIOEROSION_KG_M2_YR_L95 =
-          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate - macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (first(MACROBIOEROSION_RATE_KG_M2_YR) - first(MACROBIOEROSION_RATE_KG_M2_YR_CI)),
         MACROBIOEROSION_KG_M2_YR_U95 =
-          SUBSTRATE_AVAILABLE_MACRO_INDEX * (macro_rate + macro_rate_ci),
+          SUBSTRATE_AVAILABLE_MACRO_INDEX * (first(MACROBIOEROSION_RATE_KG_M2_YR) + first(MACROBIOEROSION_RATE_KG_M2_YR_CI)),
         MICROBIOEROSION_KG_M2_YR =
-          SUBSTRATE_AVAILABLE_MICRO_INDEX * micro_rate,
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * first(MICROBIOEROSION_RATE_KG_M2_YR),
         MICROBIOEROSION_KG_M2_YR_L95 =
-          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate - micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (first(MICROBIOEROSION_RATE_KG_M2_YR) - first(MICROBIOEROSION_RATE_KG_M2_YR_CI)),
         MICROBIOEROSION_KG_M2_YR_U95 =
-          SUBSTRATE_AVAILABLE_MICRO_INDEX * (micro_rate + micro_rate_ci),
+          SUBSTRATE_AVAILABLE_MICRO_INDEX * (first(MICROBIOEROSION_RATE_KG_M2_YR) + first(MICROBIOEROSION_RATE_KG_M2_YR_CI)),
         BIOEROSION_KG_M2_YR =
           MACROBIOEROSION_KG_M2_YR +
           MICROBIOEROSION_KG_M2_YR,
