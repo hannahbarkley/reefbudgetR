@@ -3,8 +3,8 @@
 #'@author Hannah Barkley
 #'
 #'@param data Benthic data set to process
-#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB"), the 
-#'U.S. Pacific Islands NCRMP-specific database ("NCRMP"), or upload a customized database with location-specific rates ("Custom"). 
+#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB"), the
+#'U.S. Pacific Islands NCRMP-specific database ("NCRMP"), or upload a customized database with location-specific rates ("Custom").
 #'The Indo-Pacific ReefBudget database is derived from "IP Calcification and bioerosion rates database v.1.3",
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.
 #'
@@ -23,12 +23,7 @@
 #'     )
 
 
-run_calc_prod <- function(data,
-                          dbase_type,
-                          prod_dbase_custom = NULL,
-                          ...) {
-  
-  
+run_calc_prod <- function(data, dbase_type, prod_dbase_custom = NULL, ...) {
   if (dbase_type == "IPRB") {
     data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
     prod_dbase <- prod_dbase_iprb
@@ -74,23 +69,44 @@ run_calc_prod <- function(data,
   data <- data %>%
     left_join(
       prod_dbase %>%
-        select(SUBSTRATE_CODE, SUBSTRATE_NAME, SUBSTRATE_CLASS, TAXA_LEVEL, CORAL_GROUP, CORAL_GROUP_NAME) %>%
+        select(
+          SUBSTRATE_CODE,
+          SUBSTRATE_NAME,
+          SUBSTRATE_CLASS,
+          TAXA_LEVEL,
+          CORAL_GROUP,
+          CORAL_GROUP_NAME
+        ) %>%
         distinct(SUBSTRATE_CODE, .keep_all = TRUE),
       by = "SUBSTRATE_CODE",
       suffix = c("", ".db")
     ) %>%
     mutate(
-      SUBSTRATE_NAME   = if ("SUBSTRATE_NAME.db" %in% names(.)) coalesce(SUBSTRATE_NAME, SUBSTRATE_NAME.db) else SUBSTRATE_NAME,
-      SUBSTRATE_CLASS  = if ("SUBSTRATE_CLASS.db" %in% names(.)) coalesce(SUBSTRATE_CLASS, SUBSTRATE_CLASS.db) else SUBSTRATE_CLASS,
-      TAXA_LEVEL       = if ("TAXA_LEVEL.db" %in% names(.)) coalesce(TAXA_LEVEL, TAXA_LEVEL.db) else TAXA_LEVEL,
-      CORAL_GROUP      = if ("CORAL_GROUP.db" %in% names(.)) coalesce(CORAL_GROUP, CORAL_GROUP.db) else CORAL_GROUP,
-      CORAL_GROUP_NAME = if ("CORAL_GROUP_NAME.db" %in% names(.)) coalesce(CORAL_GROUP_NAME, CORAL_GROUP_NAME.db) else CORAL_GROUP_NAME
+      SUBSTRATE_NAME   = if ("SUBSTRATE_NAME.db" %in% names(.))
+        coalesce(SUBSTRATE_NAME, SUBSTRATE_NAME.db)
+      else
+        SUBSTRATE_NAME,
+      SUBSTRATE_CLASS  = if ("SUBSTRATE_CLASS.db" %in% names(.))
+        coalesce(SUBSTRATE_CLASS, SUBSTRATE_CLASS.db)
+      else
+        SUBSTRATE_CLASS,
+      TAXA_LEVEL       = if ("TAXA_LEVEL.db" %in% names(.))
+        coalesce(TAXA_LEVEL, TAXA_LEVEL.db)
+      else
+        TAXA_LEVEL,
+      CORAL_GROUP      = if ("CORAL_GROUP.db" %in% names(.))
+        coalesce(CORAL_GROUP, CORAL_GROUP.db)
+      else
+        CORAL_GROUP,
+      CORAL_GROUP_NAME = if ("CORAL_GROUP_NAME.db" %in% names(.))
+        coalesce(CORAL_GROUP_NAME, CORAL_GROUP_NAME.db)
+      else
+        CORAL_GROUP_NAME
     ) %>%
     select(-ends_with(".db")) %>%
     mutate(
       MORPHOLOGYCODE = case_when(
-        SUBSTRATE_CODE %in% c("PRUS", "PMRC") ~ "LC",
-        !is.na(MORPHOLOGYCODE) ~ MORPHOLOGYCODE,
+        SUBSTRATE_CODE %in% c("PRUS", "PMRC") ~ "LC",!is.na(MORPHOLOGYCODE) ~ MORPHOLOGYCODE,
         TAXA_LEVEL == "SPECIES" ~ prod_dbase$MORPHOLOGYCODE[match(SUBSTRATE_CODE, prod_dbase$SUBSTRATE_CODE)],
         TRUE ~ NA_character_
       )
@@ -115,23 +131,41 @@ run_calc_prod <- function(data,
   data <- data %>%
     left_join(
       prod_dbase %>%
-        select(SUBSTRATE_CODE, MORPHOLOGYCODE, CORAL_GROUP, CORAL_GROUP_NAME, MORPHOLOGY) %>%
+        select(
+          SUBSTRATE_CODE,
+          MORPHOLOGYCODE,
+          CORAL_GROUP,
+          CORAL_GROUP_NAME,
+          MORPHOLOGY
+        ) %>%
         distinct(),
       by = c("SUBSTRATE_CODE", "MORPHOLOGYCODE"),
       suffix = c("", ".db")
     ) %>%
     mutate(
       CORAL_GROUP = if_else(
-        SUBSTRATE_CODE %in% c("PRUS", "PMRC"), "POLC",
-        if ("CORAL_GROUP.db" %in% names(.)) coalesce(CORAL_GROUP, CORAL_GROUP.db) else CORAL_GROUP
+        SUBSTRATE_CODE %in% c("PRUS", "PMRC"),
+        "POLC",
+        if ("CORAL_GROUP.db" %in% names(.))
+          coalesce(CORAL_GROUP, CORAL_GROUP.db)
+        else
+          CORAL_GROUP
       ),
       CORAL_GROUP_NAME = if_else(
-        SUBSTRATE_CODE %in% c("PRUS", "PMRC"), "Laminar columnar Porites",
-        if ("CORAL_GROUP_NAME.db" %in% names(.)) coalesce(CORAL_GROUP_NAME, CORAL_GROUP_NAME.db) else CORAL_GROUP_NAME
+        SUBSTRATE_CODE %in% c("PRUS", "PMRC"),
+        "Laminar columnar Porites",
+        if ("CORAL_GROUP_NAME.db" %in% names(.))
+          coalesce(CORAL_GROUP_NAME, CORAL_GROUP_NAME.db)
+        else
+          CORAL_GROUP_NAME
       ),
       MORPHOLOGY = if_else(
-        SUBSTRATE_CODE %in% c("PRUS", "PMRC"), "Laminar columnar",
-        if ("MORPHOLOGY.db" %in% names(.)) coalesce(MORPHOLOGY, MORPHOLOGY.db) else MORPHOLOGY
+        SUBSTRATE_CODE %in% c("PRUS", "PMRC"),
+        "Laminar columnar",
+        if ("MORPHOLOGY.db" %in% names(.))
+          coalesce(MORPHOLOGY, MORPHOLOGY.db)
+        else
+          MORPHOLOGY
       )
     ) %>%
     select(-ends_with(".db"))
@@ -141,7 +175,11 @@ run_calc_prod <- function(data,
   data$COLONY_PROD_G_YR_U95 <- NA_real_
   
   # Create an empty list to store details about rows that failed
-  error_log <- data.frame(row_index = integer(), substrate_code = character(), error_message = character())
+  error_log <- data.frame(
+    row_index = integer(),
+    substrate_code = character(),
+    error_message = character()
+  )
   
   for (i in seq_len(nrow(data))) {
     
@@ -159,11 +197,14 @@ run_calc_prod <- function(data,
       )
     }, error = function(e) {
       # If an error occurs, log it and return NULL
-      error_log <<- rbind(error_log, data.frame(
-        row_index = i, 
-        substrate_code = data$SUBSTRATE_CODE[i], 
-        error_message = as.character(e$message)
-      ))
+      error_log <<- rbind(
+        error_log,
+        data.frame(
+          row_index = i,
+          substrate_code = data$SUBSTRATE_CODE[i],
+          error_message = as.character(e$message)
+        )
+      )
       return(NULL)
     })
     
@@ -174,11 +215,11 @@ run_calc_prod <- function(data,
       data$COLONY_PROD_G_YR_U95[i] <- calc_i$cp_u95_i
     }
   }
-
+  
   data <- data %>%
     mutate(OCC_SITEID_TRANSECT = paste(OCC_SITEID, CB_TRANSECTID, sep = "-")) %>%
     left_join(
-      transect_summary %>% 
+      transect_summary %>%
         select(OCC_SITEID_TRANSECT, TRANSECT_TOTAL_SUBSTRATE_COVER_M),
       by = "OCC_SITEID_TRANSECT"
     )

@@ -34,201 +34,97 @@ process_prod <- function(data,
                          prod_dbase_custom = NULL,
                          qc_check = FALSE,
                          ...) {
-  options(dplyr.summarise.inform = FALSE,
-          scipen = 999)
   
-  test = NULL
+  options(dplyr.summarise.inform = FALSE, scipen = 999)
   
-  test <- tryCatch(
-    expr = {
-      run_calc_prod(data,
-                    dbase_type)
-    },
-    error = function(e) {
-      print(test)
-    }
-  )
+  # Calculate production rates for each data row
+  calc_prod_output <- tryCatch({
+    run_calc_prod(data, dbase_type, prod_dbase_custom)
+  }, error = function(e) {
+    message("Critical failure in run_calc_prod: ", e$message)
+    return(NULL)
+  })
   
-  if(is.null(nrow(test)) == FALSE){
-    
-    print("CHECK DATA")
-    print(test)
-    return(errors = test)
-    
+  # Check for Failures
+  if (is.null(calc_prod_output)) {
+    stop("Process halted: run_calc_prod could not execute.")
   }
   
+  # If row-level errors occurred in the database lookup, report them
+  if (nrow(calc_prod_output$error_log) > 0) {
+    warning(paste(nrow(calc_prod_output$error_log), "rows failed. See error_log in output."))
+  }
   
-  
-  calc_prod_output <- run_calc_prod(data,
-                                    dbase_type,
-                                    prod_dbase_custom = NULL)
   data <- calc_prod_output$data
   transect_summary <- calc_prod_output$transect_summary
+  error_log <- calc_prod_output$error_log
   
-  if(qc_check == TRUE){
-  bad_transects <- transect_summary$OCC_SITEID_TRANSECT[transect_summary$TRANSECT_RUGOSITY < 1] 
-  
-  if (length(bad_transects) > 0) {
-    data <- data[!data$OCC_SITEID_TRANSECT %in% bad_transects , ]
-    transect_summary <-
-      transect_summary[!transect_summary$OCC_SITEID_TRANSECT %in% bad_transects , ]
+  # Quality Control (Rugosity Check)
+  if (qc_check == TRUE) {
+    # Flag transects where rugosity is physically impossible (< 1)
+    bad_transects <- transect_summary$OCC_SITEID_TRANSECT[transect_summary$TRANSECT_RUGOSITY < 1] 
+    
+    if (length(bad_transects) > 0) {
+      data <- data[!data$OCC_SITEID_TRANSECT %in% bad_transects, ]
+      transect_summary <- transect_summary[!transect_summary$OCC_SITEID_TRANSECT %in% bad_transects, ]
+    }
   }
+  
+  # Summarize at different levels
+  
+  run_sum <- function(s_by, lvl) {
+    summarize_prod(data, transect_summary, dbase_type, 
+                   summarize_by = s_by, level = lvl, 
+                   macro_rates = macro_rates, micro_rates = micro_rates)
   }
   
-  # Calculate cover, planar production, and carbonate production for each
-  # SUBSTRATE_CODE on each TRANSECT
-  prod_transect_substratecode <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "substrate code",
-                   level = "transect",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
+  # TRANSECT LEVEL
+  prod_transect_substratecode  <- run_sum("substrate code", "transect")
+  prod_transect_substrateclass <- run_sum("substrate class", "transect")
+  prod_transect_coral          <- run_sum("coral group", "transect")
+  prod_transect                <- run_sum("overall", "transect")
   
-  # Calculate cover, planar production, and carbonate production for each
-  # SUBSTRATE_CLASS on each TRANSECT
-  prod_transect_substrateclass <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "substrate class",
-                   level = "transect",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
+  # SITE LEVEL
+  prod_site_substratecode  <- run_sum("substrate code", "site")
+  prod_site_substrateclass <- run_sum("substrate class", "site")
+  prod_site_coral          <- run_sum("coral group", "site")
+  prod_site                <- run_sum("overall", "site")
   
-  # Calculate cover, planar production, and carbonate production for each
-  # CORAL_GROUP on each TRANSECT
-  prod_transect_coral <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "coral group",
-                   level = "transect",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
-  
-  # Calculate cover, planar production, and carbonate production
-  # on each TRANSECT
-  prod_transect <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "overall",
-                   level = "transect",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
-  
-  # Calculate cover, planar production, and carbonate production for each
-  # SUBSTRATE_CODE on each SITE
-  prod_site_substratecode <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "substrate code",
-                   level = "site",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
-  
-  # Calculate cover, planar production, and carbonate production for each
-  # SUBSTRATE_CLASS on each SITE
-  
-  prod_site_substrateclass <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "substrate class",
-                   level = "site",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
-  
-  # Calculate cover, planar production, and carbonate production for each
-  # CORAL_GROUP on each SITE
-  prod_site_coral <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "coral group",
-                   level = "site",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
-  
-  # Calculate cover, planar production, and carbonate production on each SITE
-  prod_site <-
-    summarize_prod(data,
-                   transect_summary,
-                   dbase_type,
-                   summarize_by = "overall",
-                   level = "site",
-                   macro_rates = macro_rates,
-                   micro_rates = micro_rates)
-  
+  # 5. Output Packaging
   if (full_summary == TRUE) {
-    data <- data[c(
-      "REGION",
-      "REGIONCODE",
-      "YEAR",
-      "CRUISE_ID",
-      "LOCATION",
-      "LOCATIONCODE",
-      "OCC_SITEID",
-      "SITEVISITID",
-      "LATITUDE",
-      "LONGITUDE",
-      "SITE_DEPTH_M",
-      "LOCALDATE",
-      "CB_METHOD",
-      "CB_TRANSECTID",
-      "OCC_SITEID_TRANSECT",
-      "TRANSECT_PLANAR_LENGTH_M",
-      "SUBSTRATE_CLASS",
-      "SUBSTRATE_NAME",
-      "SUBSTRATE_CODE",
-      "MORPHOLOGY",
-      "MORPHOLOGYCODE",
-      "SUBSTRATE_COVER_CM",
-      "COLONY_PROD_G_YR",
-      "COLONY_PROD_G_YR_L95",
-      "COLONY_PROD_G_YR_U95"
-    )]
+    # Keep only essential columns for the final observation table
+    obs_cols <- c("REGION", "REGIONCODE", "YEAR", "CRUISE_ID", "LOCATION", "LOCATIONCODE", 
+                  "OCC_SITEID", "SITEVISITID", "LATITUDE", "LONGITUDE", "SITE_DEPTH_M", 
+                  "LOCALDATE", "CB_METHOD", "CB_TRANSECTID", "OCC_SITEID_TRANSECT", 
+                  "TRANSECT_PLANAR_LENGTH_M", "SUBSTRATE_CLASS", "SUBSTRATE_NAME", 
+                  "SUBSTRATE_CODE", "MORPHOLOGY", "MORPHOLOGYCODE", "SUBSTRATE_COVER_CM", 
+                  "COLONY_PROD_G_YR", "COLONY_PROD_G_YR_L95", "COLONY_PROD_G_YR_U95")
     
+    data <- data[, intersect(names(data), obs_cols)]
     
+    # Generate Site-Level Metadata
     sites_metadata <- transect_summary %>%
       group_by(OCC_SITEID) %>%
-      summarize(across(
-        .cols = c("REGION",
-                  "REGIONCODE",
-                  "YEAR",
-                  "CRUISE_ID",
-                  "LOCALDATE",
-                  "LOCATION",
-                  "LOCATIONCODE",
-                  "LATITUDE",
-                  "LONGITUDE",
-                  "SITE_DEPTH_M",
-                  "SITEVISITID") ,
-        .fns = unique
-      ))
+      summarize(across(.cols = any_of(c("REGION", "REGIONCODE", "YEAR", "CRUISE_ID", 
+                                        "LOCALDATE", "LOCATION", "LOCATIONCODE", 
+                                        "LATITUDE", "LONGITUDE", "SITE_DEPTH_M", "SITEVISITID")), 
+                       .fns = ~first(.x)))
     
-    return(
-      list(
-        summary_site = prod_site,
-        summary_site_substrateclass = prod_site_substrateclass,
-        summary_site_coral = prod_site_coral,
-        summary_site_substratecode = prod_site_substratecode,
-        summary_transect = prod_transect,
-        summary_transect_substrateclass =
-          prod_transect_substrateclass,
-        summary_transect_coral = prod_transect_coral,
-        summary_transect_substratecode =
-          prod_transect_substratecode,
-        data = data,
-        transect_summary = transect_summary,
-        sites_metadata = sites_metadata
-      )
-    )
-  }
-  if (full_summary == FALSE) {
-    return(summary_site = prod_site)
+    return(list(
+      summary_site = prod_site,
+      summary_site_substrateclass = prod_site_substrateclass,
+      summary_site_coral = prod_site_coral,
+      summary_site_substratecode = prod_site_substratecode,
+      summary_transect = prod_transect,
+      summary_transect_substrateclass = prod_transect_substrateclass,
+      summary_transect_coral = prod_transect_coral,
+      summary_transect_substratecode = prod_transect_substratecode,
+      data = data,
+      transect_summary = transect_summary,
+      sites_metadata = sites_metadata,
+      error_log = error_log # Crucial for auditing
+    ))
+  } else {
+    return(prod_site)
   }
 }
