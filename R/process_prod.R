@@ -3,8 +3,8 @@
 #'@author Hannah Barkley
 #'
 #'@param data Benthic field data set.
-#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB")
-#'or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+#'@param dbase_type Production database to use, either Indo-Pacific ReefBudget ("IPRB"), 
+#'the U.S. Pacific Islands NCRMP-specific database ("NCRMP"), or a customized location-specific database ("Custom"). The Indo-Pacific ReefBudget
 #'database is derived from "IP Calcification and bioerosion rates database v.1.3",
 #'downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".
 #'@param method_name Transect design by which data were collected ("IPRB", "Chords", or "SfM").
