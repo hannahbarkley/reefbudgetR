@@ -477,7 +477,11 @@ summarize_prod <- function(data,
   summary_transect_coral <- summary_transect_coral %>%
     group_by(OCC_SITEID) %>%
     fill(REGION:TRANSECT_TOTAL_SUBSTRATE_COVER_M, .direction = "downup") %>%
-    ungroup() 
+    ungroup() %>%
+    mutate(across(
+      SUBSTRATE_COVER_CM:SUBSTRATE_CARB_PROD_KG_M2_YR_U95,
+      ~ replace_na(.x, 0)
+    )) 
   
   
   summary_transect_coral <- summary_transect_coral[c(
