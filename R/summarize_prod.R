@@ -61,7 +61,8 @@
 
 summarize_prod <- function(data,
                            transect_summary,
-                           dbase_type = c("IPRB", "NCRMP"),
+                           dbase_type = c("IPRB", "NCRMP", "Custom"),
+                           prod_dbase_custom = NULL,
                            summarize_by = c("substrate code",
                                             "substrate class",
                                             "coral group",
@@ -72,14 +73,29 @@ summarize_prod <- function(data,
                            ...
 
 ) { 
-
+  
+  dbase_type   <- match.arg(dbase_type)
+  summarize_by <- match.arg(summarize_by)
+  level        <- match.arg(level)
+  macro_rates  <- match.arg(macro_rates)
+  micro_rates  <- match.arg(micro_rates)
+  
   if (dbase_type == "IPRB") {
-    data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
-    prod_dbase <- prod_dbase_iprb
-  }
 
-  if (dbase_type == "NCRMP") {
+    if ("SUBSTRATE_CODE_IPRB" %in% names(data)) {
+      data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
+    }
+    prod_dbase <- prod_dbase_iprb
+    
+  } else if (dbase_type == "NCRMP") {
     prod_dbase <- prod_dbase_ncrmp
+    
+  } else if (dbase_type == "Custom") {
+    # Verify the custom dbase was actually provided
+    if (is.null(prod_dbase_custom)) {
+      stop("Error: dbase_type is set to 'Custom', but prod_dbase_custom is NULL. Please provide a data frame.")
+    }
+    prod_dbase <- prod_dbase_custom
   }
   
 
@@ -643,7 +659,7 @@ summarize_prod <- function(data,
           MICROBIOEROSION_KG_M2_YR_U95
       )
   }
-  if (dbase_type == "NCRMP") {
+  if (dbase_type %in% c("NCRMP", "Custom") == TRUE) {
     summary_transect <-
       summary_transect_substratecode  %>% dplyr::group_by(
         REGION,

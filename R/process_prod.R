@@ -73,9 +73,16 @@ process_prod <- function(data,
   # Summarize at different levels
   
   run_sum <- function(s_by, lvl) {
-    summarize_prod(data, transect_summary, dbase_type, 
-                   summarize_by = s_by, level = lvl, 
-                   macro_rates = macro_rates, micro_rates = micro_rates)
+    summarize_prod(
+      data, 
+      transect_summary, 
+      dbase_type,
+      prod_dbase_custom = prod_dbase_custom, # Pass the object through
+      summarize_by = s_by, 
+      level = lvl, 
+      macro_rates = macro_rates, 
+      micro_rates = micro_rates
+    )
   }
   
   # TRANSECT LEVEL

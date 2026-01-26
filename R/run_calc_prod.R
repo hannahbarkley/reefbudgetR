@@ -103,11 +103,21 @@ run_calc_prod <- function(data, dbase_type, prod_dbase_custom = NULL, ...) {
       else
         CORAL_GROUP_NAME
     ) %>%
+    mutate(across(c(TAXA_LEVEL, CORAL_GROUP, CORAL_GROUP_NAME), 
+                       ~ ifelse(.x == "" | is.na(.x), NA_character_, .x))) %>%
     select(-ends_with(".db")) %>%
     mutate(
       MORPHOLOGYCODE = case_when(
-        SUBSTRATE_CODE %in% c("PRUS", "PMRC") ~ "LC",!is.na(MORPHOLOGYCODE) ~ MORPHOLOGYCODE,
+        # Primary Overrides (PRUS/PMRC always LC)
+        SUBSTRATE_CODE %in% c("PRUS", "PMRC") ~ "LC",
+        
+        # If it's a SPECIES, ignore existing data and take from DB
         TAXA_LEVEL == "SPECIES" ~ prod_dbase$MORPHOLOGYCODE[match(SUBSTRATE_CODE, prod_dbase$SUBSTRATE_CODE)],
+        
+        # For GENUS or other levels, keep existing if present
+        !is.na(MORPHOLOGYCODE) ~ MORPHOLOGYCODE,
+        
+        # 4. Default
         TRUE ~ NA_character_
       )
     )
@@ -200,9 +210,11 @@ run_calc_prod <- function(data, dbase_type, prod_dbase_custom = NULL, ...) {
       error_log <<- rbind(
         error_log,
         data.frame(
-          row_index = i,
-          substrate_code = data$SUBSTRATE_CODE[i],
-          error_message = as.character(e$message)
+          row_index           = i,
+          transect_id         = data$OCC_SITEID_TRANSECT[i], # New field added
+          substrate_code      = data$SUBSTRATE_CODE[i],
+          error_message       = as.character(e$message),
+          stringsAsFactors    = FALSE
         )
       )
       return(NULL)
@@ -231,3 +243,4 @@ run_calc_prod <- function(data, dbase_type, prod_dbase_custom = NULL, ...) {
     error_log = error_log
   ))
 }
+

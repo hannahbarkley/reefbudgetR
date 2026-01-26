@@ -19,45 +19,45 @@
 #' )
 
 combine_sfm <- function(sfm_folder) {
-
-sfm_files <- list.files(sfm_folder, full.names = TRUE, recursive = T)
-benthic_sfm <- NULL
-
-for (i in seq_along(sfm_files)) {
-  transect_i <- read.csv(sfm_files[i], colClasses = "character")
   
-  names(transect_i)[names(transect_i) == 'OBJECTID..'] <- 'OBJECTID'
-  names(transect_i)[names(transect_i) == 'OID_'] <- 'OBJECTID'
-  names(transect_i)[names(transect_i) == 'Shape..'] <- 'Shape'
-  names(transect_i)[names(transect_i) == 'SITE'] <- 'OCC_SITEID'
-  names(transect_i)[names(transect_i) == 'Site'] <- 'OCC_SITEID'    
-  names(transect_i)[names(transect_i) == 'Transect'] <- 'CB_TRANSECTID'
-  names(transect_i)[names(transect_i) == 'CB_TRANSECT'] <- 'CB_TRANSECTID'
-  names(transect_i)[names(transect_i) == 'Taxon'] <- 'SUBSTRATE_CODE'
-  names(transect_i)[names(transect_i) == 'TAXON_ID'] <- 'SUBSTRATE_CODE'
-  names(transect_i)[names(transect_i) == 'MORPH_ID'] <- 'MORPHOLOGYCODE'
-  names(transect_i)[names(transect_i) == 'Morph'] <- 'MORPHOLOGYCODE'
-  names(transect_i)[names(transect_i) == 'Moprh'] <- 'MORPHOLOGYCODE'
-  names(transect_i)[names(transect_i) == 'Year'] <- 'YEAR'
-  names(transect_i)[names(transect_i) == 'DEPTH_M'] <- 'SITE_DEPTH_M'
+  # Get File List
+  sfm_files <- list.files(sfm_folder, full.names = TRUE, recursive = TRUE)
   
-  if (is.null(transect_i$OBJECTID) == TRUE) {
-    transect_i$OBJECTID <- NA
+  # Define Renaming Map 
+  
+  process_file <- function(file) {
+    df <- read.csv(file, colClasses = "character")
+    
+    current_names <- names(df)
+    
+    new_names <- dplyr::case_match(current_names,
+                                   c("OBJECTID..", "OID_") ~ "OBJECTID",
+                                   "Shape.."               ~ "Shape",
+                                   c("SITE", "Site")       ~ "OCC_SITEID",
+                                   c("Transect", "CB_TRANSECT") ~ "CB_TRANSECTID",
+                                   c("Taxon", "TAXON_ID")  ~ "SUBSTRATE_CODE",
+                                   c("MORPH_ID", "Morph", "Moprh") ~ "MORPHOLOGYCODE",
+                                   "Year"                  ~ "YEAR",
+                                   "DEPTH_M"               ~ "SITE_DEPTH_M",
+                                   .default = current_names # Keep original name if no match found
+    )
+    
+    names(df) <- new_names
+    
+    # Ensure OBJECTID exists 
+    if (!"OBJECTID" %in% names(df)) {
+      df$OBJECTID <- NA
+    }
+    
+    return(df)
   }
-
-  benthic_sfm <- bind_rows(benthic_sfm, transect_i)
-}
-
-
-benthic_sfm <- benthic_sfm[with(
-  benthic_sfm,
-  order(
-    benthic_sfm$OCC_SITEID,
-    benthic_sfm$CB_TRANSECTID,
-    benthic_sfm$OBJECTID
-  )
-), ]
-
-return(benthic_sfm)
-
+  
+  # Read and Combine 
+  benthic_sfm <- purrr::map_dfr(sfm_files, process_file)
+  
+  # Sort Data
+  benthic_sfm <- benthic_sfm %>%
+    dplyr::arrange(OCC_SITEID, CB_TRANSECTID, OBJECTID)
+  
+  return(benthic_sfm)
 }
