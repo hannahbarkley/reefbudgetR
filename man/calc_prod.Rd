@@ -10,6 +10,7 @@ calc_prod(
   substrate_code,
   morphology_code,
   substrate_cover_cm,
+  location_code = NULL,
   dbase_type,
   prod_dbase
 )
@@ -48,7 +49,6 @@ morphology_code = "MD",
 substrate_cover_cm = 10,
 dbase_type = "NCRMP",
 prod_dbase = "NCRMP")
-
 
 }
 \author{

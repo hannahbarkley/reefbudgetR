@@ -10,7 +10,6 @@
 #'@import reshape2
 #'
 #'@export format_4ncei
-#'
 
 format_4ncei <- function(data) {
   
@@ -52,4 +51,8 @@ format_4ncei <- function(data) {
   if (length(missing_cols) > 0) {
     data[missing_cols] <- NA
   }
+  
+  data <- data %>% select(all_of(cols_ncei))
+  
+  return(data)
 }

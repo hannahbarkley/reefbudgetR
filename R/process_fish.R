@@ -22,51 +22,53 @@
 #'fish_belt <- process_fish(spc_data = fish_data_spc,
 #'dbase_type = "Kindinger", belt_data = fish_data_belt, subset_distance_m = 2000)
 
+
 process_fish <- function(data,
-                         method_type = "Fixed",                         
+                         method_type = c("Fixed", "StRS", "Mean StRS", "Belt"),
                          fixed_metadata = NULL,
-                         dbase_type = "Kindinger",
+                         dbase_type = c("Kindinger", "IPRB"),
                          subset_distance_m = 6000) {
   
-  if (dbase_type == "Kindinger") {
-    rates_dbase <- fish_erosion_dbase_kindinger
-  } else{
-    rates_dbase <- fish_erosion_dbase_iprb
+  method_type <- match.arg(method_type)
+  dbase_type  <- match.arg(dbase_type)
+  
+  rates_dbase <- if (dbase_type == "Kindinger") {
+    if(exists("fish_erosion_dbase_kindinger")) fish_erosion_dbase_kindinger else stop("Database 'fish_erosion_dbase_kindinger' not found.")
+  } else {
+    if(exists("fish_erosion_dbase_iprb")) fish_erosion_dbase_iprb else stop("Database 'fish_erosion_dbase_iprb' not found.")
   }
   
+  result <- switch(method_type,
+                   "Fixed" = {
+                     calc_fish_fixed_spc(
+                       data = data, 
+                       rates_dbase = rates_dbase
+                     )
+                   },
+                   "StRS" = {
+                     calc_fish_strs_spc(
+                       data = data,
+                       rates_dbase = rates_dbase,
+                       method_type = "StRS"
+                     )
+                   },
+                   "Mean StRS" = {
+                     calc_fish_strs_spc(
+                       data = data,
+                       fixed_metadata = fixed_metadata,
+                       rates_dbase = rates_dbase,
+                       subset_distance_m = subset_distance_m,
+                       method_type = "Mean StRS"
+                     )
+                   },
+                   "Belt" = {
+                     calc_fish_belt(
+                       data = data, 
+                       rates_dbase = rates_dbase, 
+                       full_summary = TRUE
+                     )
+                   }
+  )
   
-  # if you have SPC data then....
-  if (method_type == "Fixed") {
-      fish_fixed_spc <- calc_fish_fixed_spc(data = data, rates_dbase = rates_dbase)
-      
-      return(fish_fixed_spc)
-  }
-    
-  
-  if (method_type == "StRS") {
-      fish_strs_spc_ <- calc_fish_strs_spc(data = data,
-                                           rates_dbase = rates_dbase,
-                                           method_type = "StRS")
-      
-      return(fish_strs_spc_)
-  }
-  
-  if (method_type == "Mean StRS") {
-    fish_strs_spc_ <- calc_fish_strs_spc(data = data,
-                                         fixed_metadata = fixed_metadata,
-                                         rates_dbase = rates_dbase,
-                                         subset_distance_m,
-                                         method_type = "Mean StRS")
-    
-    return(fish_strs_spc_)
-  }
-    
-    
-  if (method_type == "Belt") {
-      fish_belt_ <- calc_fish_belt(data = data, 
-                                    rates_dbase = rates_dbase, 
-                                    full_summary = TRUE)
-      return(fish_belt_)
-    }
-    
+  return(result)
 }

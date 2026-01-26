@@ -7,24 +7,23 @@
 process_prod(
   data,
   dbase_type = "NCRMP",
+  macro_rates = "IPRB",
+  micro_rates = "IPRB",
   full_summary = TRUE,
-  label = NULL,
+  prod_dbase_custom = NULL,
   qc_check = FALSE,
-  sites_metadata = NULL,
   ...
 )
 }
 \arguments{
 \item{data}{Benthic field data set.}
 
-\item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
-or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
+\item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB"),
+the U.S. Pacific Islands NCRMP-specific database ("NCRMP"), or a customized location-specific database ("Custom"). The Indo-Pacific ReefBudget
 database is derived from "IP Calcification and bioerosion rates database v.1.3",
 downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/. Defaults to "NCRMP".}
 
 \item{qc_check}{Remove transects where rugosity < 1.}
-
-\item{sites_metadata}{Data frame containing information about sites}
 
 \item{method_name}{Transect design by which data were collected ("IPRB", "Chords", or "SfM").}
 }

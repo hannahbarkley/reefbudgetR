@@ -30,162 +30,98 @@ calc_fish_strs_spc <- function(data,
   if (method_type == "StRS") {
     
     strs_metadata <- data %>%
-      dplyr::group_by(REA_SITEID) %>%
-      summarize_at(
-        c(
-          "CRUISE_ID",
-          "REGION",
-          "REGIONCODE",
-          "LOCATION",
-          "LOCATIONCODE",
-          "LATITUDE",
-          "LONGITUDE",
-          "YEAR",
-          "METHOD"
-        ),
-        unique
-      ) %>%
-      dplyr::distinct(.)
-    
+      dplyr::select(CRUISE_ID, REGION, REGIONCODE, LOCATION, LOCATIONCODE, 
+                    LATITUDE, LONGITUDE, YEAR, METHOD, REA_SITEID) %>%
+      distinct()
     
     format_strsspc_output <- format_fish_spc(data, method = "nSPC", rates_dbase = rates_dbase)
     
     summary_strsspc_erosion <- format_strsspc_output %>%
-      # convert REPLICATEID values to Transect '1' and '2'
-      dplyr::group_by(SITEVISITID) %>%
-      dplyr::mutate(TRANSECT = match(REPLICATEID, unique(REPLICATEID))) %>%
-      tidyr::gather("METRIC", "VALUE", -c(SITEVISITID:FXN_GRP, TRANSECT)) %>% #set up data frame by spreading by transects (or the former REPLICATEID)
-      dplyr::select(-REPLICATEID) %>%
-      tidyr::spread(TRANSECT, VALUE) %>%
-      dplyr::mutate_at(dplyr::vars(`1`, `2`), as.numeric) %>%
-      # Average replicates (n=2)
-      dplyr::group_by(SITEVISITID,
-                      REA_SITEID,
-                      REP,
-                      COMMONFAMILYALL,
-                      FXN_GRP,
-                      METRIC) %>% #calculate mean, sd, se, CI95 of data by averaging 2 divers (REPLICATEID)
-      dplyr::rowwise() %>%
-      dplyr::mutate(MEAN = mean(dplyr::c_across(`1`:`2`), na.rm = TRUE)) %>%
-      dplyr::mutate(SD = sd(dplyr::c_across(`1`:`2`), na.rm = TRUE)) %>%
-      dplyr::mutate(SD = dplyr::coalesce(SD, 0)) %>% # reaplce NA SD values with 0 because SD of one transect value is 0
-      dplyr::mutate(SE = SD / sqrt(2)) %>% #2 is the number of total Transects
-      dplyr::mutate(L95 = MEAN - (SE * 1.97)) %>%
-      dplyr::mutate(U95 = MEAN + (SE * 1.97)) %>%
-      dplyr::select(-c(`1`:`2`)) %>% #remove unnecessary columns
-      dplyr::ungroup(.) %>%
-      dplyr::mutate(L95 = dplyr::case_when(L95 < 0 ~ 0, TRUE ~ as.numeric(L95))) %>%
+      tidyr::pivot_longer(
+        cols = c(SUM_BIOMASS_PER_FISH_KG_HECTARE, 
+                 SUM_DENSITY_PER_FISH_HECTARE, 
+                 SUM_EROSION_PER_FISH_KG_M2_YR),
+        names_to = "METRIC",
+        values_to = "VALUE"
+      ) %>%
+      dplyr::group_by(SITEVISITID, REA_SITEID, REP, COMMONFAMILYALL, FXN_GRP, METRIC) %>%
+      dplyr::summarize(
+        MEAN = mean(VALUE, na.rm = TRUE),
+        SD   = dplyr::coalesce(sd(VALUE, na.rm = TRUE), 0),
+        .groups = "drop" 
+      ) %>%
+      dplyr::mutate(
+        SE  = SD / sqrt(2), 
+        L95 = pmax(0, MEAN - (SE * 1.97)), 
+        U95 = MEAN + (SE * 1.97)
+      ) %>%
       dplyr::select(-SITEVISITID, -REP)
-    
-    
+  
     calc_strs_spc_erosion <- summary_strsspc_erosion %>%
-      #dplyr::select(c(COMMONFAMILYALL:ASSOC_OCCSITEID, MEAN:U95)) %>% #remove unnecessary columns
-      dplyr::mutate(L95 = dplyr::case_when(L95 < 0 ~ 0, TRUE ~ as.numeric(L95))) %>%
-      dplyr::filter(!COMMONFAMILYALL %in% "NOTPARROTFISH") %>% # removed non-parrotfish species group
-      dplyr::filter(!FXN_GRP %in% NA) %>% # remove NA Graz_types (these are also all non-parrotfish species group)
-      # Format dataframe to match BELT FINAL BIOEROSION OUTPUT
-      tidyr::gather(., "calc", "value", -c(REA_SITEID:METRIC)) %>%
+      dplyr::mutate(L95 = pmax(0, L95)) %>%
+      dplyr::filter(
+        COMMONFAMILYALL != "NOTPARROTFISH",
+        !is.na(FXN_GRP)
+      ) %>%
+      tidyr::pivot_longer(
+        cols = -c(REA_SITEID:METRIC), # Keeps your negative selection logic
+        names_to = "calc",
+        values_to = "value"
+      ) %>%
       dplyr::select(-COMMONFAMILYALL) %>%
       dplyr::mutate(
-        METRIC = dplyr::case_when(
-          METRIC == "SUM_BIOMASS_PER_FISH_KG_HECTARE" ~ "FISH_BIOMASS_KG_HA",
-          METRIC == "SUM_DENSITY_PER_FISH_HECTARE" ~ "FISH_DENSITY_ABUNDANCE_HA",
-          METRIC == "SUM_EROSION_PER_FISH_KG_M2_YR" ~ "FISH_EROSION_KG_M2_YR"
+        METRIC = dplyr::case_match(METRIC,
+                                   "SUM_BIOMASS_PER_FISH_KG_HECTARE" ~ "FISH_BIOMASS_KG_HA",
+                                   "SUM_DENSITY_PER_FISH_HECTARE"    ~ "FISH_DENSITY_ABUNDANCE_HA",
+                                   "SUM_EROSION_PER_FISH_KG_M2_YR"   ~ "FISH_EROSION_KG_M2_YR",
+                                   .default = METRIC
         )
       )
     
-    # pause here to complete FXN_GRP column if values are missing
-    options_fxn_grp <- c("ALL", "OTHER", "SCRAPER", "EXCAVATOR") # all four functional groups should be present
-    missing_fxn_grp <- options_fxn_grp[!options_fxn_grp %in% unique(calc_strs_spc_erosion$FXN_GRP)] #isolate missing functional groups
+    options_fxn_grp <- c("ALL", "OTHER", "SCRAPER", "EXCAVATOR")
     
-    # Add back in rows of missing functional groups and assign value to 0 with completing the dataframe
-    if (length(missing_fxn_grp) >= 1) {
-      for (i in 1:length(missing_fxn_grp)) {
-        calc_strs_spc_erosion <- add_row(calc_strs_spc_erosion, FXN_GRP = missing_fxn_grp[i])
-        
-      }
-      
-      calc_strs_spc_erosion2 <- calc_strs_spc_erosion %>%
-        dplyr::select(-SITEVISITID) %>%
-        complete(REA_SITEID, METRIC, calc, FXN_GRP, fill = list(value = 0)) %>%
-        filter_all(all_vars(!is.na(.))) %>%
-        distinct(.)
-      
-    } else {
-      calc_strs_spc_erosion2 <- calc_strs_spc_erosion
-    }
-    
-    # Add back in STRS fixed sites that are missing and assign value to 0 with completing the dataframe
-    strs_filtered <- strs_metadata %>%
+    target_sites <- strs_metadata %>%
       filter(LOCATIONCODE %in% data$LOCATIONCODE) %>%
-      droplevels(.)
+      pull(REA_SITEID) %>%
+      unique()
     
-    missing_sites <- unique(strs_filtered$REA_SITEID)[!unique(strs_filtered$REA_SITEID) %in% unique(calc_strs_spc_erosion2$REA_SITEID)]
+    calc_strs_spc_erosion3 <- calc_strs_spc_erosion %>%
+      dplyr::select(-any_of("SITEVISITID")) %>%
+      tidyr::complete(
+        REA_SITEID = target_sites,
+        FXN_GRP = options_fxn_grp,
+        METRIC, 
+        calc,
+        fill = list(value = 0)
+      ) %>%
+      dplyr::filter(!is.na(METRIC), !is.na(calc)) %>%
+      dplyr::distinct(.)
     
-    if (length(missing_sites) >= 1) {
-      for (i in 1:length(missing_sites)) {
-        calc_strs_spc_erosion2 <- dplyr::add_row(calc_strs_spc_erosion2, REA_SITEID = missing_sites[i])
-        
-      }
-      
-      calc_strs_spc_erosion3 <- calc_strs_spc_erosion2 %>%
-        tidyr::complete(FXN_GRP, METRIC, REA_SITEID, calc, fill = list(value = 0)) %>%
-        dplyr::filter_all(dplyr::all_vars(!is.na(.))) %>%
-        dplyr::distinct(.)
-      
-      
-    } else {
-      calc_strs_spc_erosion3 <- calc_strs_spc_erosion2
-    }
-    
-    
-    
-    
-    # Continue formatting dataframe to match BELT FINAL BIOEROSION OUTPUT
-    calc_strs_spc_erosion4 <-
-      calc_strs_spc_erosion3 %>%
-      tidyr::unite("METRIC", METRIC, FXN_GRP) %>%
-      tidyr::unite("METRIC", METRIC, calc) %>%
-      # fill in missing metadata info
+    calc_strs_spc_erosion4 <- calc_strs_spc_erosion3 %>%
       dplyr::left_join(
-        .,
-        strs_metadata %>% dplyr::select(
-          REGION,
-          REGIONCODE,
-          CRUISE_ID,
-          LOCATION,
-          LOCATIONCODE,
-          REA_SITEID,
-          LATITUDE,
-          LONGITUDE
-        ),
+        strs_metadata %>% 
+          dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+                        REA_SITEID, LATITUDE, LONGITUDE), 
         by = "REA_SITEID",
         relationship = "many-to-one"
-      ) %>% #join important metadata that was lost during averaging replicates
-      dplyr::distinct(.) %>% #left_join creates duplicates, so remove duplicates
-      dplyr::mutate(LATITUDE = round(LATITUDE, 5)) %>%
-      dplyr::mutate(LONGITUDE = round(LONGITUDE, 5)) %>%
-      dplyr::mutate(METHOD = "StRS SPC") %>%
-      tidyr::spread(., METRIC, value, fill = "0") %>%
-      dplyr::select(
-        REGION,
-        REGIONCODE,
-        CRUISE_ID,
-        LOCATION,
-        LOCATIONCODE,
-        REA_SITEID,
-        LATITUDE,
-        LONGITUDE,
-        METHOD,
-        everything(.)
       ) %>%
-      dplyr::mutate_at(dplyr::vars(REGION:METHOD), as.factor) %>%
-      dplyr::mutate_at(
-        dplyr::vars(
-          FISH_BIOMASS_KG_HA_ALL_L95:FISH_EROSION_KG_M2_YR_SCRAPER_U95
-        ),
-        as.numeric
-      )
+      tidyr::pivot_wider(
+        id_cols = c(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+                    REA_SITEID, LATITUDE, LONGITUDE),
+        names_from = c(METRIC, FXN_GRP, calc),
+        values_from = value,
+        names_sep = "_",
+        values_fill = 0 
+      ) %>%
+      dplyr::mutate(
+        LATITUDE = round(LATITUDE, 5),
+        LONGITUDE = round(LONGITUDE, 5),
+        METHOD = as.factor("StRS SPC")
+      ) %>%
+      dplyr::mutate(across(c(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE), as.factor)) %>%
+      
+      dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+                    REA_SITEID, LATITUDE, LONGITUDE, METHOD, everything())
     
     return(list(calc_strs_ero = calc_strs_spc_erosion4))
     

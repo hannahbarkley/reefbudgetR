@@ -7,13 +7,12 @@
 summarize_prod(
   data,
   transect_summary,
-  dbase_type = c("IPRB", "NCRMP"),
+  dbase_type = c("IPRB", "NCRMP", "Custom"),
+  prod_dbase_custom = NULL,
   summarize_by = c("substrate code", "substrate class", "coral group", "overall"),
   level = c("transect", "site"),
-  macro_rate = 0.209,
-  macro_rate_ci = 0.129,
-  micro_rate = 0.262,
-  micro_rate_ci = 0.18,
+  macro_rates = c("IPRB", "NCRMP"),
+  micro_rates = c("IPRB", "NCRMP"),
   ...
 )
 }

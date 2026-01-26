@@ -4,14 +4,14 @@
 \alias{run_calc_prod}
 \title{Run calc_prod function}
 \usage{
-run_calc_prod(data, dbase_type, ...)
+run_calc_prod(data, dbase_type, prod_dbase_custom = NULL, ...)
 }
 \arguments{
 \item{data}{Benthic data set to process}
 
-\item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB")
-or U.S. Pacific Islands NCRMP-specific database ("NCRMP"). The Indo-Pacific ReefBudget
-database is derived from "IP Calcification and bioerosion rates database v.1.3",
+\item{dbase_type}{Production database to use, either Indo-Pacific ReefBudget ("IPRB"), the
+U.S. Pacific Islands NCRMP-specific database ("NCRMP"), or upload a customized database with location-specific rates ("Custom").
+The Indo-Pacific ReefBudget database is derived from "IP Calcification and bioerosion rates database v.1.3",
 downloaded from https://geography.exeter.ac.uk/reefbudget/indopacific/.}
 }
 \description{

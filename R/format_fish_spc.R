@@ -17,72 +17,100 @@ format_fish_spc <- function(data,
                             method = c("fSPC", "nSPC"),
                             rates_dbase = rates_dbase) {
   
-   if(method == "CbB") {method_type = "fSPC"} 
-   if(method == "fSPC") {method_type = "fSPC"} else {method_type = "nSPC"}
+  method_arg <- match.arg(method) 
+  method_type <- if(method_arg == "fSPC" || method_arg == "CbB") "fSPC" else "nSPC"
+  
+  cyl_area_m2 <- pi * (7.5^2)
+  cyl_area_ha <- cyl_area_m2 / 10000
   
   formatdat <- data %>% 
-    dplyr::filter(., METHOD %in% method_type) %>%
-    dplyr::filter(., !(TRAINING_YN %in% "-1")) %>%
-    dplyr::select(SITEVISITID, YEAR, REA_SITEID, LOCATION, REP, REPLICATEID, SPECIES, COUNT, SIZE_, TAXONNAME, COMMONFAMILYALL, LW_A:LENGTH_CONVERSION_FACTOR) %>% #subset only columns that matter for density, biomass, bioerosion calculation
-    mutate(AREA_M2 = pi*(7.5^2)) %>% #calculate Area per m^2 of survey cylinder
-    #calculate density below
-    mutate(DENSITY_PER_FISH_HECTARE = COUNT/(AREA_M2/10000)) %>% # calculate density by dividing count by area and converting to per hectare with the 10000
-    #calculate biomass below
-    mutate(BIOMASS_PER_FISH_G = LW_A * ((SIZE_ * LENGTH_CONVERSION_FACTOR) ^ LW_B)) %>% #convert size to wet weight in grams with conversion factor and constants
-    mutate(BIOMASS_PER_FISH_KG = (COUNT * BIOMASS_PER_FISH_G) / 1000) %>% #calculate biomass per row with number of fish seen and converted grams to kilograms with /1000
-    mutate(BIOMASS_PER_FISH_KG_HECTARE = BIOMASS_PER_FISH_KG/(AREA_M2 / 10000)) %>% #calculate final biomass value of each row by dividing by area and converting m^2 to hectares
-    #calculate bioerosion below
-    mutate(SIZE_CLASS = case_when(SIZE_ >= 0 & SIZE_ <= 10 ~ "0-10cm", # need to create column with size bin range for joining Tye's bioerosion metrics
-                                  SIZE_ >= 11 & SIZE_ <= 20 ~ "11-20cm",
-                                  SIZE_ >= 21 & SIZE_ <= 30 ~ "21-30cm",
-                                  SIZE_ >= 31 & SIZE_ <= 40 ~ "31-40cm",
-                                  SIZE_ >= 41 & SIZE_ <= 50 ~ "41-50cm",
-                                  SIZE_ >= 51 ~ "51-60cm")) %>% #HCB removed upper limit on size class, so this bin captures everything larger than 51cm
-    left_join(., rates_dbase, by = c("TAXONNAME"="TAXONNAME", "SIZE_CLASS" = "SIZE_CLASS"), relationship = "many-to-many") %>% # join Tye's bioerosion metrics or bioerosion calculation to follow
-    distinct(.) %>%
-    mutate(EROSION_PER_FISH_KG_M2_YR = (COUNT * EROSION_RATE)/AREA_M2) %>% # calculate bioerosion in kg/m^2/yr
-    mutate_at(.vars = "EROSION_PER_FISH_KG_M2_YR", funs(ifelse(EROSION_PER_FISH_KG_M2_YR <= 0, 0, .))) # change all negative bioerosion values to zero...can use this to change multiple columns to zero based on a single column
     
-    # PAUSE HERE: Note that if using Kindinger database, both initial and terminal phase size class erosion values are all the same, so it does not matter whether you merge the erosion database by initial or terminal phase, 
-    # HOWEVER, if using Chris's (IPRB) database that includes life stages in his calculations, you'll want to merge the IPRB database to your data by life phase as seen in the next set of lines:
+    dplyr::filter(METHOD %in% method_type, TRAINING_YN != "-1") %>%
     
-  prepdat <- formatdat %>%
-    # filter data by life phase
-    filter(PHASE %in% c("I","T")) %>% # THIS WILL NEED CHANGED IF YOUR DATA DISTINGUISHES BETWEEN INITIAL AND TERMINAL PHASES...updated code to follow...will likely need to make an ifelse statement
+    dplyr::select(SITEVISITID, YEAR, REA_SITEID, LOCATION, REP, REPLICATEID, 
+                  SPECIES, COUNT, SIZE_, TAXONNAME, COMMONFAMILYALL, 
+                  LW_A:LENGTH_CONVERSION_FACTOR) %>%
     
-    # Label COMMONFAMILYALL column as "Parrotfish" and "NotParrotfish"        
-    dplyr::select(SITEVISITID:COMMONFAMILYALL, SIZE_CLASS, FXN_GRP, DENSITY_PER_FISH_HECTARE, BIOMASS_PER_FISH_KG_HECTARE, EROSION_PER_FISH_KG_M2_YR) %>% # select only relevant columns
-    mutate(COMMONFAMILYALL = case_when(COMMONFAMILYALL != "Parrotfish" ~ "NOTPARROTFISH", # assign non parrotfish species NOTPARROTFISH
-                                       TRUE ~ "Parrotfish")) %>%
+    mutate(
+      AREA_M2 = cyl_area_m2,
+      
+      # Density
+      DENSITY_PER_FISH_HECTARE = COUNT / cyl_area_ha,
+      
+      # Calculate grams, then kg, then kg/ha 
+      BIOMASS_PER_FISH_G = LW_A * ((SIZE_ * LENGTH_CONVERSION_FACTOR) ^ LW_B),
+      BIOMASS_PER_FISH_KG = (COUNT * BIOMASS_PER_FISH_G) / 1000,
+      BIOMASS_PER_FISH_KG_HECTARE = BIOMASS_PER_FISH_KG / cyl_area_ha,
+      
+      SIZE_CLASS = cut(SIZE_, 
+                       breaks = c(0, 10, 20, 30, 40, 50, Inf), 
+                       labels = c("0-10cm", "11-20cm", "21-30cm", "31-40cm", "41-50cm", "51-60cm"),
+                       include.lowest = TRUE, right = TRUE)
+    ) %>%
     
-    # Sum FXN_GRP to the REPLICATEID level
-    mutate(FXN_GRP = replace(as.character(FXN_GRP), FXN_GRP == "Browser", "Other")) %>%
-    dplyr::group_by(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL, FXN_GRP) %>% #now we want to sum each surveyors estimates by Grazing Type (note, REP is not divided by surveyor, but REPLICATEID is)
-    dplyr::summarize("SUM_BIOMASS_PER_FISH_KG_HECTARE" = sum(BIOMASS_PER_FISH_KG_HECTARE),
-                     "SUM_DENSITY_PER_FISH_HECTARE" = sum(DENSITY_PER_FISH_HECTARE),
-                     "SUM_EROSION_PER_FISH_KG_M2_YR" = sum(EROSION_PER_FISH_KG_M2_YR)) %>%
-    ungroup(.) %>% # need to do this to make next group_by work properly
-    bind_rows(dplyr::filter(.) %>% # create new rows where Excavator, Scraper, and Other are totaled in sum for each site and replicate ID
-                group_by(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL) %>%
-                summarise(across(SUM_BIOMASS_PER_FISH_KG_HECTARE:SUM_EROSION_PER_FISH_KG_M2_YR, ~(sum(.x, na.rm=T)))) %>% 
-                mutate(FXN_GRP = "ALL")) %>%
-    #format by adding back in where replicateID and Graz_Type were zero before averaging
-    complete(., REPLICATEID, COMMONFAMILYALL, FXN_GRP, fill = list(SUM_BIOMASS_PER_FISH_KG_HECTARE = 0, 
-                                                                   SUM_DENSITY_PER_FISH_HECTARE = 0, 
-                                                                   SUM_EROSION_PER_FISH_KG_M2_YR = 0)) %>% #...I can complete (fill in missing) SPECIES codes for each REPLICATEID. So we're adding back zeros and this is important becuase of the mean calculations we're about to do.
-    dplyr::select(-SITEVISITID, -REA_SITEID, -REP) %>% # remove columns with NA and will join them back in next step
-    mutate_at(vars(REPLICATEID), as.integer) %>% # make structure of REPLICATEID the same again for the sake of the join
-    left_join(., data %>% 
-                  dplyr::filter(., METHOD %in% method_type) %>%
-                  dplyr::filter(., !(TRAINING_YN %in% "-1")) %>%
-                  # dplyr::filter(., !(REA_SITEID == "GUA-2587" & METHOD == "fSPC")) %>%
-                  dplyr::select(SITEVISITID, REA_SITEID, REP, REPLICATEID), by = "REPLICATEID", relationship = "many-to-many") %>% # join the three columns that produced NAs with function complete
-    distinct(.) %>% # remove duplicate rows
-    dplyr::select(SITEVISITID, REA_SITEID, REP, everything(.)) %>% # re-order columns for visual effects
-    mutate(FXN_GRP = case_when(FXN_GRP == "Other" ~ "OTHER",
-                               FXN_GRP == "Scraper" ~ "SCRAPER",
-                               FXN_GRP == "Excavator" ~ "EXCAVATOR",
-                               TRUE ~ FXN_GRP))
+    # Join Rates
+    left_join(rates_dbase, by = c("TAXONNAME", "SIZE_CLASS"), relationship = "many-to-many") %>%
+    distinct() %>%
+    
+    # Final Bioerosion Math
+    mutate(
+      EROSION_RATE = coalesce(EROSION_RATE, 0), 
+      EROSION_PER_FISH_KG_M2_YR = pmax(0, (COUNT * EROSION_RATE) / cyl_area_m2)
+    )
+  
+  if ("PHASE" %in% names(formatdat)) {
+    prep_step <- formatdat %>% filter(PHASE %in% c("I", "T"))
+  } else {
+    prep_step <- formatdat
+  }
+  
+  prepdat <- prep_step %>%
+
+    mutate(
+      COMMONFAMILYALL = if_else(COMMONFAMILYALL == "Parrotfish", "Parrotfish", "NOTPARROTFISH"),
+      FXN_GRP = case_when(
+        FXN_GRP == "Browser"   ~ "OTHER",
+        FXN_GRP == "Scraper"   ~ "SCRAPER",
+        FXN_GRP == "Excavator" ~ "EXCAVATOR",
+        TRUE ~ "OTHER"
+      )
+    ) %>%
+    
+
+    group_by(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL, FXN_GRP) %>%
+    summarize(
+      SUM_BIOMASS_PER_FISH_KG_HECTARE = sum(BIOMASS_PER_FISH_KG_HECTARE, na.rm = TRUE),
+      SUM_DENSITY_PER_FISH_HECTARE    = sum(DENSITY_PER_FISH_HECTARE, na.rm = TRUE),
+      SUM_EROSION_PER_FISH_KG_M2_YR   = sum(EROSION_PER_FISH_KG_M2_YR, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+
+  sum_all <- prepdat %>%
+    group_by(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL) %>%
+    summarize(
+      SUM_BIOMASS_PER_FISH_KG_HECTARE = sum(SUM_BIOMASS_PER_FISH_KG_HECTARE, na.rm = TRUE),
+      SUM_DENSITY_PER_FISH_HECTARE    = sum(SUM_DENSITY_PER_FISH_HECTARE, na.rm = TRUE),
+      SUM_EROSION_PER_FISH_KG_M2_YR   = sum(SUM_EROSION_PER_FISH_KG_M2_YR, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(FXN_GRP = "ALL")
+  
+  prepdat <- bind_rows(prepdat, sum_all) %>%
+    complete(
+      nesting(SITEVISITID, REA_SITEID, REP, REPLICATEID), 
+      COMMONFAMILYALL, 
+      FXN_GRP, 
+      fill = list(
+        SUM_BIOMASS_PER_FISH_KG_HECTARE = 0, 
+        SUM_DENSITY_PER_FISH_HECTARE = 0, 
+        SUM_EROSION_PER_FISH_KG_M2_YR = 0
+      )
+    ) %>%
+    dplyr::select(SITEVISITID, REA_SITEID, REP, REPLICATEID, COMMONFAMILYALL, FXN_GRP,
+                  SUM_BIOMASS_PER_FISH_KG_HECTARE, 
+                  SUM_DENSITY_PER_FISH_HECTARE, 
+                  SUM_EROSION_PER_FISH_KG_M2_YR)
   
   
   return(prepdat)
