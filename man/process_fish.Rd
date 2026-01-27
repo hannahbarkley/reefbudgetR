@@ -6,9 +6,9 @@
 \usage{
 process_fish(
   data,
-  method_type = "Fixed",
+  method_type = c("Fixed", "StRS", "Mean StRS", "Belt"),
   fixed_metadata = NULL,
-  dbase_type = "Kindinger",
+  dbase_type = c("Kindinger", "IPRB"),
   subset_distance_m = 6000
 )
 }

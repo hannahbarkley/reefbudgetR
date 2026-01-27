@@ -6,10 +6,10 @@
 \usage{
 calc_fish_strs_spc(
   data,
-  rates_dbase = rates_dbase,
+  rates_dbase,
   fixed_metadata = NULL,
   subset_distance_m = NULL,
-  method_type = method_type
+  method_type
 )
 }
 \arguments{

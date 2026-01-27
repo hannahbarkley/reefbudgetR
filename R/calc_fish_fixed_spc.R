@@ -26,9 +26,6 @@ calc_fish_fixed_spc <- function(data,
     format_spc_output <- format_fish_spc(data,                                                 
                                          method = "fSPC",
                                          rates_dbase = rates_dbase)
-  
-    # created associated SPC sites to each OCC fixed site SPC
-    # sites_associated_dbase <- create_fish_assoc_sites(data, 6000)
     
     summary_spc_erosion  <- format_spc_output %>%
       pivot_longer(

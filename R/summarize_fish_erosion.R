@@ -42,158 +42,113 @@
 #'
 
 
-summarize_fish_erosion <- function(species_table,
-                                   full_summary = TRUE) {
-  options(scipen = 999) #prevent scientific notation
+summarize_fish_erosion <- function(species_table, full_summary = TRUE) {
   
-  # Final bioerosion calculations per transect
-  fish_erosion_transect_wide <- species_table %>%
-    # Re-order so Grazing Type comes first in column orders
-    dplyr::select(FXN_GRP, everything()) %>%
-    # Collapse dataframe to be workable with group_by()
-    gather(
-      .,
-      "TRANSECT",
-      "value",-c(FXN_GRP:SPECIES),
-      -METRIC
-    ) %>%
-    dplyr::group_by(
-      REGION,
-      REGIONCODE,
-      CRUISE_ID,
-      LOCATION,
-      LOCATIONCODE,
-      OCC_SITEID,
-      LATITUDE,
-      LONGITUDE,
-      METHOD,
-      TRANSECT,
-      FXN_GRP,
-      METRIC
-    ) %>%
-    # Summarize all species by Graze Type and Transect
-    dplyr::summarize(.sum = sum(value)) %>%
-    # Spread back out by Transect to look like CP Excel outputs
-    spread(., TRANSECT, .sum, fill = NA) %>%
-    # reorder Transect 10 to the end
-        dplyr::select(-c("TRANSECT_10"), everything()) %>%
-    #exclude "other" if only want to look at excavators and scrapers
-    # that contribute to bioerosion
-    #filter(!GRAZ_TYPE %in% "Other") %>%
-    bind_rows(
-      species_table %>%
-        group_by(
-          REGION,
-          REGIONCODE,
-          CRUISE_ID,
-          LOCATION,
-          LOCATIONCODE,
-          OCC_SITEID,
-          LATITUDE,
-          LONGITUDE,
-          METHOD,
-          METRIC
-        ) %>%
-        dplyr::summarise(across(
-          TRANSECT_1:TRANSECT_10, ~ sum(.x, na.rm = T)
-        )) %>%
-        # add Total Row in dataframe for final CB calculation
-        mutate(FXN_GRP = "All")
+  options(scipen = 999) # prevent scientific notation
+  
+  # Base Summary (Long Format) ----------------------------------------------
+  
+  base_long <- species_table %>%
+    dplyr::select(-SPECIES) %>%
+    tidyr::pivot_longer(
+      cols = starts_with("TRANSECT_"),
+      names_to = "TRANSECT",
+      values_to = "VALUE"
     )
-
-
-
-  # Calculate bioerosion per site and metric
-  fish_erosion_transect <- fish_erosion_transect_wide %>%
-    pivot_longer(.,
-                 cols = 12:21,
-                 names_to = "TRANSECT",
-                 values_to = "Values") %>%
-    dplyr::select(
-      REGION,
-      REGIONCODE,
-      CRUISE_ID,
-      LOCATION,
-      LOCATIONCODE,
-      OCC_SITEID,
-      LATITUDE,
-      LONGITUDE,
-      METHOD,
-      METRIC,
-      everything()
+  
+  # Calculate Sums for each Functional Group
+  sum_by_fxn <- base_long %>%
+    dplyr::group_by(
+      REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+      OCC_SITEID, LATITUDE, LONGITUDE, METHOD, METRIC, TRANSECT, FXN_GRP
     ) %>%
-    spread(., METRIC, Values, fill = 0)
-
-  fish_erosion_transect$TRANSECT <- as.factor(str_split(fish_erosion_transect$TRANSECT, "\\_", simplify=T)[,2])
-
-  fish_erosion_transect$TRANSECT <- factor(fish_erosion_transect$TRANSECT, levels = seq(1,10,1))
-
-  fish_erosion_transect <- fish_erosion_transect[
-    with(fish_erosion_transect, order(REGION, LOCATION, METHOD, TRANSECT, FXN_GRP)),
-  ]
-
-  # final bioerosion calculations per site and metric
-  fish_erosion_site_long <- fish_erosion_transect_wide %>%
-    dplyr::select(
-      REGION,
-      REGIONCODE,
-      CRUISE_ID,
-      LOCATION,
-      LOCATIONCODE,
-      OCC_SITEID,
-      LATITUDE,
-      LONGITUDE,
-      METHOD,
-      METRIC,
-      everything()
+    dplyr::summarise(VALUE = sum(VALUE, na.rm = TRUE), .groups = "drop")
+  
+  # Calculate Sums for "All" Groups combined
+  sum_all <- base_long %>%
+    dplyr::group_by(
+      REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+      OCC_SITEID, LATITUDE, LONGITUDE, METHOD, METRIC, TRANSECT
     ) %>%
-    rowwise() %>%
-    dplyr::mutate(MEAN = mean(c_across(TRANSECT_1:TRANSECT_10))) %>%
-    dplyr::mutate(SD = sd(c_across(TRANSECT_1:TRANSECT_10))) %>%
-    dplyr::mutate(SE = SD / sqrt(10)) %>% #10 is the number of total Transects
-    dplyr::mutate(L95 = MEAN - (SE * 1.97)) %>%
-    dplyr::mutate(U95 = MEAN + (SE * 1.97)) %>%
-    dplyr::select(-c(TRANSECT_1:TRANSECT_10)) #remove unnecessary columns
-
-  fish_erosion_site_long$L95[fish_erosion_site_long$L95 < 0] <-
-    0
-
-  # format output dataframe for NCEI
+    dplyr::summarise(VALUE = sum(VALUE, na.rm = TRUE), .groups = "drop") %>%
+    dplyr::mutate(FXN_GRP = "All")
+  
+  # Combine Specific Groups + "All"
+  combined_long <- dplyr::bind_rows(sum_by_fxn, sum_all)
+  
+  
+  # Transect Level Summary ----------------------------------------
+  
+  fish_erosion_transect <- combined_long %>%
+    tidyr::pivot_wider(
+      names_from = METRIC,
+      values_from = VALUE,
+      values_fill = 0
+    ) %>%
+    dplyr::mutate(
+      TRANSECT_NUM = as.integer(sub("TRANSECT_", "", TRANSECT))
+    ) %>%
+    dplyr::arrange(REGION, LOCATION, METHOD, TRANSECT_NUM, FXN_GRP) %>%
+    dplyr::select(-TRANSECT_NUM) %>%
+    dplyr::select(
+      REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+      OCC_SITEID, LATITUDE, LONGITUDE, METHOD, TRANSECT, FXN_GRP,
+      everything()
+    )
+  
+  
+  # Site Level Summary --------------------------------------------
+  
+  fish_erosion_site_long <- combined_long %>%
+    dplyr::group_by(
+      REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+      OCC_SITEID, LATITUDE, LONGITUDE, METHOD, METRIC, FXN_GRP
+    ) %>%
+    dplyr::summarise(
+      MEAN = mean(VALUE, na.rm = TRUE),
+      SD   = sd(VALUE, na.rm = TRUE),
+      n    = n(), # Should be 10, but safe to calculate
+      .groups = "drop"
+    ) %>%
+    dplyr::mutate(
+      SD  = dplyr::coalesce(SD, 0),
+      SE  = SD / sqrt(10), # Assuming n=10 fixed as per original code
+      L95 = pmax(0, MEAN - (SE * 1.97)), # Vectorized 'max' logic
+      U95 = MEAN + (SE * 1.97)
+    )
+  
+  # Format for NCEI 
   fish_erosion_site <- fish_erosion_site_long %>%
-    dplyr::select(
-      REGION,
-      REGIONCODE,
-      CRUISE_ID,
-      LOCATION,
-      LOCATIONCODE,
-      OCC_SITEID,
-      LATITUDE,
-      LONGITUDE,
-      METHOD,
-      METRIC,
-      everything()
+    tidyr::pivot_longer(
+      cols = c(MEAN, SD, SE, L95, U95),
+      names_to = "STAT",
+      values_to = "VAL"
     ) %>%
-    pivot_longer(.,
-                 cols = 12:16,
-                 names_to = "Variables",
-                 values_to = "Values") %>%
-    unite("METRIC", METRIC:FXN_GRP) %>% #combine columns with underscore
-    unite("METRIC", METRIC:Variables) %>% #combine columns with underscore
-    spread(., METRIC, Values, fill = 0)
-
+    tidyr::unite("COL_NAME", c(METRIC, FXN_GRP, STAT), sep = "_") %>%
+    tidyr::pivot_wider(
+      names_from = COL_NAME,
+      values_from = VAL,
+      values_fill = 0
+    ) 
+  
+  # Ensure uppercase names
   names(fish_erosion_site) <- toupper(names(fish_erosion_site))
-
-  if (full_summary == TRUE) {
+  
+  # Reorder columns to ensure metadata is first
+  fish_erosion_site <- fish_erosion_site %>%
+    dplyr::select(
+      REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, 
+      OCC_SITEID, LATITUDE, LONGITUDE, METHOD,
+      everything()
+    )
+  
+  # Return ------------------------------------------------------------------
+  if (full_summary) {
     return(list(
       fish_erosion_transect = fish_erosion_transect,
-      fish_erosion_site = fish_erosion_site)
-    )
-  }
-
-  if (full_summary == FALSE) {
+      fish_erosion_site = fish_erosion_site
+    ))
+  } else {
     return(fish_erosion_site)
   }
-
-
 }
-

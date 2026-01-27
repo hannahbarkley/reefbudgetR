@@ -21,64 +21,42 @@
 #'fish_strs_spc <- calc_fish_strs_spc(data = fish_data, rates_dbase = rates_dbase, subset_distance_m = 2000)
 
 calc_fish_strs_spc <- function(data,
-                               rates_dbase = rates_dbase,
+                               rates_dbase,
                                fixed_metadata = NULL,
                                subset_distance_m = NULL,
-                               method_type = method_type) {
-  # FOR StRS SPC DATA ----------------------------------------------------------------
+                               method_type) {
+  
+  # ============================================================================
+  # StRS SPC DATA (Stratified Random Sampling)
+  # ============================================================================
   
   if (method_type == "StRS") {
-    strs_metadata <- data %>%
-      dplyr::select(
-        CRUISE_ID,
-        REGION,
-        REGIONCODE,
-        LOCATION,
-        LOCATIONCODE,
-        LATITUDE,
-        LONGITUDE,
-        YEAR,
-        METHOD,
-        REA_SITEID
-      ) %>%
-      distinct()
     
-    format_strsspc_output <- format_fish_spc(data, method = "nSPC", rates_dbase = rates_dbase)
-    
-    summary_strsspc_erosion <- format_strsspc_output %>%
+    # Format and Summary Stats
+    summary_strsspc <- format_fish_spc(data, method = "nSPC", rates_dbase = rates_dbase) %>%
       tidyr::pivot_longer(
-        cols = c(
-          SUM_BIOMASS_PER_FISH_KG_HECTARE,
-          SUM_DENSITY_PER_FISH_HECTARE,
-          SUM_EROSION_PER_FISH_KG_M2_YR
-        ),
+        cols = c(SUM_BIOMASS_PER_FISH_KG_HECTARE, SUM_DENSITY_PER_FISH_HECTARE, SUM_EROSION_PER_FISH_KG_M2_YR),
         names_to = "METRIC",
         values_to = "VALUE"
       ) %>%
-      dplyr::group_by(SITEVISITID,
-                      REA_SITEID,
-                      REP,
-                      COMMONFAMILYALL,
-                      FXN_GRP,
-                      METRIC) %>%
-      dplyr::summarize(
+      dplyr::group_by(SITEVISITID, REA_SITEID, REP, COMMONFAMILYALL, FXN_GRP, METRIC) %>%
+      dplyr::summarise(
         MEAN = mean(VALUE, na.rm = TRUE),
-        SD   = dplyr::coalesce(sd(VALUE, na.rm = TRUE), 0),
+        SD   = sd(VALUE, na.rm = TRUE),
         .groups = "drop"
       ) %>%
       dplyr::mutate(
+        SD  = dplyr::coalesce(SD, 0),
         SE  = SD / sqrt(2),
         L95 = pmax(0, MEAN - (SE * 1.97)),
         U95 = MEAN + (SE * 1.97)
-      ) %>%
-      dplyr::select(-SITEVISITID, -REP)
+      )
     
-    calc_strs_spc_erosion <- summary_strsspc_erosion %>%
-      dplyr::mutate(L95 = pmax(0, L95)) %>%
+    # Filter, Rename, Pivot
+    calc_strs_spc <- summary_strsspc %>%
       dplyr::filter(COMMONFAMILYALL != "NOTPARROTFISH", !is.na(FXN_GRP)) %>%
       tidyr::pivot_longer(
-        cols = -c(REA_SITEID:METRIC),
-        # Keeps your negative selection logic
+        cols = c(MEAN, SD, SE, L95, U95),
         names_to = "calc",
         values_to = "value"
       ) %>%
@@ -93,133 +71,98 @@ calc_fish_strs_spc <- function(data,
         )
       )
     
+    # Complete Missing Data
+    target_sites <- unique(data$REA_SITEID) 
     options_fxn_grp <- c("ALL", "OTHER", "SCRAPER", "EXCAVATOR")
     
-    target_sites <- strs_metadata %>%
-      filter(LOCATIONCODE %in% data$LOCATIONCODE) %>%
-      pull(REA_SITEID) %>%
-      unique()
-    
-    calc_strs_spc_erosion3 <- calc_strs_spc_erosion %>%
-      dplyr::select(-any_of("SITEVISITID")) %>%
+    calc_strs_spc_filled <- calc_strs_spc %>%
+      dplyr::select(-any_of(c("SITEVISITID", "REP"))) %>%
       tidyr::complete(
         REA_SITEID = target_sites,
         FXN_GRP = options_fxn_grp,
         METRIC,
         calc,
         fill = list(value = 0)
-      ) %>%
-      dplyr::filter(!is.na(METRIC), !is.na(calc)) %>%
-      dplyr::distinct(.)
+      )
     
-    calc_strs_spc_erosion4 <- calc_strs_spc_erosion3 %>%
-      dplyr::left_join(
-        strs_metadata %>%
-          dplyr::select(
-            REGION,
-            REGIONCODE,
-            CRUISE_ID,
-            LOCATION,
-            LOCATIONCODE,
-            REA_SITEID,
-            LATITUDE,
-            LONGITUDE
-          ),
-        by = "REA_SITEID",
-        relationship = "many-to-one"
-      ) %>%
-      tidyr::pivot_wider(
-        id_cols = c(
-          REGION,
-          REGIONCODE,
-          CRUISE_ID,
-          LOCATION,
-          LOCATIONCODE,
-          REA_SITEID,
-          LATITUDE,
-          LONGITUDE
-        ),
-        names_from = c(METRIC, FXN_GRP, calc),
-        values_from = value,
-        names_sep = "_",
-        values_fill = 0
-      ) %>%
+    # Join Metadata and Format Final
+    meta_cols <- data %>%
+      dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE) %>%
+      dplyr::distinct()
+    
+    calc_final <- calc_strs_spc_filled %>%
+      dplyr::left_join(meta_cols, by = "REA_SITEID") %>%
       dplyr::mutate(
         LATITUDE = round(LATITUDE, 5),
         LONGITUDE = round(LONGITUDE, 5),
-        METHOD = as.factor("StRS SPC")
+        METHOD = "StRS SPC"
       ) %>%
-      dplyr::mutate(across(
-        c(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE),
-        as.factor
-      )) %>%
-      
-      dplyr::select(
-        REGION,
-        REGIONCODE,
-        CRUISE_ID,
-        LOCATION,
-        LOCATIONCODE,
-        REA_SITEID,
-        LATITUDE,
-        LONGITUDE,
-        METHOD,
-        everything()
-      )
+      tidyr::pivot_wider(
+        names_from = c(METRIC, FXN_GRP, calc),
+        names_sep = "_",
+        values_from = value,
+        values_fill = 0
+      ) %>%
+      dplyr::mutate(
+        dplyr::across(c(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, METHOD), as.factor),
+        dplyr::across(where(is.numeric), as.numeric)
+      ) %>%
+      dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, REA_SITEID, LATITUDE, LONGITUDE, METHOD, everything())
     
-    return(list(calc_strs_ero = calc_strs_spc_erosion4))
-    
+    return(list(calc_strs_ero = calc_final))
   }
   
-  # FOR MEAN StRS SPC DATA ----------------------------------------------------------------
+  
+  # ============================================================================
+  # MEAN StRS SPC DATA (Associated Sites)
+  # ============================================================================
   
   if (method_type == "Mean StRS") {
+    
+    # Base Calculations
     format_strsspc_output <- format_fish_spc(data, method = "nSPC", rates_dbase = rates_dbase)
     
-    # created associated SPC sites to each OCC fixed site SPC
-    sites_associated_dbase_ <- suppressWarnings(create_fish_assoc_sites(data, fixed_metadata, subset_distance_m))
-    sites_associated_dbase <- sites_associated_dbase_$output
-    survey_sample_size <- sites_associated_dbase_$surveysamplesize
+    # Create Associations
+    sites_assoc <- suppressWarnings(create_fish_assoc_sites(data, fixed_metadata, subset_distance_m))
+    sites_assoc_db <- sites_assoc$output
+    survey_sample_size <- sites_assoc$surveysamplesize
     
-    summary_strsspc_erosion <- format_strsspc_output %>%
+    # Initial Summary (Site Level)
+    summary_site_level <- format_strsspc_output %>%
       tidyr::pivot_longer(
         cols = -c(SITEVISITID:FXN_GRP, REPLICATEID),
         names_to = "METRIC",
         values_to = "VALUE"
       ) %>%
       dplyr::mutate(VALUE = as.numeric(VALUE)) %>%
-      dplyr::group_by(SITEVISITID,
-                      REA_SITEID,
-                      REP,
-                      COMMONFAMILYALL,
-                      FXN_GRP,
-                      METRIC) %>%
-      dplyr::summarise(MEAN = mean(VALUE, na.rm = TRUE),
-                       SD = sd(VALUE, na.rm = TRUE),) %>%
+      dplyr::group_by(SITEVISITID, REA_SITEID, REP, COMMONFAMILYALL, FXN_GRP, METRIC) %>%
+      dplyr::summarise(
+        MEAN = mean(VALUE, na.rm = TRUE),
+        SD   = sd(VALUE, na.rm = TRUE),
+        .groups = "drop"
+      ) %>%
       dplyr::mutate(
-        SD = dplyr::coalesce(SD, 0),
-        SE = SD / sqrt(2),
+        SD  = dplyr::coalesce(SD, 0),
+        SE  = SD / sqrt(2),
         L95 = pmax(0, MEAN - (SE * 1.97)),
         U95 = MEAN + (SE * 1.97)
       )
     
-    format_strs_spc_erosion <- summary_strsspc_erosion %>%
-      dplyr::select(-c(SD:U95)) %>%
+    # Associate and Filter
+    format_assoc <- summary_site_level %>%
+      dplyr::select(-SD, -SE, -L95, -U95) %>%
       dplyr::inner_join(
-        sites_associated_dbase %>%
+        sites_assoc_db %>%
           dplyr::filter(METHOD == "nSPC") %>%
-          dplyr::filter(!value %in% c("0", "1", 0, 1) &
-                          !is.na(value)) %>%
+          dplyr::filter(!value %in% c("0", "1", 0, 1) & !is.na(value)) %>%
           dplyr::select(REA_SITEID, ASSOC_OCCSITEID),
         by = "REA_SITEID",
         relationship = "many-to-many"
       ) %>%
-      dplyr::group_by(ASSOC_OCCSITEID) %>%
-      dplyr::mutate(TRANSECT = dplyr::dense_rank(REA_SITEID)) %>%
-      dplyr::ungroup() %>%
       dplyr::select(-SITEVISITID, -REA_SITEID, -REP)
     
-    calc_strs_spc_erosion <- format_strs_spc_erosion %>%
+    # Secondary Aggregation (Associated Site Level)
+    calc_assoc_level <- format_assoc %>%
       dplyr::group_by(ASSOC_OCCSITEID, COMMONFAMILYALL, FXN_GRP, METRIC) %>%
       dplyr::summarise(
         n = n(),
@@ -228,9 +171,8 @@ calc_fish_strs_spc <- function(data,
         .groups = "drop"
       ) %>%
       dplyr::mutate(
-        SD = dplyr::coalesce(SD, 0),
-        # Replace NA SD with 0
-        SE = SD / sqrt(n),
+        SD  = dplyr::coalesce(SD, 0),
+        SE  = SD / sqrt(n),
         L95 = pmax(0, MEAN_val - (SE * 1.97)),
         U95 = MEAN_val + (SE * 1.97)
       ) %>%
@@ -246,56 +188,37 @@ calc_fish_strs_spc <- function(data,
       dplyr::mutate(
         METRIC = dplyr::case_when(
           METRIC == "SUM_BIOMASS_PER_FISH_KG_HECTARE" ~ "FISH_BIOMASS_KG_HA",
-          METRIC == "SUM_DENSITY_PER_FISH_HECTARE" ~ "FISH_DENSITY_ABUNDANCE_HA",
-          METRIC == "SUM_EROSION_PER_FISH_KG_M2_YR" ~ "FISH_EROSION_KG_M2_YR",
+          METRIC == "SUM_DENSITY_PER_FISH_HECTARE"    ~ "FISH_DENSITY_ABUNDANCE_HA",
+          METRIC == "SUM_EROSION_PER_FISH_KG_M2_YR"     ~ "FISH_EROSION_KG_M2_YR",
           TRUE ~ METRIC
         )
       )
     
-    calc_strs_spc_erosion2 <- calc_strs_spc_erosion %>%
-      dplyr::ungroup() %>%
-      dplyr::mutate(FXN_GRP = factor(FXN_GRP, levels = c(
-        "ALL", "OTHER", "SCRAPER", "EXCAVATOR"
-      ))) %>%
-      tidyr::complete(ASSOC_OCCSITEID, 
-                      METRIC,
-                      calc, 
-                      FXN_GRP, 
-                      fill = list(value = 0)) %>%
-      dplyr::mutate(FXN_GRP = as.character(FXN_GRP)) %>%
-      dplyr::filter(!is.na(ASSOC_OCCSITEID)) %>%
-      dplyr::distinct()
-    
-    
+    # Complete Missing Data
     all_fixed_sites <- fixed_metadata %>%
       dplyr::filter(LOCATIONCODE %in% unique(data$LOCATIONCODE)) %>%
       dplyr::pull(OCC_SITEID) %>%
       unique()
     
-    calc_strs_spc_erosion3 <- calc_strs_spc_erosion2 %>%
-      tidyr::complete(ASSOC_OCCSITEID = all_fixed_sites,
-                      FXN_GRP,
-                      METRIC,
-                      calc,
-                      fill = list(value = 0)) %>%
-      dplyr::filter(!is.na(FXN_GRP) & !is.na(METRIC)) %>%
+    options_fxn_grp <- c("ALL", "OTHER", "SCRAPER", "EXCAVATOR")
+    
+    calc_filled <- calc_assoc_level %>%
+      dplyr::ungroup() %>%
+      tidyr::complete(
+        ASSOC_OCCSITEID = all_fixed_sites, # Adds missing sites
+        FXN_GRP = options_fxn_grp,         # Adds missing groups
+        METRIC,
+        calc,
+        fill = list(value = 0)
+      ) %>%
+      dplyr::filter(!is.na(METRIC)) %>%
       dplyr::distinct()
     
-    
-    # Continue formatting dataframe to match BELT FINAL BIOEROSION OUTPUT
-    calc_strs_spc_erosion4 <- calc_strs_spc_erosion3 %>%
+    # Final Formatting and Metadata Join
+    calc_final_mean <- calc_filled %>%
       dplyr::left_join(
         fixed_metadata %>%
-          dplyr::select(
-            REGION,
-            REGIONCODE,
-            CRUISE_ID,
-            LOCATION,
-            LOCATIONCODE,
-            OCC_SITEID,
-            LATITUDE,
-            LONGITUDE
-          ) %>%
+          dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, LATITUDE, LONGITUDE) %>%
           dplyr::distinct(),
         by = c("ASSOC_OCCSITEID" = "OCC_SITEID")
       ) %>%
@@ -309,37 +232,14 @@ calc_fish_strs_spc <- function(data,
         names_from = c(METRIC, FXN_GRP, calc),
         names_sep = "_",
         values_from = value,
-        values_fill = 0 #
+        values_fill = 0
       ) %>%
-      dplyr::select(
-        REGION,
-        REGIONCODE,
-        CRUISE_ID,
-        LOCATION,
-        LOCATIONCODE,
-        OCC_SITEID,
-        LATITUDE,
-        LONGITUDE,
-        METHOD,
-        dplyr::everything()
+      dplyr::mutate(
+        dplyr::across(c(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, METHOD), as.factor),
+        dplyr::across(where(is.numeric), as.numeric)
       ) %>%
-      dplyr::mutate(dplyr::across(
-        c(
-          REGION,
-          REGIONCODE,
-          CRUISE_ID,
-          LOCATION,
-          LOCATIONCODE,
-          METHOD
-        ),
-        as.factor
-      ),
-      dplyr::across(where(is.numeric), as.numeric))
+      dplyr::select(REGION, REGIONCODE, CRUISE_ID, LOCATION, LOCATIONCODE, OCC_SITEID, LATITUDE, LONGITUDE, METHOD, everything())
     
-    return(
-      list(calc_strs_ero = calc_strs_spc_erosion4, assoc_survey_count = survey_sample_size)
-    )
-    
-    
+    return(list(calc_strs_ero = calc_final_mean, assoc_survey_count = survey_sample_size))
   }
 }

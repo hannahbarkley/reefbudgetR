@@ -20,9 +20,13 @@
 
 calc_fish_belt <- function(data, 
                            rates_dbase, 
+                           fixed_metadata = sites_metadata,
                            full_summary = TRUE) {
   
   # Calculate erosion rates per fish ----------------------------------------
+  
+  data <- prep_spc(data, fixed_metadata)
+  
   calc_eros_fish_output <- calc_eros_fish(data, rates_dbase)
   
   # Calculate metrics ---------------------

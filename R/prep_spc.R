@@ -34,13 +34,19 @@ prep_spc <- function(data_spc, fixed_metadata = NULL) {
   ) %>% as_date()
   
   if (!is.null(fixed_metadata)) {
-
+    desired_cols <- c("REGION", "REGIONCODE", "LOCATION", "LOCATIONCODE")
+    existing_cols <- intersect(desired_cols, names(fixed_metadata))
+    
     meta_lookup <- fixed_metadata %>%
-      dplyr::select(REGION, REGIONCODE, LOCATION, LOCATIONCODE) %>%
-      distinct() 
+      dplyr::select(all_of(existing_cols)) %>%
+      distinct()
+    
+    
+    join_keys <- intersect(names(data_spc), names(meta_lookup))
     
     data_spc <- data_spc %>%
-      left_join(meta_lookup, by = c("REGION", "LOCATION"))
+      
+      left_join(meta_lookup, by = join_keys)
     
   } else {
 
