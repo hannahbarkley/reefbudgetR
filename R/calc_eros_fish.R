@@ -39,7 +39,7 @@ calc_eros_fish <- function(data, rates_dbase) {
   # Create Reference Databases ----------------------------------------------------
   
   rates_db <- rates_dbase %>%
-    dplyr::rename(any_of(c(TAXONNAME = "TAXON_NAME"))) %>%
+    dplyr::rename(any_of(c(TAXONNAME = "TAXON_NAME", SPECIES = "TAXON_CODE"))) %>%
     dplyr::mutate(SIZE_CLASS = rates_size_map[SIZE_CLASS]) %>%
     dplyr::filter(!is.na(SIZE_CLASS)) %>%
     dplyr::select(TAXONNAME, SIZE_CLASS, PHASE, EROSION_RATE, FXN_GRP_DB = FXN_GRP)
@@ -51,7 +51,7 @@ calc_eros_fish <- function(data, rates_dbase) {
   # Calculation Pipeline -----------------------------------------------
   
   fish_all <- data %>%
-    dplyr::rename(any_of(c(METHOD = "CB_METHOD", TAXONNAME = "TAXON_NAME"))) %>%
+    dplyr::rename(any_of(c(METHOD = "CB_METHOD", TAXONNAME = "TAXON_NAME",SPECIES = "TAXON_CODE"))) %>%
     dplyr::mutate(
       dplyr::across(c(REGION:LONGITUDE, METHOD:VISIBILITY_M, TRANSECT, 
                       HABITAT_CODE:TAXONNAME, PHASE), as.factor),
