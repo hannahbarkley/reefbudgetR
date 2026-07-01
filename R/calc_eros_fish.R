@@ -1,5 +1,5 @@
 #' Calculate parrotfish biomass, density, and bioerosion rates
-
+#'
 #'@author Rebecca Weible
 #'
 #'@param data Parrotfish belt data, including number of fish observed of each
@@ -48,15 +48,28 @@ calc_eros_fish <- function(data, rates_dbase) {
     dplyr::select(SPECIES, LW_A, LW_B, LENGTH_CONVERSION_FACTOR) %>%
     dplyr::distinct()
   
+  # 0. Base Transects Roster ------------------------------------------------------
+  # Clean names first so we can select them reliably
+  data_renamed <- data %>%
+    dplyr::rename(any_of(c(METHOD = "CB_METHOD", TAXONNAME = "TAXON_NAME", SPECIES = "TAXON_CODE"))) %>%
+    # FIX: Standardize types BEFORE splitting the data to prevent anti_join crashes
+    # This specifically protects LATITUDE and LONGITUDE as numeric fields.
+    dplyr::mutate(
+      dplyr::across(any_of(c("REGION", "REGIONCODE", "YEAR", "CRUISE_ID", "LOCATION", 
+                             "LOCATIONCODE", "OCC_SITEID", "OCC_SITENAME", "LOCALDATE", 
+                             "METHOD", "DIVER", "BUDDY", "REP", "VISIBILITY_M", "TRANSECT", 
+                             "HABITAT_CODE", "HABITAT_TYPE", "SPECIES", "TAXONNAME", "PHASE")), as.factor),
+      dplyr::across(c(any_of(c("LATITUDE", "LONGITUDE", "TRANSECT_LENGTH_M", "TRANSECT_WIDTH_M", "AREA_M2")), starts_with("SIZE_BIN_")), as.numeric)
+    )
+  
+  # Capture every surveyed transect before any filtering happens
+  base_transects <- data_renamed %>%
+    dplyr::select(REGION:TRANSECT) %>%
+    dplyr::distinct()
+  
   # Calculation Pipeline -----------------------------------------------
   
-  fish_all <- data %>%
-    dplyr::rename(any_of(c(METHOD = "CB_METHOD", TAXONNAME = "TAXON_NAME",SPECIES = "TAXON_CODE"))) %>%
-    dplyr::mutate(
-      dplyr::across(c(REGION:LONGITUDE, METHOD:VISIBILITY_M, TRANSECT, 
-                      HABITAT_CODE:TAXONNAME, PHASE), as.factor),
-      dplyr::across(c(TRANSECT_LENGTH_M:AREA_M2, starts_with("SIZE_BIN_")), as.numeric)
-    ) %>%
+  fish_all <- data_renamed %>%
     dplyr::select(
       REGION:TRANSECT, 
       SPECIES:PHASE, 
@@ -68,10 +81,11 @@ calc_eros_fish <- function(data, rates_dbase) {
       values_to = "COUNT",
       values_drop_na = TRUE
     ) %>%
+    # The is.na(PHASE) logic prevents the filter from silently dropping entirely empty transects
     dplyr::filter(
-      !(PHASE == "J" & SIZE_CLASS != "SIZE_BIN_0_10_CM"),
-      !(PHASE %in% c("I", "T") & SIZE_CLASS == "SIZE_BIN_0_10_CM"),
-      !(PHASE == "I" & SIZE_CLASS == "SIZE_BIN_51_60_CM")
+      is.na(PHASE) | !(PHASE == "J" & SIZE_CLASS != "SIZE_BIN_0_10_CM"),
+      is.na(PHASE) | !(PHASE %in% c("I", "T") & SIZE_CLASS == "SIZE_BIN_0_10_CM"),
+      is.na(PHASE) | !(PHASE == "I" & SIZE_CLASS == "SIZE_BIN_51_60_CM")
     ) %>%
     dplyr::mutate(length = size_to_length[SIZE_CLASS]) %>%
     dplyr::left_join(species_db, by = "SPECIES") %>%
@@ -97,6 +111,30 @@ calc_eros_fish <- function(data, rates_dbase) {
       FISH_EROSION_KG_M2_YR = pmax(0, FISH_EROSION_KG_M2_YR)
     ) %>%
     dplyr::select(-any_of("FXN_GRP_DB"))
+  
+  # Add back dropped zero-count transects ----------------------------------
+  
+  # Find which transects were annihilated by the pipeline (e.g., pivot_longer or count = 0)
+  missing_transects <- dplyr::anti_join(base_transects, fish_all, by = names(base_transects))
+  
+  if (nrow(missing_transects) > 0) {
+    zero_rows <- missing_transects %>%
+      dplyr::mutate(
+        SPECIES = "NONE",
+        TAXONNAME = "NONE",
+        PHASE = "NONE",
+        SIZE_CLASS = "NONE",
+        COUNT = 0,
+        BIOMASS_PER_FISH_G = 0,
+        BIOMASS_PER_FISH_KG = 0,
+        FXN_GRP = "Other",
+        EROSION_RATE = 0,
+        FISH_EROSION_KG_M2_YR = 0
+      )
+    
+    # Bind the reinstated zero-transects to the bottom of the processed data
+    fish_all <- dplyr::bind_rows(fish_all, zero_rows)
+  }
   
   return(fish_all)
 }

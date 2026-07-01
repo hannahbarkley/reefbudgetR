@@ -2,8 +2,9 @@
 #'
 #'@author Rebecca Weible
 #'
-#'@param fish_data Fish spc survey data.
-#'@param method_type Type of SPC data. "Fixed" (fixed only), "StRS" (stratified random), "Mean StRS" (average of nearby stratified random), or "Belt" (belt data only)
+#'@param spc_data Fish SPC survey data (default is NULL).
+#'@param belt_data Fish Belt survey data (default is NULL).
+#'@param method_type Type of survey data to process. "Fixed" (fixed SPC only), "StRS" (stratified random SPC), "Mean StRS" (average of nearby stratified random SPC), or "Belt" (belt data only)
 #'@param fixed_metadata Dataframe with fixed site info
 #'@param dbase_type Erosion rates database to use. Choose either Indo-Pacific
 #'ReefBudget ("dbase_type = "IPRB") or U.S. Pacific Islands rates developed
@@ -17,13 +18,14 @@
 #'@export process_fish
 #'
 #'@examples
-#'fish_data <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
+#'fish_data_belt <- read.csv("CB_FishBelt_alldata.csv", na = "", check.names = FALSE)
 #'
 #'fish_belt <- process_fish(spc_data = fish_data_spc,
 #'dbase_type = "Kindinger", belt_data = fish_data_belt, subset_distance_m = 2000)
 
 
-process_fish <- function(data,
+process_fish <- function(spc_data = NULL,
+                         belt_data = NULL,
                          method_type = c("Fixed", "StRS", "Mean StRS", "Belt"),
                          fixed_metadata = NULL,
                          dbase_type = c("Kindinger", "IPRB"),
@@ -40,21 +42,24 @@ process_fish <- function(data,
   
   result <- switch(method_type,
                    "Fixed" = {
+                     if (is.null(spc_data)) stop("spc_data is missing. Please provide spc_data for the 'Fixed' method.")
                      calc_fish_fixed_spc(
-                       data = data, 
+                       data = spc_data, 
                        rates_dbase = rates_dbase
                      )
                    },
                    "StRS" = {
+                     if (is.null(spc_data)) stop("spc_data is missing. Please provide spc_data for the 'StRS' method.")
                      calc_fish_strs_spc(
-                       data = data,
+                       data = spc_data,
                        rates_dbase = rates_dbase,
                        method_type = "StRS"
                      )
                    },
                    "Mean StRS" = {
+                     if (is.null(spc_data)) stop("spc_data is missing. Please provide spc_data for the 'Mean StRS' method.")
                      calc_fish_strs_spc(
-                       data = data,
+                       data = spc_data,
                        fixed_metadata = fixed_metadata,
                        rates_dbase = rates_dbase,
                        subset_distance_m = subset_distance_m,
@@ -62,8 +67,17 @@ process_fish <- function(data,
                      )
                    },
                    "Belt" = {
+                     # Fallback to spc_data if a user accidentally passes belt data into the spc_data argument
+                     if (is.null(belt_data)) {
+                       if (!is.null(spc_data)) {
+                         belt_data <- spc_data
+                       } else {
+                         stop("belt_data is missing. Please provide belt_data for the 'Belt' method.")
+                       }
+                     }
+                     
                      calc_fish_belt(
-                       data = data, 
+                       data = belt_data, 
                        rates_dbase = rates_dbase, 
                        full_summary = TRUE
                      )

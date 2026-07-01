@@ -19,29 +19,6 @@
 #'  summarize_by = "species"
 #')
 
-#'biomass_average <- suppressWarnings(
-#'  summarize_fish_metrics(
-#'    data = calc_eros_fish_output,
-#'    metric = "biomass",
-#'    level = "transect",
-#'    summarize_by = "species"
-#'  )
-
-#'bioerosion_average <- suppressWarnings(
-#'  summarize_fish_metrics(
-#'    data = calc_eros_fish_output,
-#'    metric = "bioerosion",
-#'    level = "transect",
-#'    summarize_by = "species"
-#'  )
-
-#'species_table <-
-#'  rbind(density_average, biomass_average, bioerosion_average)
-
-#' summary_fish_erosion <- summarize_fish_erosion(species_table, full_summary)
-#'
-
-
 summarize_fish_erosion <- function(species_table, full_summary = TRUE) {
   
   options(scipen = 999) # prevent scientific notation
@@ -49,12 +26,16 @@ summarize_fish_erosion <- function(species_table, full_summary = TRUE) {
   # Base Summary (Long Format) ----------------------------------------------
   
   base_long <- species_table %>%
-    dplyr::select(-SPECIES) %>%
+    dplyr::select(-any_of("SPECIES")) %>%
     tidyr::pivot_longer(
       cols = starts_with("TRANSECT_"),
       names_to = "TRANSECT",
       values_to = "VALUE"
-    )
+    ) %>%
+    # FIX: Drop rows where VALUE is NA. 
+    # These NAs are artifacts generated when row-binding sites with different total numbers of transects.
+    # True surveyed transects with zero counts are preserved as 0, not NA.
+    dplyr::filter(!is.na(VALUE))
   
   # Calculate Sums for each Functional Group
   sum_by_fxn <- base_long %>%
@@ -107,13 +88,13 @@ summarize_fish_erosion <- function(species_table, full_summary = TRUE) {
     dplyr::summarise(
       MEAN = mean(VALUE, na.rm = TRUE),
       SD   = sd(VALUE, na.rm = TRUE),
-      n    = n(), # Should be 10, but safe to calculate
+      n    = sum(!is.na(VALUE)), # Dynamically counts only the true surveyed transects for this site
       .groups = "drop"
     ) %>%
     dplyr::mutate(
       SD  = dplyr::coalesce(SD, 0),
-      SE  = SD / sqrt(10), # Assuming n=10 fixed as per original code
-      L95 = pmax(0, MEAN - (SE * 1.97)), # Vectorized 'max' logic
+      SE  = SD / sqrt(n), # Dynamically scales SE based on true survey effort
+      L95 = pmax(0, MEAN - (SE * 1.97)),
       U95 = MEAN + (SE * 1.97)
     )
   

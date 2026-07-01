@@ -11,12 +11,9 @@
 #'
 #'@import Rmisc
 #'@import dplyr
+#'@import tidyr
 #'
 #'@export summarize_fish_metrics
-#'
-#'@examples
-#'calc_eros_fish_output <- calc_eros_fish(data, rates_dbase = rates_dbase)
-
 
 summarize_fish_metrics <- function(data,
                                    metric = c("density", "biomass", "bioerosion"),
@@ -26,7 +23,7 @@ summarize_fish_metrics <- function(data,
   # Setup Parameters --------------------------------------------------------
   metric_arg <- match.arg(metric)
   level_arg  <- match.arg(level)
-  sum_by_arg <- match.arg(summarize_by)
+  sum_by_arg = match.arg(summarize_by)
   
   # Map generic metric names to column names
   col_name <- switch(metric_arg,
@@ -35,8 +32,6 @@ summarize_fish_metrics <- function(data,
                      "bioerosion" = "FISH_EROSION_KG_M2_YR")
   
   # Define Area Normalization Factor
-  # Density/Biomass = per Hectare (Area / 10,000)
-  # Bioerosion = per m2 (Area / 1)
   area_denom_factor <- if (metric_arg == "bioerosion") 1 else 10000
   
   # Define Grouping Columns based on user input
@@ -45,48 +40,51 @@ summarize_fish_metrics <- function(data,
                      "species"    = c("FXN_GRP", "SPECIES"),
                      "overall"    = character(0)) 
   
-  # Define Metadata Columns (to keep in output)
+  # Define Metadata Columns
   meta_cols <- c("REGION", "REGIONCODE", "CRUISE_ID", "LOCATION", 
                  "LOCATIONCODE", "OCC_SITEID", "LATITUDE", "LONGITUDE", "METHOD")
   
-  
   # Base Calculation (Transect Level) ---------------------------------------
-  # Calculate the metric per transect first. 
-  
-  # Aggregate
   base_transect <- data %>%
     dplyr::group_by(dplyr::across(all_of(c(meta_cols, "TRANSECT", grp_cols)))) %>%
     dplyr::summarise(
-      # Sum the metric for the group, then divide by Area (converted if needed)
-      # We take the mean Area per transect group (should be unique per transect)
       VAL = sum(!!sym(col_name), na.rm = TRUE) / (mean(AREA_M2) / area_denom_factor),
       .groups = "drop"
     )
   
-  # Zero Filling 
-  
-  # Define standard transect list
-  transect_levels <- paste0("TRANSECT_", 1:10)
-  
+  # Dynamic Zero Filling Per Site -------------------------------------------
   base_filled <- base_transect %>%
-    dplyr::mutate(TRANSECT = factor(paste0("TRANSECT_", TRANSECT), levels = transect_levels)) %>%
-    tidyr::complete(
-      tidyr::nesting(!!!syms(c(meta_cols, grp_cols))), # Keep existing metadata/groups together
-      TRANSECT, 
-      fill = list(VAL = 0)
+    # FIX: Select only the structural columns needed for expansion.
+    # This strips metadata out temporarily so left_join doesn't create .x/.y suffixes.
+    dplyr::select(OCC_SITEID, TRANSECT, any_of(grp_cols), VAL) %>%
+    dplyr::group_by(OCC_SITEID) %>%
+    dplyr::group_modify(~ {
+      site_max <- max(as.numeric(as.character(.x$TRANSECT)), na.rm = TRUE)
+      site_transect_levels <- paste0("TRANSECT_", 1:site_max)
+      
+      .x %>%
+        dplyr::mutate(TRANSECT = factor(paste0("TRANSECT_", TRANSECT), levels = site_transect_levels)) %>%
+        tidyr::complete(
+          tidyr::nesting(!!!syms(intersect(names(.x), grp_cols))), 
+          TRANSECT,
+          fill = list(VAL = 0)
+        )
+    }) %>%
+    dplyr::ungroup() %>%
+    # FIX: Cleanly map the full metadata columns back onto every row by OCC_SITEID
+    dplyr::left_join(
+      base_transect %>% dplyr::select(all_of(meta_cols)) %>% dplyr::distinct(),
+      by = "OCC_SITEID"
     )
-  
   
   # Output Generation -----------------------------------------------
   
   # --- Transect Level Output  ---
   if (level_arg == "transect") {
-    
     output <- base_filled %>%
       tidyr::pivot_wider(
         names_from = TRANSECT,
-        values_from = VAL,
-        values_fill = 0
+        values_from = VAL
       ) %>%
       dplyr::select(all_of(meta_cols), any_of(grp_cols), everything())
     
@@ -95,27 +93,23 @@ summarize_fish_metrics <- function(data,
   
   # --- Site Level Output  ---
   if (level_arg == "site") {
-    
     output <- base_filled %>%
       dplyr::group_by(dplyr::across(all_of(c(meta_cols, grp_cols)))) %>%
       dplyr::summarise(
         MEAN = mean(VAL, na.rm = TRUE),
         SD   = sd(VAL, na.rm = TRUE),
-        SE   = SD / sqrt(n()), # n() will be 10 due to complete() above
+        SE   = SD / sqrt(n()), 
         N    = n(),
         .groups = "drop"
       )
     
-    # If summarizing by SIZE CLASS: Sort by Phase
     if (sum_by_arg == "size class") {
       output <- output %>%
         dplyr::mutate(PHASE = factor(PHASE, levels = c("J", "I", "T"))) %>%
         dplyr::arrange(PHASE)
     }
     
-    # If summarizing by SPECIES: Attach Genus/Grazing info
     if (sum_by_arg == "species") {
-      # Assumes 'fish_grazing_types' exists globally, as per original code
       if (exists("fish_grazing_types")) {
         output <- output %>%
           dplyr::left_join(

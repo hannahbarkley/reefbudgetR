@@ -23,14 +23,15 @@ calc_fish_belt <- function(data,
                            fixed_metadata = sites_metadata,
                            full_summary = TRUE) {
   
-  # Calculate erosion rates per fish ----------------------------------------
+  # 0. Clean duplicate columns ----------------------------------------------
+  # Safely removes duplicate columns (like "TRANSECT") that cause pivot_longer to crash
+  data <- data[, !duplicated(colnames(data)), drop = FALSE]
   
-  data <- prep_spc(data, fixed_metadata)
+  # 1. Pre-process data -----------------------------------------------------
+  data_prepped <- prep_spc(data, fixed_metadata)
+  calc_eros_fish_output <- calc_eros_fish(data_prepped, rates_dbase)
   
-  calc_eros_fish_output <- calc_eros_fish(data, rates_dbase)
-  
-  # Calculate metrics ---------------------
-
+  # 2. Calculate metrics ----------------------------------------------------
   metrics_map <- list(
     density    = "FISH_DENSITY_ABUNDANCE_HA",
     biomass    = "FISH_BIOMASS_KG_HA",
@@ -50,10 +51,40 @@ calc_fish_belt <- function(data,
       dplyr::mutate(METRIC = label)
   })
   
-  # Final Summary -----------------------------------------------------------
+  # 3. Add back zero-count transects safely ---------------------------------
+  # Identify the core grouping columns that exist in the calculated species table
+  id_cols <- intersect(c("OCC_SITEID", "SITE", "CB_TRANSECTID", "TRANSECT", "TRANSECT_ID", "REPLICATE"), names(species_table))
+  
+  # Extract the true master roster of all transects from the prepped data
+  base_transects <- calc_eros_fish_output %>%
+    dplyr::select(dplyr::all_of(id_cols)) %>%
+    dplyr::distinct()
+  
+  # Find exactly which transects were dropped (the empty ones)
+  missing_transects <- dplyr::anti_join(base_transects, species_table, by = id_cols)
+  
+  if (nrow(missing_transects) > 0) {
+    # Create blank rows for the missing transects crossed with our 3 metrics
+    zero_rows <- tidyr::expand_grid(
+      missing_transects,
+      METRIC = unique(species_table$METRIC)
+    )
+    
+    # Safely assign "NONE" to whichever species columns your package happens to output
+    sp_cols <- intersect(c("TAXON_CODE", "TAXON_NAME", "SPECIES", "SPECIES_NAME"), names(species_table))
+    for (sc in sp_cols) {
+      zero_rows[[sc]] <- "NONE"
+    }
+    
+    # Bind the empty transects to the bottom of the table and fill metrics with 0
+    species_table <- dplyr::bind_rows(species_table, zero_rows) %>%
+      dplyr::mutate(dplyr::across(where(is.numeric), ~ tidyr::replace_na(., 0)))
+  }
+  
+  # 4. Final Summary --------------------------------------------------------
   summary_belt_erosion <- summarize_fish_erosion(species_table, full_summary)
   
-  # Return Logic ( --------------------------
+  # 5. Return Logic ---------------------------------------------------------
   if (full_summary) {
     return(list(
       fish_erosion_transect = summary_belt_erosion$fish_erosion_transect,

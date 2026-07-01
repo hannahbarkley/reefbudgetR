@@ -71,7 +71,7 @@ summarize_prod <- function(data,
                            macro_rates = c("IPRB", "NCRMP"),
                            micro_rates = c("IPRB", "NCRMP"),
                            ...
-
+                           
 ) { 
   
   dbase_type   <- match.arg(dbase_type)
@@ -81,7 +81,7 @@ summarize_prod <- function(data,
   micro_rates  <- match.arg(micro_rates)
   
   if (dbase_type == "IPRB") {
-
+    
     if ("SUBSTRATE_CODE_IPRB" %in% names(data)) {
       data$SUBSTRATE_CODE <- data$SUBSTRATE_CODE_IPRB
     }
@@ -98,9 +98,9 @@ summarize_prod <- function(data,
     prod_dbase <- prod_dbase_custom
   }
   
-
+  
   # Summarize production by SUBSTRATE_CODE at TRANSECT level  ----------------
-
+  
   transect_substratecode <-
     data %>% dplyr::group_by(
       REGION,
@@ -123,32 +123,32 @@ summarize_prod <- function(data,
       MORPHOLOGY,
       MORPHOLOGYCODE
     ) %>%
-      reframe(
-        TRANSECT_PLANAR_LENGTH_M =
-          first(TRANSECT_PLANAR_LENGTH_M),
-        TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-          first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
-        SUBSTRATE_COVER_CM =
-          sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
-        SUBSTRATE_COVER_PCT =
-          SUBSTRATE_COVER_CM /
-          TRANSECT_TOTAL_SUBSTRATE_COVER_M,
-        SUBSTRATE_PLANAR_PROD_KG_YR =
-          sum(COLONY_PROD_G_YR, na.rm = TRUE) / 1000,
-        SUBSTRATE_PLANAR_PROD_KG_YR_L95 =
-          sum(COLONY_PROD_G_YR_L95, na.rm = TRUE) / 1000,
-        SUBSTRATE_PLANAR_PROD_KG_YR_U95 =
-          sum(COLONY_PROD_G_YR_U95, na.rm = TRUE) / 1000,
-        SUBSTRATE_CARB_PROD_KG_M2_YR =
-          SUBSTRATE_PLANAR_PROD_KG_YR *
-          (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
-        SUBSTRATE_CARB_PROD_KG_M2_YR_L95 =
-          SUBSTRATE_PLANAR_PROD_KG_YR_L95 *
-          (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
-        SUBSTRATE_CARB_PROD_KG_M2_YR_U95 =
-          SUBSTRATE_PLANAR_PROD_KG_YR_U95 *
-          (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
-      )
+    reframe(
+      TRANSECT_PLANAR_LENGTH_M =
+        first(TRANSECT_PLANAR_LENGTH_M),
+      TRANSECT_TOTAL_SUBSTRATE_COVER_M =
+        first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+      SUBSTRATE_COVER_CM =
+        sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
+      SUBSTRATE_COVER_PCT =
+        SUBSTRATE_COVER_CM /
+        TRANSECT_TOTAL_SUBSTRATE_COVER_M,
+      SUBSTRATE_PLANAR_PROD_KG_YR =
+        sum(COLONY_PROD_G_YR, na.rm = TRUE) / 1000,
+      SUBSTRATE_PLANAR_PROD_KG_YR_L95 =
+        sum(COLONY_PROD_G_YR_L95, na.rm = TRUE) / 1000,
+      SUBSTRATE_PLANAR_PROD_KG_YR_U95 =
+        sum(COLONY_PROD_G_YR_U95, na.rm = TRUE) / 1000,
+      SUBSTRATE_CARB_PROD_KG_M2_YR =
+        SUBSTRATE_PLANAR_PROD_KG_YR *
+        (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
+      SUBSTRATE_CARB_PROD_KG_M2_YR_L95 =
+        SUBSTRATE_PLANAR_PROD_KG_YR_L95 *
+        (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
+      SUBSTRATE_CARB_PROD_KG_M2_YR_U95 =
+        SUBSTRATE_PLANAR_PROD_KG_YR_U95 *
+        (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
+    )
   
   # Create unique pairs and lookup ID
   substrate_code_morphology_all <- data %>%
@@ -160,7 +160,7 @@ summarize_prod <- function(data,
       remove = FALSE, # Keeps original columns
       na.rm = TRUE    # If MORPHOLOGYCODE is NA, it won't add "-NA"
     )
-
+  
   # Build the full substrate code table for each OCC SITE and substrate/morphology pair
   
   substrate_code_full_table <- expand_grid(
@@ -259,7 +259,7 @@ summarize_prod <- function(data,
     "SUBSTRATE_CARB_PROD_KG_M2_YR_L95",
     "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
   )]
-
+  
   
   # Summarize production by SUBSTRATE_CLASS at TRANSECT level  ---------------
   transect_substrateclass <- 
@@ -280,32 +280,32 @@ summarize_prod <- function(data,
       OCC_SITEID_TRANSECT,
       SUBSTRATE_CLASS
     ) %>%
-      reframe(
-        TRANSECT_PLANAR_LENGTH_M = first(TRANSECT_PLANAR_LENGTH_M),
-        TRANSECT_TOTAL_SUBSTRATE_COVER_M =
-          first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
-        SUBSTRATE_COVER_CM =
-          sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
-        SUBSTRATE_COVER_PCT =
-          SUBSTRATE_COVER_CM / TRANSECT_TOTAL_SUBSTRATE_COVER_M,
-        SUBSTRATE_PLANAR_PROD_KG_YR =
-          sum(COLONY_PROD_G_YR, na.rm = TRUE) / 1000,
-        SUBSTRATE_PLANAR_PROD_KG_YR_L95 =
-          sum(COLONY_PROD_G_YR_L95, na.rm = TRUE) / 1000,
-        SUBSTRATE_PLANAR_PROD_KG_YR_U95 =
-          sum(COLONY_PROD_G_YR_U95, na.rm = TRUE) / 1000,
-        SUBSTRATE_CARB_PROD_KG_M2_YR =
-          SUBSTRATE_PLANAR_PROD_KG_YR *
-          (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
-        SUBSTRATE_CARB_PROD_KG_M2_YR_L95 =
-          SUBSTRATE_PLANAR_PROD_KG_YR_L95 *
-          (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
-        SUBSTRATE_CARB_PROD_KG_M2_YR_U95 =
-          SUBSTRATE_PLANAR_PROD_KG_YR_U95 *
-          (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
-      )
+    reframe(
+      TRANSECT_PLANAR_LENGTH_M = first(TRANSECT_PLANAR_LENGTH_M),
+      TRANSECT_TOTAL_SUBSTRATE_COVER_M =
+        first(TRANSECT_TOTAL_SUBSTRATE_COVER_M),
+      SUBSTRATE_COVER_CM =
+        sum(SUBSTRATE_COVER_CM, na.rm = TRUE),
+      SUBSTRATE_COVER_PCT =
+        SUBSTRATE_COVER_CM / TRANSECT_TOTAL_SUBSTRATE_COVER_M,
+      SUBSTRATE_PLANAR_PROD_KG_YR =
+        sum(COLONY_PROD_G_YR, na.rm = TRUE) / 1000,
+      SUBSTRATE_PLANAR_PROD_KG_YR_L95 =
+        sum(COLONY_PROD_G_YR_L95, na.rm = TRUE) / 1000,
+      SUBSTRATE_PLANAR_PROD_KG_YR_U95 =
+        sum(COLONY_PROD_G_YR_U95, na.rm = TRUE) / 1000,
+      SUBSTRATE_CARB_PROD_KG_M2_YR =
+        SUBSTRATE_PLANAR_PROD_KG_YR *
+        (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
+      SUBSTRATE_CARB_PROD_KG_M2_YR_L95 =
+        SUBSTRATE_PLANAR_PROD_KG_YR_L95 *
+        (10000 / (TRANSECT_PLANAR_LENGTH_M * 100)),
+      SUBSTRATE_CARB_PROD_KG_M2_YR_U95 =
+        SUBSTRATE_PLANAR_PROD_KG_YR_U95 *
+        (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
+    )
   
-
+  
   # Create a table of all substrate classes for each transect
   substrate_class_all <- c("CORAL",
                            "CCA",
@@ -316,7 +316,7 @@ summarize_prod <- function(data,
                            "TURF",
                            "OTHER")
   
-
+  
   substrate_full_table <- expand_grid(
     OCC_SITEID = unique(transect_summary$OCC_SITEID),
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
@@ -326,7 +326,7 @@ summarize_prod <- function(data,
   
   
   substrate_full_table <- substrate_full_table[substrate_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT , ]
-
+  
   # Populate full table with transect-level data
   summary_transect_substrateclass <-  left_join(
     substrate_full_table,
@@ -350,7 +350,7 @@ summarize_prod <- function(data,
       SUBSTRATE_COVER_CM:SUBSTRATE_CARB_PROD_KG_M2_YR_U95, 
       ~ replace_na(.x, 0)
     ))
-
+  
   summary_transect_substrateclass <- summary_transect_substrateclass[c(
     "REGION",
     "REGIONCODE",
@@ -378,8 +378,8 @@ summarize_prod <- function(data,
     "SUBSTRATE_CARB_PROD_KG_M2_YR_L95",
     "SUBSTRATE_CARB_PROD_KG_M2_YR_U95"
   )]
-
-
+  
+  
   # Summarize production by CORAL_GROUP at TRANSECT level  -------------------
   transect_coral_group <- data %>% dplyr::group_by(
     REGION,
@@ -424,8 +424,8 @@ summarize_prod <- function(data,
         SUBSTRATE_PLANAR_PROD_KG_YR_U95 *
         (10000 / (TRANSECT_PLANAR_LENGTH_M * 100))
     )
-
-
+  
+  
   coral_group_all <- c(
     "ACBR",
     "ACTA",
@@ -447,7 +447,7 @@ summarize_prod <- function(data,
     "POLC",
     "POMA"
   )
-
+  
   coral_full_table <- expand.grid(
     OCC_SITEID = unique(transect_summary$OCC_SITEID),
     CB_TRANSECTID = unique(transect_summary$CB_TRANSECTID),
@@ -459,7 +459,7 @@ summarize_prod <- function(data,
     )
   
   coral_full_table <- coral_full_table[coral_full_table$OCC_SITEID_TRANSECT %in% transect_summary$OCC_SITEID_TRANSECT ,]
-
+  
   
   # Populate full table with transect-level data
   
@@ -474,7 +474,7 @@ summarize_prod <- function(data,
       coral_full_table,
       transect_coral_group,
       by = c("OCC_SITEID", "CB_TRANSECTID", "OCC_SITEID_TRANSECT")
-      )
+    )
     
   } else {
     summary_transect_coral <-  left_join(
@@ -530,7 +530,7 @@ summarize_prod <- function(data,
   )]
   
   # Summarize production by TRANSECT ----------------------------------------
- 
+  
   if (macro_rates == "IPRB"){
     
     summary_transect_substratecode$MACROBIOEROSION_RATE_KG_M2_YR <- 0.209
@@ -558,8 +558,8 @@ summarize_prod <- function(data,
   }
   
   
-   if (dbase_type == "IPRB") {
-
+  if (dbase_type == "IPRB") {
+    
     summary_transect <- summary_transect_substratecode  %>%
       dplyr::group_by(
         REGION,
@@ -592,50 +592,21 @@ summarize_prod <- function(data,
           TRANSECT_TOTAL_SUBSTRATE_COVER_M /
           TRANSECT_PLANAR_LENGTH_M,
         SUBSTRATE_AVAILABLE_MACRO_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("ART",
-                                                        "BOR",
-                                                        "CCA",
-                                                        "CYA",
-                                                        "DC",
-                                                        "HA",
-                                                        "LSP",
-                                                        "MAC",
-                                                        "MCA",
-                                                        "OCE",
-                                                        "OTH",
-                                                        "RUB",
-                                                        "RUBT",
-                                                        "RUBC",
-                                                        "SCA",
-                                                        "TF"
-                                                        )]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("ART", "BOR", "CCA", "CYA", "DC", "HA", "LSP", "MAC", "MCA", "OCE", "OTH", "RUB", "RUBT", "RUBC", "SCA", "TF")], na.rm = TRUE),
         SUBSTRATE_AVAILABLE_MACRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
         SUBSTRATE_AVAILABLE_MICRO_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("ART",
-                                                        "CYA",
-                                                        "DC",
-                                                        "HA",
-                                                        "LSP",
-                                                        "MAC",
-                                                        "RUB",
-                                                        "RUBT",
-                                                        "TF"
-                                                        )]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("ART", "CYA", "DC", "HA", "LSP", "MAC", "RUB", "RUBT", "TF")], na.rm = TRUE),
         SUBSTRATE_AVAILABLE_MICRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
         HARD_CORAL_COVER_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CORAL"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS %in% "CORAL"], na.rm = TRUE),
         CCA_COVER_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CCA"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS %in% "CCA"], na.rm = TRUE),
         HARD_CORAL_CARB_PROD_KG_M2_YR =
-          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
-            SUBSTRATE_CLASS == "CORAL"],
-              na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[SUBSTRATE_CLASS %in% "CORAL"], na.rm = TRUE),
         CCA_CARB_PROD_KG_M2_YR =
-          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
-            SUBSTRATE_CLASS == "CCA"],
-              na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[SUBSTRATE_CLASS %in% "CCA"], na.rm = TRUE),
         MACROBIOEROSION_KG_M2_YR =
           SUBSTRATE_AVAILABLE_MACRO_INDEX * first(MACROBIOEROSION_RATE_KG_M2_YR),
         MACROBIOEROSION_KG_M2_YR_L95 =
@@ -692,42 +663,21 @@ summarize_prod <- function(data,
           TRANSECT_TOTAL_SUBSTRATE_COVER_M /
           TRANSECT_PLANAR_LENGTH_M,
         SUBSTRATE_AVAILABLE_MACRO_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("HARD",
-                                                        "DC",
-                                                        "RUB",
-                                                        "TURF",
-                                                        "CYANO",
-                                                        "CCA",
-                                                        "MA",
-                                                        "PESP",
-                                                        "HALI",
-                                                        "SP"
-                                                        )]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("HARD", "DC", "RUB", "TURF", "CYANO", "CCA", "MA", "PESP", "HALI", "SP")], na.rm = TRUE),
         SUBSTRATE_AVAILABLE_MACRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MACRO_PCT / 100),
         SUBSTRATE_AVAILABLE_MICRO_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("HARD",
-                                                        "DC",
-                                                        "RUB",
-                                                        "TURF",
-                                                        "CYANO",
-                                                        "MA",
-                                                        "HALI"
-                                                        )]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CODE %in% c("HARD", "DC", "RUB", "TURF", "CYANO", "MA", "HALI")], na.rm = TRUE),
         SUBSTRATE_AVAILABLE_MICRO_INDEX =
           RUGOSITY * (SUBSTRATE_AVAILABLE_MICRO_PCT / 100),
         HARD_CORAL_COVER_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CORAL"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS %in% "CORAL"], na.rm = TRUE),
         CCA_COVER_PCT =
-          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS == "CCA"]),
+          sum(SUBSTRATE_COVER_PCT[SUBSTRATE_CLASS %in% "CCA"], na.rm = TRUE),
         HARD_CORAL_CARB_PROD_KG_M2_YR =
-          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
-            SUBSTRATE_CLASS == "CORAL"],
-              na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[SUBSTRATE_CLASS %in% "CORAL"], na.rm = TRUE),
         CCA_CARB_PROD_KG_M2_YR =
-          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[
-            SUBSTRATE_CLASS == "CCA"],
-              na.rm = TRUE),
+          sum(SUBSTRATE_CARB_PROD_KG_M2_YR[SUBSTRATE_CLASS %in% "CCA"], na.rm = TRUE),
         MACROBIOEROSION_KG_M2_YR =
           SUBSTRATE_AVAILABLE_MACRO_INDEX * first(MACROBIOEROSION_RATE_KG_M2_YR),
         MACROBIOEROSION_KG_M2_YR_L95 =
@@ -751,17 +701,17 @@ summarize_prod <- function(data,
           MICROBIOEROSION_KG_M2_YR_U95
       )
   }
-
+  
   # Summarize production by SUBSTRATE_CODE at SITE level -------------------
-
+  
   se <- function(x) {
     sd(x, na.rm = TRUE) / sqrt(length(x))
   }
-
+  
   ci95 <- function(x) {
     sd(x, na.rm = TRUE) / sqrt(length(x)) * 1.97
   }
-
+  
   summary_site_substratecode <-
     summary_transect_substratecode %>% dplyr::group_by(
       REGION,
@@ -792,7 +742,7 @@ summarize_prod <- function(data,
         N = length
       )
     ))
-
+  
   # Summarize production by SUBSTRATE_CLASS at SITE level --------------------
   summary_site_substrateclass <-
     summary_transect_substrateclass %>%
@@ -811,18 +761,18 @@ summarize_prod <- function(data,
       LOCALDATE,
       SUBSTRATE_CLASS
     ) %>%
-  dplyr::reframe(across(
-    c(SUBSTRATE_COVER_PCT,
-      SUBSTRATE_CARB_PROD_KG_M2_YR),
-    list(
-      MEAN = ~mean(.x, na.rm = TRUE),
-      SD = ~sd(.x, na.rm = TRUE),
-      SE = se,
-      CI95 = ci95,
-      N = length
-    )
-  ))
-
+    dplyr::reframe(across(
+      c(SUBSTRATE_COVER_PCT,
+        SUBSTRATE_CARB_PROD_KG_M2_YR),
+      list(
+        MEAN = ~mean(.x, na.rm = TRUE),
+        SD = ~sd(.x, na.rm = TRUE),
+        SE = se,
+        CI95 = ci95,
+        N = length
+      )
+    ))
+  
   # Summarize production by CORAL_GROUP at SITE level -----------------------
   summary_site_coral <- summary_transect_coral %>%
     dplyr::group_by(
@@ -852,8 +802,8 @@ summarize_prod <- function(data,
         N = length
       )
     ))
-
-
+  
+  
   # Summarize production by SITE --------------------------------------------
   summary_site <- summary_transect %>%
     dplyr::group_by(
@@ -889,7 +839,7 @@ summarize_prod <- function(data,
         N = length
       )
     ))
-
+  
   
   
   # Export data -------------------------------------------------------------
@@ -918,5 +868,3 @@ summarize_prod <- function(data,
     return(summary_site)
   }
 }
-
-
