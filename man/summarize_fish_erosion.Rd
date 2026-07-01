@@ -22,24 +22,6 @@ density_average <- summarize_fish_metrics(
  level = "transect",
  summarize_by = "species"
 )
-biomass_average <- suppressWarnings(
- summarize_fish_metrics(
-   data = calc_eros_fish_output,
-   metric = "biomass",
-   level = "transect",
-   summarize_by = "species"
- )
-bioerosion_average <- suppressWarnings(
- summarize_fish_metrics(
-   data = calc_eros_fish_output,
-   metric = "bioerosion",
-   level = "transect",
-   summarize_by = "species"
- )
-species_table <-
- rbind(density_average, biomass_average, bioerosion_average)
-summary_fish_erosion <- summarize_fish_erosion(species_table, full_summary)
-
 }
 \author{
 Rebecca Weible

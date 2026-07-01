@@ -55,7 +55,7 @@ process_net <- function(prod,
     net_site <- net_transect %>%
       group_by(REGION, REGIONCODE, YEAR, CRUISE_ID, LOCATION, LOCATIONCODE, 
                OCC_SITEID, SITEVISITID, LATITUDE, LONGITUDE, SITE_DEPTH_M, 
-               LOCALDATE, METHOD) %>%
+               LOCALDATE) %>%
       summarise(
         N_TRANSECTS = n(), # <--- ADDED: Count number of transects per site
         across(

@@ -26,9 +26,6 @@ summarize_fish_metrics(
 Calculate metrics for density, biomass, and bioerosion at the transect
 and site level
 }
-\examples{
-calc_eros_fish_output <- calc_eros_fish(data, rates_dbase = rates_dbase)
-}
 \author{
 Rebecca Weible
 }

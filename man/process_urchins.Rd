@@ -4,21 +4,15 @@
 \alias{process_urchins}
 \title{Calculate urchin erosion rates from urchin census data}
 \usage{
-process_urchins(data, transect_length = NULL, full_summary = TRUE)
+process_urchins(data, full_summary = TRUE)
 }
 \arguments{
 \item{data}{Urchin observation data set.}
+
+\item{full_summary}{Logical. If TRUE, returns a list of dataframes.}
 }
 \description{
 Calculate urchin erosion rates from urchin census data
-}
-\examples{
-urchin_data <- read.csv("ESD_CarbBudget_Urchins_OAHU_2021.csv",
-  na = "", check.names = FALSE)
-
-urch<- process_urchins(
-  data = urchin_data
-)
 }
 \author{
 Hannah Barkley
